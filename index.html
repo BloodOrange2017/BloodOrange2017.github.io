@@ -431,8 +431,43 @@
         
           
             <p><link href="http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/05/05/cat.css" rel="stylesheet"></p>
-<p><script><br>        var maxRange = 530;//边框最大距离–正方形<br>        var minRange = 30;//边框与界面边距<br>        var hinders = 20;//阻碍的个数<br>        var clearances = 1;//关卡数<br>        var speed = 3;//阻碍物速度<br>        var 分数 = 0;<br>        var life = 3;<br>        var coefficient = 17;//积分系数<br>        window.onload = function() {<br>            bgmove();<br>        }<br>        //背景移动方法<br>        function bgmove() {<br>            var bg = document.getElementById(“movebg”);<br>            window.setInterval(function() {<br>                bg.style.left = bg.offsetLeft + 2 + “px”;<br>                if (bg.offsetLeft &gt;= 1) {<br>                    bg.style.left = -1100 + “px”;<br>                }<br>            }, 40);<br>        }<br>        //开始按钮<br>        function start() {<br>            makeHinder(0, hinders);<br>            makeHinder(1, 2);<br>            document.getElementById(“start”).style.display = “none”;<br>            document.getElementById(“div”).style.display = “block”;<br>        }</p>
-<pre><code>    //创造阻碍物
+<p><script><br>        var maxRange = 530;//边框最大距离–正方形</p>
+<pre><code>    var minRange = 30;//边框与界面边距
+
+    var hinders = 20;//阻碍的个数
+
+    var clearances = 1;//关卡数
+
+    var speed = 3;//阻碍物速度
+
+    var 分数 = 0;
+
+    var life = 3;
+
+    var coefficient = 17;//积分系数
+
+    window.onload = function() {
+        bgmove();
+    }
+    //背景移动方法
+    function bgmove() {
+        var bg = document.getElementById(&quot;movebg&quot;);
+        window.setInterval(function() {
+            bg.style.left = bg.offsetLeft + 2 + &quot;px&quot;;
+            if (bg.offsetLeft &gt;= 1) {
+                bg.style.left = -1100 + &quot;px&quot;;
+            }
+        }, 40);
+    }
+    //开始按钮
+    function start() {
+        makeHinder(0, hinders);
+        makeHinder(1, 2);
+        document.getElementById(&quot;start&quot;).style.display = &quot;none&quot;;
+        document.getElementById(&quot;div&quot;).style.display = &quot;block&quot;;
+    }
+
+    //创造阻碍物
     function makeHinder(Hurt, counts) {
         for (var i = 1; i &lt; counts; i++) {
             var div = document.createElement(&quot;div&quot;);
