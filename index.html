@@ -430,66 +430,83 @@
       
         
           
-            <div><br><link href="https://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/05/05/cat.css" rel="stylesheet"><br><script type="text/javascript" src="https://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/05/05/cat.js"></script><br><div><br><img src="http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/up_01.png" onclick="ymove('div',0)"><br>    <img src="http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/down_01.png" onclick="ymove('div',500)"><br>        <img src="http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/left_01.png" onclick="xmove('div',25)"><br>        <img src="http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/right_01.png" onclick="xmove('div',530)"><br>        <!--<div id="hinder" name="hinder"></div>--><br>        <div id="bg" onmousemove="mouseMove('div',event)"><br>            <img src="http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/bg_07.jpg" id="movebg"><br>        </div><br>        <div id="div" align="center" onmousemove="mouseMove('div',event)"><br>            <img src="http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/img_01.gif" width="50px" id="img"><br>        </div>
+            <pre><code>&lt;body style=&quot;margin:0&quot; id=&quot;body1&quot;&gt;
+    &lt;img src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/up_01.png&quot; onclick=&quot;ymove(&apos;div&apos;,0)&quot;&gt;
+    &lt;img src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/down_01.png&quot; onclick=&quot;ymove(&apos;div&apos;,500)&quot;&gt;
+    &lt;img src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/left_01.png&quot; onclick=&quot;xmove(&apos;div&apos;,25)&quot;&gt;
+    &lt;img src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/right_01.png&quot; onclick=&quot;xmove(&apos;div&apos;,530)&quot;&gt;
+    &lt;!--&lt;div id=&quot;hinder&quot; name=&quot;hinder&quot;&gt;&lt;/div&gt;--&gt;
+    &lt;div id=&quot;bg&quot; onmousemove=&quot;mouseMove(&apos;div&apos;,event)&quot;&gt;
+        &lt;img src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/bg_07.jpg&quot; id=&quot;movebg&quot;&gt;
+    &lt;/div&gt;
+    &lt;!--指针操作--&gt;
+    &lt;div id=&quot;div&quot; align=&quot;center&quot; onmousemove=&quot;mouseMove(&apos;div&apos;,event)&quot;&gt;
+        &lt;img src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/img_01.gif&quot; width=&quot;50px&quot; id=&quot;img&quot;&gt;
+    &lt;/div&gt;
 
 
 
 
-<pre><code>&lt;span id=&quot;score&quot;&gt;&lt;/span&gt;&amp;nbsp;
-&lt;div id=&quot;marquee&quot; style=&quot;position:absolute; top:555px ; left:50px; font-family:&apos;汉仪细中圆简&apos;; color:#930; font-weight:bolder&quot;&gt;
-    &lt;span id=&quot;username&quot; style=&quot;width:710px&quot;&gt; 
+    &lt;span id=&quot;score&quot;&gt;&lt;/span&gt;&amp;nbsp;
+    &lt;div id=&quot;marquee&quot; style=&quot;position:absolute; top:555px ; left:50px; font-family:&apos;汉仪细中圆简&apos;; color:#930; font-weight:bolder&quot;&gt;
+        &lt;span id=&quot;username&quot; style=&quot;width:710px&quot;&gt; 
+        &lt;/span&gt;
+    &lt;/div&gt;
+
+
+    &lt;div id=&quot;clearance&quot; align=&quot;center&quot;&gt;
+        &lt;img style=&quot;position:absolute; top:390px; left:260px; cursor: wait&quot; src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/button_07.png&quot; onclick=&quot;onclickButton()&quot;&gt;
+    &lt;/div&gt;
+    &lt;!--游戏窗口--&gt;
+    &lt;div style=&quot;position:absolute; margin:0; width:800px; height:600px; top:0px; z-index:-1; background-image:url(http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/bg_06.png)&quot;&gt;&lt;/div&gt;
+    &lt;div id=&quot;score2&quot;&gt;
+        &lt;p id=&quot;score2P&quot; style=&quot; position:absolute; left:80px; top:0px&quot;&gt;0&lt;/p&gt;
+        &lt;img src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/score_01.png&quot; style=&quot;position:absolute; top:0px ; left:0px; z-index:-1&quot;&gt;
+    &lt;/div&gt;
+    &lt;div id=&quot;showClearances&quot;&gt;
+        &lt;img src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/clearance_01.png&quot;&gt;
+        &lt;p id=&quot;showClearancesP&quot; style=&quot;position:absolute; top:-30px ; left:80px&quot;&gt;关卡:1&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div id=&quot;lifes&quot; style=&quot;width:200px&quot;&gt;
+        &lt;img name=&quot;life&quot; src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/life_02.png&quot;&gt; &lt;img name=&quot;life&quot; src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/life_02.png&quot;&gt; &lt;img name=&quot;life&quot; src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/life_02.png&quot;&gt;
+        &lt;img name=&quot;life&quot; src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/life_02.png&quot;&gt; &lt;img name=&quot;life&quot; src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/life_02.png&quot;&gt;
+    &lt;/div&gt;
+    &lt;div id=&quot;BGM&quot;&gt;
+        &lt;!--&lt;embed src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/BGM_01.mp3&quot; width=&quot;20&quot; height=&quot;20&quot; style=&quot;background-color:#666&quot; loop=&quot;10&quot;&gt;--&gt;
+        &lt;!--BGM--&gt;
+    &lt;/div&gt;
+    &lt;div id=&quot;start&quot;&gt;
+        &lt;input type=&quot;image&quot; onclick=&quot;start()&quot; src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/button_07.png&quot;&gt;
+        &lt;p style=&quot;font-weight:bolder; color:#69F; font-size:18px; font-family:&apos;汉仪细中圆简&apos;&quot;&gt;开始游戏&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div&gt;
+        &lt;img src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/gilr_01.png&quot; style=&quot;position:absolute; left:550px; top:140px&quot;&gt;
+    &lt;/div&gt;
+    &lt;div&gt;
+        &lt;img src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/Cats_01.png&quot; style=&quot;position:absolute; left:10px; top:280px&quot;&gt;
+    &lt;/div&gt;
+    &lt;div id=&quot;end&quot; style=&quot;display:none&quot;&gt;
+        &lt;img src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/GameOver_02.png&quot; style=&quot;position:absolute; left:170px; top:100px&quot; id=&quot;over&quot;&gt; &lt;span id=&quot;endscore&quot; style=&quot;position:absolute; left:240px; top:300px; font-size:30px; color:#94631B&quot;&gt;成绩:&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div&gt;
+        &lt;img src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/Strip_01.png&quot; style=&quot;position:absolute; left:30px; top:20px; z-index:8&quot;&gt;
+    &lt;/div&gt;
+    &lt;div style=&quot;position:absolute; left:39px; top:29px; z-index:9; width:535px; height:10px; overflow:hidden&quot;&gt;
+        &lt;img src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/Strip_02.png&quot; style=&quot; position:absolute; left:-530px&quot; id=&quot;strip&quot;&gt;
+    &lt;/div&gt;
+    &lt;img src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/up_03.png&quot; style=&quot;position:absolute; left:540px; top:20px; z-index:10; width:50px; height:50px&quot; id=&quot;stars&quot;&gt;
+    &lt;span id=&quot;heighscore&quot; style=&quot;position:absolute; left:590px; top:110px; font-size:20px; color:#94631B&quot;&gt;
+
     &lt;/span&gt;
-&lt;/div&gt;
+    &lt;form action=&quot;../upload/doUpload.jsp&quot;&gt;
+        &lt;input type=&quot;image&quot; style=&quot;position:absolute; left:290px; top:410px; z-index:10; width:50px; height:50px; display:none&quot; id=&quot;endup&quot; src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/button_07.png&quot;&gt; &lt;input type=&quot;hidden&quot; id=&quot;upload&quot; name=&quot;upload&quot; value=&quot;0&quot;&gt; &lt;input type=&quot;hidden&quot; id=&quot;guser&quot; name=&quot;guser&quot; value=&quot;用户你好&quot;&gt;
+    &lt;/form&gt;
 
 
-&lt;div id=&quot;clearance&quot; align=&quot;center&quot;&gt;
-    &lt;img style=&quot;position:absolute; top:390px; left:260px; cursor: wait&quot; src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/button_07.png&quot; onclick=&quot;onclickButton()&quot;&gt;
-&lt;/div&gt;
-&lt;!--游戏窗口--&gt;
-&lt;div style=&quot;position:absolute; margin:0; width:800px; height:600px; top:0px; z-index:-1; background-image:url(http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/bg_06.png)&quot;&gt;&lt;/div&gt;
-&lt;div id=&quot;score2&quot;&gt;
-    &lt;p id=&quot;score2P&quot; style=&quot; position:absolute; left:80px; top:0px&quot;&gt;0&lt;/p&gt;
-    &lt;img src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/score_01.png&quot; style=&quot;position:absolute; top:0px ; left:0px; z-index:-1&quot;&gt;
-&lt;/div&gt;
-&lt;div id=&quot;showClearances&quot;&gt;
-    &lt;img src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/clearance_01.png&quot;&gt;
-    &lt;p id=&quot;showClearancesP&quot; style=&quot;position:absolute; top:-30px ; left:80px&quot;&gt;关卡:1&lt;/p&gt;
-&lt;/div&gt;
-&lt;div id=&quot;lifes&quot; style=&quot;width:200px&quot;&gt;
-    &lt;img name=&quot;life&quot; src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/life_02.png&quot;&gt; &lt;img name=&quot;life&quot; src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/life_02.png&quot;&gt; &lt;img name=&quot;life&quot; src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/life_02.png&quot;&gt;
-    &lt;img name=&quot;life&quot; src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/life_02.png&quot;&gt; &lt;img name=&quot;life&quot; src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/life_02.png&quot;&gt;
-&lt;/div&gt;
-&lt;div id=&quot;BGM&quot;&gt;
-    &lt;!--&lt;embed src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/BGM_01.mp3&quot; width=&quot;20&quot; height=&quot;20&quot; style=&quot;background-color:#666&quot; loop=&quot;10&quot;&gt;--&gt;
-    &lt;!--BGM--&gt;
-&lt;/div&gt;
-&lt;div id=&quot;start&quot;&gt;
-    &lt;input type=&quot;image&quot; onclick=&quot;start()&quot; src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/button_07.png&quot;&gt;
-    &lt;p style=&quot;font-weight:bolder; color:#69F; font-size:18px; font-family:&apos;汉仪细中圆简&apos;&quot;&gt;开始游戏&lt;/p&gt;
-&lt;/div&gt;
-&lt;div&gt;
-    &lt;img src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/gilr_01.png&quot; style=&quot;position:absolute; left:550px; top:140px&quot;&gt;
-&lt;/div&gt;
-&lt;div&gt;
-    &lt;img src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/Cats_01.png&quot; style=&quot;position:absolute; left:10px; top:280px&quot;&gt;
-&lt;/div&gt;
-&lt;div id=&quot;end&quot; style=&quot;display:none&quot;&gt;
-    &lt;img src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/GameOver_02.png&quot; style=&quot;position:absolute; left:170px; top:100px&quot; id=&quot;over&quot;&gt; &lt;span id=&quot;endscore&quot; style=&quot;position:absolute; left:240px; top:300px; font-size:30px; color:#94631B&quot;&gt;成绩:&lt;/span&gt;
-&lt;/div&gt;
-&lt;div&gt;
-    &lt;img src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/Strip_01.png&quot; style=&quot;position:absolute; left:30px; top:20px; z-index:8&quot;&gt;
-&lt;/div&gt;
-&lt;div style=&quot;position:absolute; left:39px; top:29px; z-index:9; width:535px; height:10px; overflow:hidden&quot;&gt;
-    &lt;img src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/Strip_02.png&quot; style=&quot; position:absolute; left:-530px&quot; id=&quot;strip&quot;&gt;
-&lt;/div&gt;
-&lt;img src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/up_03.png&quot; style=&quot;position:absolute; left:540px; top:20px; z-index:10; width:50px; height:50px&quot; id=&quot;stars&quot;&gt;
-&lt;span id=&quot;heighscore&quot; style=&quot;position:absolute; left:590px; top:110px; font-size:20px; color:#94631B&quot;&gt;
 
-&lt;/span&gt;
-&lt;form action=&quot;../upload/doUpload.jsp&quot;&gt;
-    &lt;input type=&quot;image&quot; style=&quot;position:absolute; left:290px; top:410px; z-index:10; width:50px; height:50px; display:none&quot; id=&quot;endup&quot; src=&quot;http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/04/28/button_07.png&quot;&gt; &lt;input type=&quot;hidden&quot; id=&quot;upload&quot; name=&quot;upload&quot; value=&quot;0&quot;&gt; &lt;input type=&quot;hidden&quot; id=&quot;guser&quot; name=&quot;guser&quot; value=&quot;用户你好&quot;&gt;
-&lt;/form&gt;
-</code></pre><p></p></div><br></div><p></p>
+&lt;/body&gt;
+</code></pre><p><link href="https://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/05/05/cat.css" rel="stylesheet"></p>
+<script type="text/javascript" src="https://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/05/05/cat.js"></script>
 
           
         
