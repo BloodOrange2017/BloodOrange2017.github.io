@@ -90,12 +90,28 @@
 
 
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://yoursite.com/index.html">
+<meta name="description" content="JVM原理和优化                    &amp;lt;div class=&amp;quot;article_manage clearfix&amp;quot;&amp;gt;     &amp;lt;div class=&amp;quot;article_r&amp;quot;&amp;gt;         &amp;lt;span class=&amp;quot;link_postdat">
+<meta property="og:type" content="article">
+<meta property="og:title" content="转载:JVM原理及性能调优">
+<meta property="og:url" content="http://yoursite.com/2017/05/05/jvm-01/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="JVM原理和优化                    &amp;lt;div class=&amp;quot;article_manage clearfix&amp;quot;&amp;gt;     &amp;lt;div class=&amp;quot;article_r&amp;quot;&amp;gt;         &amp;lt;span class=&amp;quot;link_postdat">
+<meta property="og:image" content="http://hi.csdn.net/attachment/201201/6/0_1325814932X3Ts.gif">
+<meta property="og:image" content="http://hi.csdn.net/attachment/201003/6/1981948_1267862317X1a1.png">
+<meta property="og:image" content="http://hi.csdn.net/attachment/201003/6/1981948_1267862317ZvYy.png">
+<meta property="og:image" content="http://hi.csdn.net/attachment/201003/6/1981948_1267862317X1a1.png">
+<meta property="og:image" content="http://hi.csdn.net/attachment/201003/6/1981948_12678645142BKS.png">
+<meta property="og:image" content="http://hi.csdn.net/attachment/201004/18/1981948_1271591242sfBp.jpg">
+<meta property="og:image" content="http://hi.csdn.net/attachment/201004/18/1981948_12715912450bkp.png">
+<meta property="og:image" content="http://hi.csdn.net/attachment/201004/18/1981948_1271591246383f.png">
+<meta property="og:image" content="http://hi.csdn.net/attachment/201004/18/1981948_1271591249sb6K.png">
+<meta property="og:image" content="http://dl.iteye.com/upload/attachment/612577/2b525609-ce63-3a42-bf19-b2fbcd42f26c.png">
+<meta property="og:image" content="http://img.my.csdn.net/uploads/201207/09/1341820867_5296.gif">
+<meta property="og:updated_time" content="2017-05-05T08:57:56.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hexo">
+<meta name="twitter:title" content="转载:JVM原理及性能调优">
+<meta name="twitter:description" content="JVM原理和优化                    &amp;lt;div class=&amp;quot;article_manage clearfix&amp;quot;&amp;gt;     &amp;lt;div class=&amp;quot;article_r&amp;quot;&amp;gt;         &amp;lt;span class=&amp;quot;link_postdat">
+<meta name="twitter:image" content="http://hi.csdn.net/attachment/201201/6/0_1325814932X3Ts.gif">
 
 
 
@@ -123,13 +139,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/"/>
+  <link rel="canonical" href="http://yoursite.com/2017/05/05/jvm-01/"/>
 
 
 
 
 
-  <title>Hexo</title>
+  <title>转载:JVM原理及性能调优 | Hexo</title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="">
@@ -154,9 +170,7 @@
     
   
 
-  <div class="container sidebar-position-left 
-   page-home 
- ">
+  <div class="container sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -239,9 +253,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
 
@@ -267,9 +281,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/05/05/jvm-01/" itemprop="url">转载:JVM原理及性能调优</a></h1>
+          <h1 class="post-title" itemprop="name headline">转载:JVM原理及性能调优</h1>
         
 
         <div class="post-meta">
@@ -316,9 +328,7 @@
       
 
       
-        
-          
-            <div id="article_details" class="details"><br>    <div class="article_title"><br>         <span class="ico ico_type_Repost"></span><br><br><br>    <h1><br>        <span class="link_title"><a href="/ning109314/article/details/10411495"><br>        JVM原理和优化<br>        </a></span><br>    </h1><br></div>
+        <div id="article_details" class="details"><br>    <div class="article_title"><br>         <span class="ico ico_type_Repost"></span><br><br><br>    <h1><br>        <span class="link_title"><a href="/ning109314/article/details/10411495"><br>        JVM原理和优化<br>        </a></span><br>    </h1><br></div>
 
 
 
@@ -420,20 +430,27 @@
 
 <p></p></div><p></p>
 </div>
-          
+      
+    </div>
+
+    <div>
+      
         
+
       
     </div>
 
     <div>
       
-    </div>
+        
 
-    <div>
       
     </div>
 
     <div>
+      
+        
+
       
     </div>
 
@@ -441,133 +458,38 @@
       
 
       
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/05/first/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="John Doe">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
         
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/05/05/first/" itemprop="url">HEXO教程-搭建一个属于自己的HEXO博客</a></h1>
-        
+      
 
-        <div class="post-meta">
-          <span class="post-time">
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
             
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Veröffentlicht am</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-05T15:18:31+08:00">
-                2017-05-05
-              </time>
+              <a href="/2017/05/05/first/" rel="next" title="HEXO教程-搭建一个属于自己的HEXO博客">
+                <i class="fa fa-chevron-left"></i> HEXO教程-搭建一个属于自己的HEXO博客
+              </a>
             
+          </div>
 
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
             
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
+          </div>
         </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
-        
-          
-            <div class="show-content"><br>          <p><a href="https://github.com/BloodOrange2017/BloodOrange2017.github.io" target="_blank">原文 : BIGCC个人博客(gonghonglou.com)</a></p><br><p>这是一篇详细文章来讲述用Mac搭建Hexo博客于Github上的完整历程， 也是踩了无数的坑搭起来的，现在写下些经验来分享，希望能帮大家少踩些坑。</p><br><p>曾买过一款阿里的云虚拟主机，后来才发现不能自己装软件只能上传网站程序，除非另买<a href="https://www.aliyun.com/easybuy" target="_blank">ECS</a>，对于第一个月的实习工资还没拿到手的我想想还是算了，先用Wordpress搭起来玩玩吧。然而在上传网站程序中几次失败，本就觉得没劲，遂一怒转向Github。好了，废话少说，开始吧。</p><br><h2>环境配置</h2><br><br><p><a href="https://hexo.io/docs" target="_blank">Hexo官网</a>上本就有对Hexo安装及使用的详细介绍，墙裂推荐。这里来讲述自己安装的亲身步骤，或有区别。</p><br><h3>1.Node.js</h3><br><br><p>用来生成静态页面。移步<a href="https://nodejs.org/en/" target="_blank">Node.js官网</a>，下载v5.5.0 Stable 一路安装即可。</p><br><h3>2.Git</h3><br><br><p>用来将本地Hexo内容提交到Github上。Xcode自带Git，这里不再赘述。如果没有Xcode可以参考<a href="https://hexo.io/docs" target="_blank">Hexo官网</a>上的安装方法。    </p><br><h2>安装Hexo</h2><br><br><p>当Node.js和Git都安装好后就可以正式安装Hexo了，终端执行如下命令：</p><br><pre><code>$ sudo npm install -g hexo</code></pre><br><p>输入管理员密码（Mac登录密码）即开始安装 (<code>sudo</code>:linux系统管理指令  <code>-g</code>:全局安装)</p><br><blockquote><p>注意坑一：<a href="https://hexo.io/docs" target="_blank">Hexo官网</a>上的安装命令是<code>$ npm install -g hexo-cli</code>，安装时不要忘记前面加上<code>sudo</code>，否则会因为权限问题报错。</p></blockquote><br><h3>初始化</h3><br><br><p>终端cd到一个你选定的目录，执行<code>hexo init</code>命令：</p><br><pre><code>$ hexo init blog</code></pre><br><p><code>blog</code>是你建立的文件夹名称。cd到<code>blog</code>文件夹下，执行如下命令，安装npm：</p><br><pre><code>$ npm install</code></pre><br><p>执行如下命令，开启hexo服务器：</p><br><pre><code>$ hexo s</code></pre><br><p>此时，浏览器中打开网址<a href="http://0.0.0.0:4000" target="_blank">http://localhost:4000</a>，能看到如下页面：</p><br><div class="image-package"><br><img src="http://upload-images.jianshu.io/upload_images/985173-6538ff6c494aeb9d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-original-src="http://upload-images.jianshu.io/upload_images/985173-6538ff6c494aeb9d.png?imageMogr2/auto-orient/strip%7CimageView2/2"><br><div class="image-caption"><a href="http://localhost:4000" target="_blank" rel="external">http://localhost:4000</a></div><br></div><br><p>本地设置好后，接下来开始关联Github。</p><br><h2>关联Github</h2><br><br><h3>1.创建仓库</h3><br><br><p>登录你的Github帐号，新建仓库，名为<code>用户名.github.io</code>固定写法，如<code>gonghonglou.github.io</code>即下图中<code>1</code>所示：</p><br><div class="image-package"><br><img src="http://upload-images.jianshu.io/upload_images/985173-e04632cf98208a52.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-original-src="http://upload-images.jianshu.io/upload_images/985173-e04632cf98208a52.png?imageMogr2/auto-orient/strip%7CimageView2/2"><br><div class="image-caption"></div><br></div><br><p>本地的<code>blog</code>文件夹下内容为：</p><br><pre><code>_config.yml<br>db.json<br>node_modules<br>package.json<br>scaffolds<br>source<br>themes</code></pre><br><p>终端cd到<code>blog</code>文件夹下，<code>vim</code>打开<code>_config.yml</code>，命令如下：</p><br><pre><code>$ vim _config.yml</code></pre><br><p>打开后往下滑到最后，修改成下边的样子：</p><br><pre><code>deploy:<br>    type: git<br>    repository: <a href="https://github.com/BloodOrange2017/BloodOrange2017.github.io.git" target="_blank" rel="external">https://github.com/BloodOrange2017/BloodOrange2017.github.io.git</a><br>    branch: master</code></pre><br><p>你需要将<code>repository</code>后<code>gonghonglou</code>换成你自己的用户名，地址在上图<code>2</code>位置获取。hexo 3.1.1版本后<code>type:</code>值为<code>git</code>。</p><br><blockquote><p>注意坑二：在配置所有的<code>_config.yml</code>文件时（包括theme中的），在所有的冒号<code>:</code>后边都要加一个空格，否则执行hexo命令会报错，切记 切记</p></blockquote><br><p>在<code>blog</code>文件夹目录下执行生成静态页面命令：</p><br><pre><code>$ hexo generate        或者：hexo g</code></pre><br><pre>此时若出现如下报错：<br>ERROR Local hexo not found in ~/blog<br>ERROR Try runing: ‘npm install hexo –save’<br>则执行命令：<br>npm install hexo –save<br>若无报错，自行忽略此步骤。</pre><br><br><p>再执行配置命令：</p><br><pre><code>$ hexo deploy            或者：hexo d</code></pre><br><blockquote><br><p>注意坑三：若执行命令<code>hexo deploy</code>仍然报错：无法连接git或找不到git，则执行如下命令来安装<a href="https://github.com/hexojs/hexo-deployer-git" target="_blank">hexo-deployer-git</a>：</p><br><pre><code>   $ npm install hexo-deployer-git –save</code></pre><br></blockquote><br><p>再次执行<code>hexo generate</code>和<code>hexo deploy</code>命令。</p><br><p>若你未关联Github，则执行<code>hexo deploy</code>命令时终端会提示你输入Github的用户名和密码，即</p><br><pre><code>Username for ‘<a href="https://github.com" target="_blank" rel="external">https://github.com</a>‘:<br>Password for ‘<a href="https://github.com" target="_blank" rel="external">https://github.com</a>‘:</code></pre><br><p><code>hexo deploy</code>命令执行成功后，浏览器中打开网址<a href="http://gonghonglou.github.io" target="_blank">http://gonghonglou.github.io</a>（将<code>gonghonglou</code>换成你的用户名）能看到和打开<code><a href="http://localhost:4000" target="_blank" rel="external">http://localhost:4000</a></code>时一样的页面。</p><br><p><strong>为避免每次输入Github用户名和密码的麻烦，可参照第二节方法</strong></p><br><h3>2.添加ssh key到Github</h3><br><br><h4>1.1.检查SSH keys是否存在Github</h4><br><br><p>执行如下命令，检查SSH keys是否存在。如果有文件<code>id_rsa.pub</code>或<code>id_dsa.pub</code>，则直接进入步骤1.3将SSH key添加到Github中，否则进入下一步生成SSH key。</p><br><pre><code>$ ls -al ~/.ssh</code></pre><br><h4>1.2.生成新的ssh key</h4><br><br><p>执行如下命令生成public/private rsa key pair，注意将<code>your_email@example.com</code>换成你自己注册Github的邮箱地址。</p><br><pre><code>$ ssh-keygen -t rsa -C “your_email@example.com”</code></pre><br><p>默认会在相应路径下（<code>~/.ssh/id_rsa.pub</code>）生成<code>id_rsa</code>和<code>id_rsa.pub</code>两个文件。</p><br><h4>1.3.将ssh key添加到Github中</h4><br><br><p>Find前往文件夹<code>~/.ssh/id_rsa.pub</code>打开id_rsa.pub文件，里面的信息即为SSH key，将这些信息复制到Github的Add SSH key页面即可。</p><br><p>进入Github –&gt; Settings –&gt; SSH keys –&gt; add SSH key:</p><br><p>Title里任意添一个标题，将复制的内容粘贴到Key里，点击下方<code>Add key</code>绿色按钮即可。</p><br><h3>3.发布文章</h3><br><br><p>终端cd到<code>blog</code>文件夹下，执行如下命令新建文章：</p><br><pre><code>hexo new “postName”</code></pre><br><p>名为<code>postName.md</code>的文件会建在目录<code>/blog/source/_posts</code>下。你当然可以用vim来编辑文章。我在用Mou编辑器，支持预览，虽然其预览主题并非我喜欢，如果你有好用的markdown编辑器请推荐给我，感激不尽！</p><br><p>文章编辑完成后，终端cd到<code>blog</code>文件夹下，执行如下命令来发布：</p><br><pre><code>hexo generate             //生成静态页面</code></pre><br><pre>hexo deploy            //将文章部署到Github</pre><br><br><p><strong>至此，Mac上搭建基于Github的Hexo博客就完成了。下面的内容是介绍安装theme，添加评论功能和绑定个人域名，如果有兴趣且还有耐心的话，请继续吧。</strong></p><br><h2>安装theme</h2><br><br><p>你可以到<a href="https://hexo.io/themes/" target="_blank">Hexo官网主题页</a>去搜寻自己喜欢的theme。这里以<a href="https://github.com/iissnan/hexo-theme-next" target="_blank">hexo-theme-next</a>为例</p><br><p>终端cd到 <code>blog</code> 目录下执行如下命令：</p><br><pre><code>$ git clone <a href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="external">https://github.com/iissnan/hexo-theme-next</a> themes/next</code></pre><br><p>将<code>blog</code>目录下<code>_config.yml</code>里<code>theme</code>的名称<code>landscape</code>修改为<code>next</code></p><br><p>终端cd到<code>blog</code>目录下执行如下命令(每次部署文章的步骤)：</p><br><pre><code>$ hexo clean           //清除缓存文件 (db.json) 和已生成的静态文件 (public)</code></pre><br><pre>$ hexo g             //生成缓存和静态文件</pre><br><br><pre>$ hexo d             //重新部署到服务器</pre><br><br><p>至于更改theme内容，比如名称，描述，头像等去修改<code>blog/_config.yml</code>文件和<code>blog/themes/next/_config.yml</code>文件中对应的属性名称即可， 不要忘记冒号<code>:</code>后加空格。  <a href="http://theme-next.iissnan.com/" target="_blank"> NexT 使用文档</a>里有极详细的介绍。</p><br><h2>绑定个人域名</h2><br><br><p>现在使用的域名是Github提供的二级域名，也可以绑定为自己的个性域名。购买域名，可以到<a href="https://sg.godaddy.com/zh/" target="_blank">GoDaddy官网</a>，网友亲切称呼为：狗爹，也可以到<a href="http://wanwang.aliyun.com/" target="_blank">阿里万网</a>购买。我是在万网买的，可直接在其网站做域名解析。</p><br><h3>1.Github端</h3><br><br><p>在<code>/blog/themes/landscape/source</code>目录下新建文件名为：<code>CNAME</code>文件，注意没有后缀名！直接将自己的域名如：<code>gonghonglou.com</code>写入。</p><br><p>终端cd到<code>blog</code>目录下执行如下命令重新部署：</p><br><pre><code>$ hexo clean</code></pre><br><pre>$ hexo g</pre>                                                        <pre>$ hexo d</pre><br><br><blockquote><p>注意坑四：网上许多都是说在Github上直接新建<code>CNAME</code>文件，如果这样的话，在你下一次执行<code>hexo d</code>部署命令后<code>CNAME</code>文件就消失了，因为本地没有此文件嘛。</p></blockquote><br><h3>2.域名解析</h3><br><br><p>如果将域名指向一个域名，实现与被指向域名相同的访问效果，需要增加CNAME记录。登录万网，在你购买的域名后边点击：解析 –&gt; 添加解析</p><br><p>记录类型：CNAME</p><br><p>主机记录：将域名解析为example.com（不带www），填写@或者不填写</p><br><p>记录值：gonghonglou.github.io.    (不要忘记最后的<code>.</code>，<code>gonghonglou</code>改为你自己的用户名)，点击保存即可，如下图：</p><br><div class="image-package"><br><img src="http://upload-images.jianshu.io/upload_images/985173-f1c2cd896991e05f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-original-src="http://upload-images.jianshu.io/upload_images/985173-f1c2cd896991e05f.png?imageMogr2/auto-orient/strip%7CimageView2/2"><br><div class="image-caption">域名解析</div><br></div><br><p>此时，点击访问<a href="http://gonghonglou.com" target="_blank">http://gonghonglou.com</a>和访问<a href="http://gonghonglou.github.io" target="_blank">http://gonghonglou.github.io</a>效果一致，大功告成！</p><br><h4>——11.10更新 以下————————————————</h4><br><h4>1、解决 deploy 后博客空白问题</h4><br><p>昨晚更新了一下 blog 做了个部署，结果blog就挂了，打开 <code>gonghonglou.com</code> 页面显示一片空白。然而 <code>hexo s</code> 开启本地服务器 <code>localhost:4000</code> 访问是没问题的。<br>上网查了一下，原来是 GitHub Pages 禁止了 <code>source/vendors</code> 目录的访问。Github 在 11 月 3 日更新了版本。其中包括升级了 Jekyll 到 3.3。Jekyll 为了加快构建速度，忽略 <code>vendor</code> 和 <code>node_modules</code> 文件夹。所以部署到 GitHub 后，识别不到本地下的的这个文件夹 <code>blog/themes/next/source/vendor</code>，你只需要给这个文件夹换个名字再重新部署一次就 OK 了。<code>nexT</code> 在 GitHub 上的 isusses 已经给出了解决方案：<a href="https://github.com/iissnan/hexo-theme-next/issues/1214" target="_blank">#1214<br></a></p><br><div class="image-package"><br><img src="http://upload-images.jianshu.io/upload_images/985173-31f883a8da001b85.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-original-src="http://upload-images.jianshu.io/upload_images/985173-31f883a8da001b85.png?imageMogr2/auto-orient/strip%7CimageView2/2"><br><div class="image-caption">#1214</div><br></div><br><p>还有另一种解决方案就是升级 <code>nexT</code> 主题，cd 到 <code>blog/themes/next/</code> 下执行命令 <code>git pull</code> 更新。<br>然而，有可能升级后多说评论等第三方工具会失效，慎用。</p><br><h4>2、将个人博客同时部署到 GitHub 和 Coding</h4><br><p>1、首先到 <a href="https://coding.net" target="_blank">Coding</a> 上注册并开一个项目，项目名称和用户个性后缀相同（方便二级域名访问博客），拿到项目的 https 地址</p><br><p>2、打开本地 <code>blog</code> 目录下的 <code>_config.yml</code> 文件，修改如下</p><br><pre><code>deploy:<br>  type: git<br>  repository:<br>            github: <a href="https://github.com/gonghonglou/gonghonglou.github.io.git" target="_blank" rel="external">https://github.com/gonghonglou/gonghonglou.github.io.git</a><br>            coding: <a href="https://git.coding.net/gonghonglou/gonghonglou.git" target="_blank" rel="external">https://git.coding.net/gonghonglou/gonghonglou.git</a><br>  branch: master</code></pre><br><p>3、cd 到本地 <code>blog/source</code> 目录下执行如下命令新建 <code>Staticfile</code> 文件</p><br><pre><code>$ touch Staticfile  #名字必须是Staticfile</code></pre><br><p>原因是 coding.net 需要以这个文件来作为静态文件部署的标志，就是说看到这个 Staticfile 就知道按照静态文件来发布。</p><br><p>4、执行发布命令 <code>hexo g</code> 、 <code>hexo d</code>  </p><br><p>5、个人域名添加两条 <code>CNAME</code> 解析。将 <code>gonghonglou.github.io.</code> 解析为 [海外] ，将 <code>gonghonglou.coding.me.</code> 解析为 [默认]<br></p><div class="image-package"><br><img src="http://upload-images.jianshu.io/upload_images/985173-d560ebb84b300986.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-original-src="http://upload-images.jianshu.io/upload_images/985173-d560ebb84b300986.png?imageMogr2/auto-orient/strip%7CimageView2/2"><br><div class="image-caption"></div><br></div><br><p>这样就是为了从国内访问 <code>gonghonglou.com</code> 就是访问 Coding 上的博客项目，从国外访问 <code>gonghonglou.com</code> 就是访问 GitHub 上的博客项目。</p><br><p>6、到 Coding 上的博客项目主页，点击 <code>Pages服务</code> 输入部署分支 <code>master</code> 立即开启</p><br><div class="image-package"><br><img src="http://upload-images.jianshu.io/upload_images/985173-ea5b4dad460b4f8d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-original-src="http://upload-images.jianshu.io/upload_images/985173-ea5b4dad460b4f8d.png?imageMogr2/auto-orient/strip%7CimageView2/2"><br><div class="image-caption"></div><br></div><br><p>这样就可以访问自己在 Coding 上的个人博客了 <a href="http://gonghonglou.coding.me/gonghonglou" target="_blank">gonghonglou.coding.me/gonghonglou</a> 如果像这样你的用户后缀名与博客项目名称相同你还可以省略项目名称直接访问 <a href="http://gonghonglou.coding.me" target="_blank">gonghonglou.coding.me</a> </p><br><p>7、添加域名绑定，输入个人域名就 OK 了，可能需要耐心等待几分钟，这样在国内访问自己的博客就快得多了。</p><br><p>试了一下在国内访问 <a href="http://gonghonglou.com" target="_blank">gonghonglou.com</a> 拦不住 要飞起来了😂</p><br><h4>——11.10更新 以上————————————————</h4><br><h2>参考链接</h2><br><br><ul><br><li><a href="https://hexo.io/docs" target="_blank">Hexo官网</a></li><br><li><a href="http://leopardpan.github.io/2015/08/12/hexo/" target="_blank">HEXO</a></li><br><li><a href="http://www.jianshu.com/p/31cbbbc5f9fa/" target="_blank">如何生成SSH key</a></li><br></ul><br><br>        </div><br>        <!--  --><br><br>        <div class="show-foot"><br>          <a class="notebook" href="/nb/2004750"><br>            <i class="iconfont ic-search-notebook"></i> <span></span><br></a>          <div class="copyright" data-toggle="tooltip" data-html="true" data-original-title=""><br>          </div><br>          <div class="modal-wrap" data-report-note=""><br><br>          </div><br>        </div><br>    
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </article>
 
 
-    
-  </section>
 
-  
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -575,6 +497,10 @@
 
 
           
+  <div class="comments" id="comments">
+    
+  </div>
+
 
         </div>
         
@@ -594,8 +520,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Inhaltsverzeichnis
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Übersicht
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/avatar.gif"
@@ -639,6 +574,22 @@
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text">                JVM原理和优化            </span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#undefined"><span class="nav-number">1.1.</span> <span class="nav-text"> </span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#undefined"><span class="nav-number">1.2.</span> <span class="nav-text">= G1 ===================================</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#undefined"><span class="nav-number">1.3.</span> <span class="nav-text">= CMS ==================================</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#undefined"><span class="nav-number">1.4.</span> <span class="nav-text">= 调试工具 ==================================</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -752,6 +703,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
 
   
 
