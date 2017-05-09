@@ -197,7 +197,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
-            Home
+            Startseite
           </a>
         </li>
       
@@ -207,7 +207,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
-            Archives
+            Archiv
           </a>
         </li>
       
@@ -279,7 +279,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2099-09-09T12:00:00+08:00">
                 2099-09-09
@@ -363,6 +363,120 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/09/innoDB-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/05/09/innoDB-2/" itemprop="url">转载：innoDB -MVCC浅析</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-09T18:27:23+08:00">
+                2017-05-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <div id="article_content" class="article_content"><br><p><span style="white-space:pre">    </span>在并发读写数据库时，读操作可能会不一致的数据（脏读）。为了避免这种情况，需要实现数据库的并发访问控制，最简单的方式就是加锁访问。由于，加锁会将读写操作串行化，所以不会出现不一致的状态。但是，读操作会被写操作阻塞，大幅降低读性能。在java concurrent包中，有copyonwrite系列的类，专门用于<strong>优化读远大于写</strong>的情况。而其优化的手段就是，在进行写操作时，将数据copy一份，不会影响原有数据，然后进行修改，修改完成后原子替换掉旧的数据，而读操作只会读取原有数据。通过这种方式实现写操作不会阻塞读操作，从而优化读效率。而写操作之间是要互斥的，并且每次写操作都会有一次copy，所以只适合读大于写的情况。</p><p><span style="white-space:pre">    </span>MVCC的原理与copyonwrite类似，全称是Multi-Version Concurrent Control，即多版本并发控制。在MVCC协议下，每个读操作会看到一个一致性的snapshot，并且可以实现非阻塞的读。MVCC允许数据具有多个版本，这个版本可以是时间戳或者是全局递增的事务ID，在同一个时间点，不同的事务看到的数据是不同的。</p><p><span style="white-space:pre">    </span>实现原理：&nbsp;</p><p><span style="white-space:pre">    </span>——————————————————————————————&gt; 时间轴</p><p><span style="white-space:pre">            </span>|——-R(T1)—–|</p><p><span style="white-space:pre">        </span>|———–U(T2)———–|</p><p><span style="white-space:pre">    </span>如上图，假设有两个并发操作R(T1)和U(T2)，T1和T2是事务ID，T1小于T2，系统中包含数据a = 1(T1)，R和W的操作如下：</p><p><span style="white-space:pre">        </span>R：read a (T1)</p><p><span style="white-space:pre">        </span>U：a = 2 &nbsp; &nbsp;(T2)</p><p><span style="white-space:pre">    </span>R（读操作）的版本T1表示要读取数据的版本，而之后写操作才会更新版本，读操作不会。在时间轴上，R晚于U，而由于U在R开始之后提交，所以对于R是不可见的。所以，R只会读取T1版本的数据，即a = 1。</p><p><span style="white-space:pre">    </span>由于在update操作提交之前，不能影响已有数据的一致性，所以不会改变旧的数据，update操作会被拆分成insert + delete。需要标记删除旧的数据，insert新的数据。只有update提交之后，才会影响后续的读操作。而对于读操作而且，只能读到在其之前的所有的写操作，正在执行中的写操作对其是不可见的。</p><p><span style="white-space:pre">    </span>上面说了一堆的虚的理论，下面来点干活，看一下mysql的innodb引擎是如何实现MVCC的。innodb会为每一行添加两个字段，分别表示该行<strong>创建的版本</strong>和<strong>删除的版本</strong>，填入的是事务的版本号，这个版本号随着事务的创建不断递增。在repeated read的隔离级别（<a target="_blank" href="http://blog.csdn.net/chosen0ne/article/details/10036775">事务的隔离级别请看这篇文章</a>）下，具体各种数据库操作的实现：</p><p><span style="white-space:pre">    </span>select：满足以下两个条件innodb会返回该行数据：（1）该行的创建版本号小于等于当前版本号，用于保证在select操作之前所有的操作已经执行落地。（2）该行的删除版本号大于当前版本或者为空。删除版本号大于当前版本意味着有一个并发事务将该行删除了。</p><p><span style="white-space:pre">    </span>insert：将新插入的行的创建版本号设置为当前系统的版本号。</p><p><span style="white-space:pre">    </span>delete：将要删除的行的删除版本号设置为当前系统的版本号。</p><p><span style="white-space:pre">    </span>update：不执行原地update，而是转换成insert + delete。将旧行的删除版本号设置为当前版本号，并将新行insert同时设置创建版本号为当前版本号。</p><p><span style="white-space:pre">    </span>其中，写操作（insert、delete和update）执行时，需要将系统版本号递增。</p><p><span style="white-space:pre">    </span>由于旧数据并不真正的删除，所以必须对这些数据进行清理，innodb会开启一个后台线程执行清理工作，具体的规则是将删除版本号小于当前系统版本的行删除，这个过程叫做purge。</p><p><span style="white-space:pre">    </span>通过MVCC很好的实现了事务的隔离性，可以达到repeated read级别，要实现serializable还必须加锁。</p><br></div>
+
+
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/09/innoDB-01/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -392,7 +506,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-09T15:51:17+08:00">
                 2017-05-09
@@ -506,7 +620,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-09T14:28:36+08:00">
                 2017-05-09
@@ -618,7 +732,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-09T11:37:45+08:00">
                 2017-05-09
@@ -755,7 +869,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-09T09:59:31+08:00">
                 2017-05-09
@@ -868,7 +982,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-08T19:25:16+08:00">
                 2017-05-08
@@ -986,7 +1100,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-08T18:19:39+08:00">
                 2017-05-08
@@ -1253,7 +1367,7 @@ for (int i = 0; i &amp;lt; this.segments.length; ++i)
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-08T18:12:45+08:00">
                 2017-05-08
@@ -1365,7 +1479,7 @@ for (int i = 0; i &amp;lt; this.segments.length; ++i)
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-07T17:17:06+08:00">
                 2017-05-07
@@ -1405,119 +1519,6 @@ for (int i = 0; i &amp;lt; this.segments.length; ++i)
         
           
             <div id="article_content" class="article_content"><br><br><p><span style="font-size:18px; color:#009900"><strong>MySQL中的存储引擎：</strong></span></p><br><p><span style="color:rgb(0,153,0)"><span style="font-size:14px">1、存储引擎的概念</span></span></p><br><p><span style="color:rgb(0,153,0)"><span style="font-size:14px">2、查看MySQL所支持的存储引擎</span></span></p><br><p><span style="color:rgb(0,153,0)"><span style="font-size:14px">3、MySQL中几种常用存储引擎的特点</span></span></p><br><p><span style="color:rgb(0,153,0)"><span style="font-size:14px">4、存储引擎之间的相互转化</span></span></p><br><p><span style="font-size:18px"><strong><span style="color:#ff6600">一、存储引擎</span></strong></span></p><br><p><span style="font-size:14px; color:#009900">1、存储引擎其实就是如何实现存储数据，如何为存储的数据建立索引以及如何更新，查询数据等技术实现的方法。</span></p><br><p><span style="font-size:14px; color:#009900">2、MySQL中的数据用各种不同的技术存储在文件（或内存）中，这些技术中的每一种技术都使用不同的存储机制，索引技巧，锁定水平并且最终提供广泛的不同功能和能力。在MySQL中将这些不同的技术及配套的相关功能称为存储引擎。</span></p><br><p><span style="font-size:18px"><span style="color:#ff6600"><strong>二、MySQL 中查看引擎</strong></span></span></p><br><p><span style="color:rgb(0,153,0)"><span style="font-size:14px">1、show&nbsp; engines;&nbsp;&nbsp; // 查看mysql所支持的存储引擎，以及从中得到mysql默认的存储引擎。</span></span></p><br><p><span style="color:rgb(0,153,0)"><span style="font-size:14px">2、show&nbsp; variables&nbsp; like ‘% storage_engine’;&nbsp;&nbsp;&nbsp; //&nbsp;&nbsp;&nbsp;&nbsp;查看mysql&nbsp;默认的存储引擎</span></span></p><br><p><img src="http://img.blog.csdn.net/20150106223151155?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvUUhfSkFWQQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="" height="135" width="570"><br><br></p><br><p><span style="font-size:18px; color:#009900">3、show&nbsp;&nbsp;create&nbsp;&nbsp; table&nbsp; tablename ;&nbsp;&nbsp; //&nbsp;&nbsp;&nbsp;&nbsp;查看具体某一个表所使用的存储引擎，这个默认存储引擎<span style="font-size:18px; color:#009900">被修改了！</span><br><br></span></p><br><p><span style="font-size:18px; color:#009900"><img src="http://img.blog.csdn.net/20150106222921332?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvUUhfSkFWQQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="" height="291" width="646"></span></p><br><p><br><br></p><br><p><span style="font-size:18px; color:#009900">4、show&nbsp; table&nbsp;&nbsp; status&nbsp; from&nbsp; database&nbsp; where&nbsp; name=&quot;tablename&quot;</span></p><br><p><span style="font-size:18px; color:#009900">//准确查看某个数据库中的某一表所使用的存储引擎</span></p><br><p><span style="font-size:18px; color:#009900"><img src="http://img.blog.csdn.net/20150106224114456?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvUUhfSkFWQQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="" height="198" width="907"><br><br></span></p><br><p><span style="font-size:18px"><span style="color:#ff6600"><strong>三、MySQL中常用的几种存储引擎：innoDB、myisam、memory、<span style="font-size:18px">BlackHole</span>以及这几个引擎的讲解</strong></span></span></p><br><p><span style="font-size:18px">innoDB存储引擎<br><br></span></p><br><p><span style="font-size:18px; color:#009900">（1） innodb存储引擎的mysql表提供了事务，回滚以及系统崩溃修复能力和多版本迸发控制的事务的安全。</span></p><br><p><span style="font-size:18px; color:#009900">（2）innodb支持自增长列（auto_increment）,自增长列的&#20540;不能为空，如果在使用的时候为空的话怎会进行自动存现有的&#20540;开始增&#20540;，如果有但是比现在的还大，则就保存这个&#20540;。</span></p><br><p><span style="font-size:18px; color:#009900">（3）innodb存储引擎支持外键（foreign key） ,外键所在的表称为子表而所依赖的表称为父表。</span></p><br><p><span style="font-size:18px; color:#009900">（4）innodb存储引擎最重要的是支持事务，以及事务相关联功能。</span></p><br><p><span style="font-size:18px; color:#009900">（5）innodb存储引擎支持mvcc的行级锁。</span></p><br><p><span style="color:#009900"><span style="font-size:18px">（6）innodb存储引擎索引使用的是B&#43;Tree</span></span></p><br><p><span style="font-size:18px; color:#009900">&nbsp; &nbsp;mvcc类&#20284;于java中的读锁具体介绍可以看这篇文章：<a href="http://blog.csdn.net/chosen0ne/article/details/18093187" target="_blank" rel="external">http://blog.csdn.net/chosen0ne/article/details/18093187</a></span></p><br><p><span style="font-size:18px">MyISAM存储引擎</span></p><br><p><span style="font-size:18px; color:#009900">1、MyISAM&nbsp;&nbsp; 这种存储引擎不支持事务，不支持行级锁，</span><span style="font-size:18px"><span style="color:#cc0000">只支持并发插入的表锁</span></span><span style="font-size:18px; color:#009900">，主要用于高负载的select。</span></p><br><p><span style="font-size:18px; color:#009900">2、<span style="color:rgb(0,153,0); font-size:18px">MyISAM&nbsp;&nbsp;&nbsp;</span>类型的表支持三种不同的存储结构：静态型、动态型、压缩型。</span></p><br><p><span style="font-size:18px; color:#009900">（1）静态型：就是定义的表列的大小是固定（即不含有：xblob、xtext、varchar等长度可变的数据类型），这样mysql就会自动使用静态myisam&#26684;式。</span></p><br><p><span style="font-size:18px; color:#009900">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 使用静态&#26684;式的表的性能比较高，因为在维护和访问的时候以预定&#26684;式存储数据时需要的开销很低。但是这高性能是有空间换来的，因为在定义的时候是固定的，所以不管列中的&#20540;有多大，都会以最大&#20540;为准，占据了整个空间。</span></p><br><p><span style="font-size:18px; color:#009900">（2）动态型：如果列（即使只有一列）定义为动态的（xblob, xtext, varchar等数据类型），这时myisam就自动使用动态型，虽然动态型的表占用了比静态型表较少的空间，但带来了性能的降低，因为如果某个字段的内容发生改变则其位置很可能需要移动，这样就会导致碎片的产生。随着数据变化的怎多，碎片就会增加，数据访问性能就会相应的降低。</span></p><br><p><span style="font-size:18px; color:#009900">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 对于因为碎片的原因而降低数据访问性，有两种解决办法：</span></p><br><p><span style="font-size:18px; color:#009900">&nbsp;&nbsp;&nbsp;&nbsp; @1、尽可能使用静态数据类型</span></p><br><p><span style="font-size:18px; color:#009900">&nbsp;&nbsp;&nbsp;&nbsp; @2、经常使用optimize&nbsp;&nbsp; table语句，他会整理表的碎片，恢复由于表的更新和删除导致的空间丢失。</span></p><br><p><span style="font-size:18px; color:#009900">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (如果存储引擎不支持&nbsp;optimize&nbsp; table&nbsp;&nbsp;&nbsp; 则可以转储并重新加载数据，这样也可以减少碎片)</span></p><br><p><span style="font-size:18px; color:#009900">（3）压缩型：如果在这个数据库中创建的是在整个生命周期内只读的表，则这种情况就是用myisam的压缩型表来减少空间的占用。</span></p><br><p><span style="font-size:18px; color:#009900">3、<span style="color:rgb(0,153,0); font-size:18px">MyISAM也是使用B&#43;tree索引但是和Innodb的在具体实现上有些不同。</span></span></p><br><p><span style="font-size:18px">MEMORY存储引擎</span></p><br><p><span style="font-size:18px; color:#009900">（1）memory存储引擎相比前面的一些存储引擎，有点不一样，其使用存储在内从中的数据来创建表，而且所有的数据也都存储在内存中。</span></p><br><p><span style="font-size:18px; color:#009900">（2）每个基于memory存储引擎的表实际对应一个磁盘文件，该文件的文件名和表名是相同的，类型为.frm。该文件只存储表的结构，而其数据文件，都是存储在内存中，这样有利于对数据的快速处理，提高整个表的处理能力。</span></p><br><p><span style="font-size:18px; color:#009900">（3）memory存储引擎默认使用哈希（HASH）索引，其速度比使用B-&#43;Tree型要快，如果读者希望使用B树型，则在创建的时候可以引用。</span></p><br><p><span style="font-size:18px; color:#009900">（4）memory存储引擎文件数据都存储在内存中，如果mysqld进程发生异常，重启或关闭机器这些数据都会消失。所以memory存储引擎中的表的生命周期很短，一般只使用一次。</span></p><br><p><span style="font-size:18px">BlackHole存储引擎（黑洞引擎）</span></p><br><p><span style="font-size:18px; color:#009900">（1）支持事务，而且支持mvcc的行级锁，主要用于日志记录或同步归档，这个存储引擎除非有特别目的，否则不适合使用！</span></p><br><p><span style="font-size:18px"><span style="color:#ff6600"><strong>四、各存储引擎相互转化</strong></span></span></p><br><p><span style="font-size:18px; color:#009900">1、alter&nbsp; table&nbsp; tablename&nbsp; engine = INnodb /MyISAM/Memory&nbsp;&nbsp;&nbsp; //&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 修改了这个表的存储引擎<br><br></span></p><br><p><span style="font-size:18px; color:#009900">优点：简单，而且适合所有的引擎。</span></p><br><p><span style="font-size:18px; color:#009900">缺点：（1）、这种转化方式需要大量的时间&nbsp;和I/O，mysql要执行从旧表&nbsp;到新表的一行一行的复制所以效率比较低</span></p><br><p><span style="font-size:18px; color:#009900">（2）、在转化这期间源表加了读锁</span></p><br><p><span style="font-size:18px; color:#009900">（3）、从一种引擎到另一种引擎做表转化，所有属于原始引擎的专用特性都会丢失，比如从innodb到&nbsp;myisam&nbsp;则&nbsp;innodb的索引会丢失！</span></p><br><p><span style="font-size:18px; color:#009900">2、使用dump（转储）&nbsp;import（导入）</span></p><br><p><span style="font-size:18px; color:#009900">优点：使用mysqldump这个工具将修改的数据导出后会以 .sql&nbsp;的文件保存，你可以对这个文件进行操作，所以你有更多更好的控制，&nbsp;如修改表名，修改存储引擎等！</span></p><br><p><span style="font-size:18px; color:#009900">看看导出的一个表：</span></p><br><p><span style="font-size:18px; color:#009900"><img src="http://img.blog.csdn.net/20150106232647565?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvUUhfSkFWQQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="" height="90" width="600"></span></p><br><p><span style="font-size:18px; color:#009900"><img src="http://img.blog.csdn.net/20150106232849355?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvUUhfSkFWQQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""></span></p><br><p><span style="font-size:18px; color:#009900"><img src="http://img.blog.csdn.net/20150106232845781?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvUUhfSkFWQQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""></span></p><br><p><span style="font-size:18px; color:#009900">以上就是使用mysqldump&nbsp;导出来的表&nbsp;即&nbsp;一个 .sql&nbsp;文件&nbsp;你可以按照需求编写这个文件，在将这个文件导入就ok!</span></p><br><p><span style="font-size:18px; color:#009900">3、第一种方式简便，第二种方式安全，这第三种方式就算是前两种方式的折中吧，&nbsp;create&nbsp; select:</span></p><br><p><span style="font-size:18px; color:#009900">(1)、&nbsp;create&nbsp;&nbsp;table&nbsp;&nbsp; newtable&nbsp; like&nbsp; oldtable;</span></p><br><p><span style="font-size:18px; color:#009900">(2)、alter&nbsp; table&nbsp; newtable engine= innodb/ myisam / memory<br><br></span></p><br><p><span style="font-size:18px; color:#009900">(3)、insert&nbsp; into&nbsp; newtable&nbsp; select <em> from&nbsp; oldtable;</em></span></p><br><p><span style="font-size:18px; color:#009900">如果数据量不大的话这种方式还是挺好的！</span></p><br><p><span style="font-size:18px; color:#009900">还有更高效的办法就是&nbsp;增量填充，在填充完每个增量数据块之后提交一次事务，这样就不会导致撤销日志文件过大；</span></p><br><p><span style="font-size:18px; color:#009900">（1）start&nbsp; transaction</span></p><br><p><span style="font-size:18px; color:#009900">（2）insert&nbsp;into&nbsp;newtable&nbsp;&nbsp;select &nbsp;&nbsp;from&nbsp;oldtable&nbsp; where&nbsp; id(主键)&nbsp;between x and y;</span></p><br><p><span style="font-size:18px; color:#009900">（3）&nbsp;commit</span></p><br><p><span style="font-size:18px; color:#009900">这样等数据填充之后有了需要的新表，旧表也存在，不需要的haunt可以删除，很方便！<br><br></span></p><br><p><br><br></p><br><br></div>
-
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/05/sysgc_01/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="John Doe">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/05/05/sysgc_01/" itemprop="url">转载:java 垃圾回收 常用算法</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-05T17:05:04+08:00">
-                2017-05-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <div id="blog_content" class="blog_content"><br>    <div style="font-size: 14px;" class="iteye-blog-content-contain"><br>    <h2 style="margin-top: 5px; margin-bottom: 5px; border: 0px; vertical-align: baseline; font-family: HelveticaNeue-Light, 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial; font-size: 1.6em !important;">垃圾收集基础</h2><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; font-family: Arial, sans-serif; color: #222222; line-height: 1.5em; margin-top: 5px !important; font-size: 1.166em !important;">Java 语言的一大特点就是可以进行自动垃圾回收处理，而无需开发人员过于关注系统资源，例如内存资源的释放情况。自动垃圾收集虽然大大减轻了开发人员的工作量，但是也增加了软件系统的负担。</p><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; font-family: Arial, sans-serif; color: #222222; line-height: 1.5em; font-size: 1.166em !important;">拥有垃圾收集器可以说是 Java 语言与 C++语言的一项显著区别。在 C++语言中，程序员必须小心谨慎地处理每一项内存分配，且内存使用完后必须手工释放曾经占用的内存空间。当内存释放不够完全时，即存在分配但永不释放的内存块，就会引起内存泄漏，严重时甚至导致程序瘫痪。</p><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; font-family: Arial, sans-serif; color: #222222; line-height: 1.5em; font-size: 1.166em !important;">以下列举了垃圾回收器常用的算法及实验原理：</p><br>    <ul style="border: 0px; font-size: 1.166em; vertical-align: baseline; margin-bottom: 0px; padding-bottom: 8px; color: #333333; line-height: 1.5em; font-family: Arial, sans-serif;" class="ibm-bullet-list"><br>    <li style="margin-bottom: 0px; margin-left: 0px; padding-top: 5px; padding-bottom: 5px; padding-left: 11px; border: 0px; font-size: inherit; vertical-align: baseline; height: 27px; clear: left;"><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; color: #222222; line-height: 1.5em; font-size: 1em !important;">引用计数法 (Reference Counting)</p><br>    </li><br>    </ul><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; font-family: Arial, sans-serif; color: #222222; line-height: 1.5em; font-size: 1.166em !important;">引用计数器在微软的 COM 组件技术中、Adobe 的 ActionScript3 种都有使用。</p><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; font-family: Arial, sans-serif; color: #222222; line-height: 1.5em; font-size: 1.166em !important;">引用计数器的实现很简单，对于一个对象 A，只要有任何一个对象引用了 A，则 A 的引用计数器就加 1，当引用失效时，引用计数器就减 1。只要对象 A 的引用计数器的值为 0，则对象 A 就不可能再被使用。</p><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; font-family: Arial, sans-serif; color: #222222; line-height: 1.5em; font-size: 1.166em !important;">引用计数器的实现也非常简单，只需要为每个对象配置一个整形的计数器即可。但是引用计数器有一个严重的问题，即无法处理循环引用的情况。因此，在 Java 的垃圾回收器中没有使用这种算法。</p><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; font-family: Arial, sans-serif; color: #222222; line-height: 1.5em; font-size: 1.166em !important;">一个简单的循环引用问题描述如下：有对象 A 和对象 B，对象 A 中含有对象 B 的引用，对象 B 中含有对象 A 的引用。此时，对象 A 和对象 B 的引用计数器都不为 0。但是在系统中却不存在任何第 3 个对象引用了 A 或 B。也就是说，A 和 B 是应该被回收的垃圾对象，但由于垃圾对象间相互引用，从而使垃圾回收器无法识别，引起内存泄漏。</p><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; font-family: Arial, sans-serif; color: #222222; line-height: 1.5em; font-size: 1.166em !important;"><strong>关键词：被引用对象计数+1，引用失效计数-1，但是循环引用就有问题了。</strong></p><br>    <ul style="border: 0px; font-size: 1.166em; vertical-align: baseline; margin-bottom: 0px; padding-bottom: 8px; color: #333333; line-height: 1.5em; font-family: Arial, sans-serif;" class="ibm-bullet-list"><br>    <li style="margin-bottom: 0px; margin-left: 0px; padding-top: 5px; padding-bottom: 5px; padding-left: 11px; border: 0px; font-size: inherit; vertical-align: baseline; height: 27px; clear: left;"><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; color: #222222; line-height: 1.5em; font-size: 1em !important;">标记-清除算法 (Mark-Sweep)</p><br>    </li><br>    </ul><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; font-family: Arial, sans-serif; color: #222222; line-height: 1.5em; font-size: 1.166em !important;">标记-清除算法将垃圾回收分为两个阶段：标记阶段和清除阶段。一种可行的实现是，在标记阶段首先通过根节点，标记所有从根节点开始的较大对象。因此，未被标记的对象就是未被引用的垃圾对象。然后，在清除阶段，清除所有未被标记的对象。该算法最大的问题是存在大量的空间碎片，因为回收后的空间是不连续的。在对象的堆空间分配过程中，尤其是大对象的内存分配，不连续的内存空间的工作效率要低于连续的空间。</p><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; font-family: Arial, sans-serif; color: #222222; line-height: 1.5em; font-size: 1.166em !important;"><strong>关键词：从根开始扫描，被引用对象被标记，未被引用的对象在清除阶段被删除，但是删除后的内存不连续了，不利于大对象的内存分配</strong></p><br>    <ul style="border: 0px; font-size: 1.166em; vertical-align: baseline; margin-bottom: 0px; padding-bottom: 8px; color: #333333; line-height: 1.5em; font-family: Arial, sans-serif;" class="ibm-bullet-list"><br>    <li style="margin-bottom: 0px; margin-left: 0px; padding-top: 5px; padding-bottom: 5px; padding-left: 11px; border: 0px; font-size: inherit; vertical-align: baseline; height: 27px; clear: left;"><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; color: #222222; line-height: 1.5em; font-size: 1em !important;">复制算法 (Copying)</p><br>    </li><br>    </ul><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; font-family: Arial, sans-serif; color: #222222; line-height: 1.5em; font-size: 1.166em !important;">将现有的内存空间分为两快，每次只使用其中一块，在垃圾回收时将正在使用的内存中的存活对象复制到未被使用的内存块中，之后，清除正在使用的内存块中的所有对象，交换两个内存的角色，完成垃圾回收。</p><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; font-family: Arial, sans-serif; color: #222222; line-height: 1.5em; font-size: 1.166em !important;">如果系统中的垃圾对象很多，复制算法需要复制的存活对象数量并不会太大。因此在真正需要垃圾回收的时刻，复制算法的效率是很高的。又由于对象在垃圾回收过程中统一被复制到新的内存空间中，因此，可确保回收后的内存空间是没有碎片的。该算法的缺点是将系统内存折半。</p><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; font-family: Arial, sans-serif; color: #222222; line-height: 1.5em; font-size: 1.166em !important;">Java 的新生代串行垃圾回收器中使用了复制算法的思想。新生代分为 eden 空间、from 空间、to 空间 3 个部分。其中 from 空间和 to 空间可以视为用于复制的两块大小相同、地位相等，且可进行角色互换的空间块。from 和 to 空间也称为 survivor 空间，即幸存者空间，用于存放未被回收的对象。</p><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; font-family: Arial, sans-serif; color: #222222; line-height: 1.5em; font-size: 1.166em !important;">在垃圾回收时，eden 空间中的存活对象会被复制到未使用的 survivor 空间中 (假设是 to)，正在使用的 survivor 空间 (假设是 from) 中的年轻对象也会被复制到 to 空间中 (大对象，或者老年对象会直接进入老年带，如果 to 空间已满，则对象也会直接进入老年代)。此时，eden 空间和 from 空间中的剩余对象就是垃圾对象，可以直接清空，to 空间则存放此次回收后的存活对象。这种改进的复制算法既保证了空间的连续性，又避免了大量的内存空间浪费。</p><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; font-family: Arial, sans-serif; color: #222222; line-height: 1.5em; font-size: 1.166em !important;"><strong>关键词：两个内存空间，复制引用对象至另一个内存空间，删除剩余全部对象，需要建立在存活对象少，垃圾对象多的前提下，且内存折半了。</strong></p><br>    <ul style="border: 0px; font-size: 1.166em; vertical-align: baseline; margin-bottom: 0px; padding-bottom: 8px; color: #333333; line-height: 1.5em; font-family: Arial, sans-serif;" class="ibm-bullet-list"><br>    <li style="margin-bottom: 0px; margin-left: 0px; padding-top: 5px; padding-bottom: 5px; padding-left: 11px; border: 0px; font-size: inherit; vertical-align: baseline; height: 27px; clear: left;"><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; color: #222222; line-height: 1.5em; font-size: 1em !important;">标记-压缩算法 (Mark-Compact)</p><br>    </li><br>    </ul><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; font-family: Arial, sans-serif; color: #222222; line-height: 1.5em; font-size: 1.166em !important;">复制算法的高效性是建立在存活对象少、垃圾对象多的前提下的。这种情况在年轻代经常发生，但是在老年代更常见的情况是大部分对象都是存活对象。如果依然使用复制算法，由于存活的对象较多，复制的成本也将很高。</p><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; font-family: Arial, sans-serif; color: #222222; line-height: 1.5em; font-size: 1.166em !important;">标记-压缩算法是一种老年代的回收算法，它在标记-清除算法的基础上做了一些优化。也首先需要从根节点开始对所有可达对象做一次标记，但之后，它并不简单地清理未标记的对象，而是将所有的存活对象压缩到内存的一端。之后，清理边界外所有的空间。这种方法既避免了碎片的产生，又不需要两块相同的内存空间，因此，其性价比比较高。</p><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; font-family: Arial, sans-serif; color: #222222; line-height: 1.5em; font-size: 1.166em !important;"><strong>关键词：从根开始扫描，将存活对象压缩至内存一端，然后清理边界所有内存空间</strong></p><br>    <ul style="border: 0px; font-size: 1.166em; vertical-align: baseline; margin-bottom: 0px; padding-bottom: 8px; color: #333333; line-height: 1.5em; font-family: Arial, sans-serif;" class="ibm-bullet-list"><br>    <li style="margin-bottom: 0px; margin-left: 0px; padding-top: 5px; padding-bottom: 5px; padding-left: 11px; border: 0px; font-size: inherit; vertical-align: baseline; height: 27px; clear: left;"><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; color: #222222; line-height: 1.5em; font-size: 1em !important;">增量算法 (Incremental Collecting)</p><br>    </li><br>    </ul><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; font-family: Arial, sans-serif; color: #222222; line-height: 1.5em; font-size: 1.166em !important;">在垃圾回收过程中，应用软件将处于一种 CPU 消耗很高的状态。在这种 CPU 消耗很高的状态下，应用程序所有的线程都会挂起，暂停一切正常的工作，等待垃圾回收的完成。如果垃圾回收时间过长，应用程序会被挂起很久，将严重影响用户体验或者系统的稳定性。</p><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; font-family: Arial, sans-serif; color: #222222; line-height: 1.5em; font-size: 1.166em !important;">增量算法的基本思想是，如果一次性将所有的垃圾进行处理，需要造成系统长时间的停顿，那么就可以让垃圾收集线程和应用程序线程交替执行。每次，垃圾收集线程只收集一小片区域的内存空间，接着切换到应用程序线程。依次反复，直到垃圾收集完成。使用这种方式，由于在垃圾回收过程中，间断性地还执行了应用程序代码，所以能减少系统的停顿时间。但是，因为线程切换和上下文转换的消耗，会使得垃圾回收的总体成本上升，造成系统吞吐量的下降。</p><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; font-family: Arial, sans-serif; color: #222222; line-height: 1.5em; font-size: 1.166em !important;"><strong>关键词：垃圾回收时应用程序被挂起，交替垃圾回收和应用程序执行，减少系统停顿时间。</strong></p><br>    <ul style="border: 0px; font-size: 1.166em; vertical-align: baseline; margin-bottom: 0px; padding-bottom: 8px; color: #333333; line-height: 1.5em; font-family: Arial, sans-serif;" class="ibm-bullet-list"><br>    <li style="margin-bottom: 0px; margin-left: 0px; padding-top: 5px; padding-bottom: 5px; padding-left: 11px; border: 0px; font-size: inherit; vertical-align: baseline; height: 27px; clear: left;"><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; color: #222222; line-height: 1.5em; font-size: 1em !important;">分代 (Generational Collecting)</p><br>    </li><br>    </ul><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; font-family: Arial, sans-serif; color: #222222; line-height: 1.5em; font-size: 1.166em !important;">根据垃圾回收对象的特性，不同阶段最优的方式是使用合适的算法用于本阶段的垃圾回收，分代算法即是基于这种思想，它将内存区间根据对象的特点分成几块，根据每块内存区间的特点，使用不同的回收算法，以提高垃圾回收的效率。以 Hot Spot 虚拟机为例，它将所有的新建对象都放入称为年轻代的内存区域，年轻代的特点是对象会很快回收，因此，在年轻代就选择效率较高的复制算法。当一个对象经过几次回收后依然存活，对象就会被放入称为老生代的内存空间。在老生代中，几乎所有的对象都是经过几次垃圾回收后依然得以幸存的。因此，可以认为这些对象在一段时期内，甚至在应用程序的整个生命周期中，将是常驻内存的。如果依然使用复制算法回收老生代，将需要复制大量对象。再加上老生代的回收性价比也要低于新生代，因此这种做法也是不可取的。根据分代的思想，可以对老年代的回收使用与新生代不同的标记-压缩算法，以提高垃圾回收效率。</p><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; font-family: Arial, sans-serif; color: #222222; line-height: 1.5em; font-size: 1.166em !important;"><strong>关键词：不同代使用不同算法，新建对象放入年轻代内存-&gt;对象很快会回收，使用复制算法， 几次回收依然存活的放入老年代内存 -&gt;使用标记-压缩算法</strong></p><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; font-family: Arial, sans-serif; color: #222222; line-height: 1.5em; font-size: 1.166em !important;">从不同角度分析垃圾收集器，可以将其分为不同的类型。</p><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; font-family: Arial, sans-serif; color: #222222; line-height: 1.5em; font-size: 1.166em !important;">1. 按线程数分，可以分为串行垃圾回收器和并行垃圾回收器。串行垃圾回收器一次只使用一个线程进行垃圾回收；并行垃圾回收器一次将开启多个线程同时进行垃圾回收。在并行能力较强的 CPU 上，使用并行垃圾回收器可以缩短 GC 的停顿时间。</p><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; font-family: Arial, sans-serif; color: #222222; line-height: 1.5em; font-size: 1.166em !important;">2. 按照工作模式分，可以分为并发式垃圾回收器和独占式垃圾回收器。并发式垃圾回收器与应用程序线程交替工作，以尽可能减少应用程序的停顿时间；独占式垃圾回收器 (Stop the world) 一旦运行，就停止应用程序中的其他所有线程，直到垃圾回收过程完全结束。</p><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; font-family: Arial, sans-serif; color: #222222; line-height: 1.5em; font-size: 1.166em !important;">3. 按碎片处理方式可分为压缩式垃圾回收器和非压缩式垃圾回收器。压缩式垃圾回收器会在回收完成后，对存活对象进行压缩整理，消除回收后的碎片；非压缩式的垃圾回收器不进行这步操作。</p><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; font-family: Arial, sans-serif; color: #222222; line-height: 1.5em; font-size: 1.166em !important;">4. 按工作的内存区间，又可分为新生代垃圾回收器和老年代垃圾回收器。</p><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; font-family: Arial, sans-serif; color: #222222; line-height: 1.5em; font-size: 1.166em !important;">可以用以下指标评价一个垃圾处理器的好坏。</p><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; font-family: Arial, sans-serif; color: #222222; line-height: 1.5em; font-size: 1.166em !important;">吞吐量：指在应用程序的生命周期内，应用程序所花费的时间和系统总运行时间的比值。系统总运行时间=应用程序耗时+GC 耗时。如果系统运行了 100min，GC 耗时 1min，那么系统的吞吐量就是 (100-1)/100=99%。</p><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; font-family: Arial, sans-serif; color: #222222; line-height: 1.5em; font-size: 1.166em !important;">垃圾回收器负载：和吞吐量相反，垃圾回收器负载指来记回收器耗时与系统运行总时间的比值。</p><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; font-family: Arial, sans-serif; color: #222222; line-height: 1.5em; font-size: 1.166em !important;">停顿时间：指垃圾回收器正在运行时，应用程序的暂停时间。对于独占回收器而言，停顿时间可能会比较长。使用并发的回收器时，由于垃圾回收器和应用程序交替运行，程序的停顿时间会变短，但是，由于其效率很可能不如独占垃圾回收器，故系统的吞吐量可能会较低。</p><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; font-family: Arial, sans-serif; color: #222222; line-height: 1.5em; font-size: 1.166em !important;">垃圾回收频率：指垃圾回收器多长时间会运行一次。一般来说，对于固定的应用而言，垃圾回收器的频率应该是越低越好。通常增大堆空间可以有效降低垃圾回收发生的频率，但是可能会增加回收产生的停顿时间。</p><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; font-family: Arial, sans-serif; color: #222222; line-height: 1.5em; font-size: 1.166em !important;">反应时间：指当一个对象被称为垃圾后多长时间内，它所占据的内存空间会被释放。</p><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; font-family: Arial, sans-serif; color: #222222; line-height: 1.5em; font-size: 1.166em !important;">堆分配：不同的垃圾回收器对堆内存的分配方式可能是不同的。一个良好的垃圾收集器应该有一个合理的堆内存区间划</p><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; font-family: Arial, sans-serif; color: #222222; line-height: 1.5em; font-size: 1.166em !important;"> </p><br>    <p style="padding-top: 6px; padding-bottom: 6px; border: 0px; vertical-align: baseline; font-family: Arial, sans-serif; color: #222222; line-height: 1.5em; font-size: 1.166em !important;"> </p><br>    <h2>Java的内存分布</h2><br>    <p>在JVM中，内存是按照分代进行组织的。<br><img alt="" src="http://www.processon.com/chart_image/53698d6e0cf21db1c3ec9394.png"></p><br>    <p>其中，堆内存分为年轻代和年老代，非堆内存主要是Permanent区域，主要用于存储一些类的元数据，常量池等信息。而年轻代又分为两种，一种是Eden区域，另外一种是两个大小对等的Survivor区域。之所以将Java内存按照分代进行组织，主要是基于这样一个<strong>“弱假设” - 大多数对象都在年轻时候死亡</strong>。同时，将内存按照分代进行组织，使得我们可以在不同的分代上使用不同的垃圾回收算法，使得整个内存的垃圾回收更加有效。</p><br>    <h2>年轻代的垃圾回收</h2><br>    <p>在年轻代上采用的垃圾回收算法是“Mark-Copy”算法，并不同于我们前面所了解的任何一种基本垃圾回收算法，但是Mark算法是一样的，基于根对象找到所有的可达对象，具体可看<a href="http://jianshu.io/p/b0f5d21fe031" target="_blank">Mark-Sweep算法</a>中的Mark步骤. 而对于Copy算法，它仅仅是简单的将符合一定年龄的对象从一个分代拷贝到另一个分代。具体的回收过程如下：</p><br>    <p><img alt="" src="http://www.processon.com/chart_image/536999160cf21db1c3ecd182.png"></p><br>    <p>首先，新对象的内存分配都是先在Eden区域中进行的，当Eden区域的空间不足于分配新对象时，就会触发年轻代上的垃圾回收（发生在Eden和Survivor内存区域上），我们称之为”minor garbage collection”.同时，每个对象都有一个“年龄”，这个年龄实际上指的就是该对象经历过的minor gc的次数。如图1所示，当对象刚分配到Eden区域时，对象的年龄为“0”，当minor gc被触发后，所有存活的对象（仍然可达对象）会被拷贝到其中一个Survivor区域，同时年龄增长为“1”。并清除整个Eden内存区域中的非可达对象。</p><br>    <p>当第二次minor gc被触发时（如图2所示），JVM会通过Mark算法找出所有在Eden内存区域和Survivor1内存区域存活的对象，并将他们拷贝到新的Survivor2内存区域(这也就是为什么需要两个大小一样的Survivor区域的原因)，同时对象的年龄加1. 最后，清除所有在Eden内存区域和Survivor1内存区域的非可达对象。</p><br>    <p>当对象的年龄足够大（这个年龄可以通过JVM参数进行指定，这里假定是2），当minor gc再次发生时，它会从Survivor内存区域中升级到年老代中，如图3所示。</p><br>    <p>其实，即使对象的年龄不够大，但是Survivor内存区域中没有足够的空间来容纳从Eden升级过来的对象时，也会有部分对象直接升级到Tenured内存区域中。</p><br>    <h2>年老代的垃圾回收</h2><br>    <p>当minor gc发生时，又有对象从Survivor区域升级到Tenured区域，但是Tenured区域已经没有空间容纳新的对象了，那么这个时候就会触发年老代上的垃圾回收，我们称之为”major garbage collection”.</p><br>    <p>而在年老代上选择的垃圾回收算法则取决于JVM上采用的是什么垃圾回收器。通过的垃圾回收器有两种：Parallel Scavenge(PS) 和Concurrent Mark Sweep(CMS)。这两种垃圾回收器的不同更多的是体现在年老代的垃圾回收过程中，年轻代的垃圾回收过程在这两种垃圾回收器中基本上是一致的。</p><br>    <p>就像其名字所表示的那样，Parallel Scavenge垃圾回收器在执行垃圾回收时使用了多线程来一起进行垃圾回收，这样可以提高垃圾回收的效率。而Concurrent Mark Sweep垃圾回收器在进行垃圾回收时，应用程序可以同时运行。</p><br>    <h3>Parallel Scavenge</h3><br>    <p>PS垃圾回收器在年老代上采用的垃圾回收算法可以看作是<a href="http://jianshu.io/p/b0f5d21fe031" target="_blank">标记-清除算法</a>和<a href="http://jianshu.io/p/698eb5e1ccb9" target="_blank">标记-压缩算法</a>的结合体。</p><br>    <p>首先，PS垃圾回收器先是会在年老代上使用标记-清除算法来回收掉非可达对象所占有的空间，但是我们知道，标记清除算法的一个缺陷就是它会引起内存碎片问题。继而有可能会引发连续的major gc。假设当前存在的内存碎片有10M，但最大的内存碎片只能容纳2M的对象，这个时候如果有一个3M的对象从Survivor区域升级到Tenured区域，那Tenured区域也没有办法存放这个3M的对象。结果就是不断的触发major gc，直到Out of Memory。所以，PS垃圾回收器在清除非可达对象后，还会进行一次compact，来消除内存碎片。</p><br>    <p><img alt="" src="http://www.processon.com/chart_image/5369c0e90cf21db1c3edb1aa.png"></p><br>    <h3>Concurrent Mark Sweep</h3><br>    <p>CMS垃圾收集器相比于PS垃圾收集器，它成功的减少了垃圾收集时暂停应用程序的时间，因为CMS在进行垃圾收集时，应用程序是可以并行运行的。下面让我们来看看它是怎么做到的。</p><br>    <p>从它的名字可以看出，CMS垃圾收集器在年老代上采用的垃圾回收算法是标记-清除算法。但是，它跟标准的标记-清除算法略有不同。它主要分为四个阶段：</p><br>    <ol><br>    <li><br>    <strong>Initial Mark阶段</strong> - 这个阶段是Stop-The-World的，它会暂停应用程序的运行，但是在这里阶段，它不会标记出在Tenured区域中所有的可达对象。它只会从根对象开始出发，标记到根对象的第一层孩子节点即停止。然后恢复应用程序的运行。所以，这个暂停应用程序的时间是很短的。</li><br>    <li><br>    <strong>Concurrent Mark阶段</strong> - 在这个阶段中，CMS垃圾回收器以Initial Mark阶段标记的节点为根对象，重新开始标记Tenured区域中的可达对象。当然，在这个阶段中是不需要暂停应用程序的。这也是它称为”Concurrent Mark”的原因。这同时也造成了一个问题，那就是由于CMS垃圾回收器和应用程序同时运行，Concurrent Mark阶段它并不保证在Tenured区域的可达对象都被标记了 - 应用程序一直在分配新对象。</li><br>    <li><br>    <strong>Remark阶段</strong> - 由于Concurrent Mark阶段它并不保证在Tenured区域的可达对象都被标记了，所以我们需要再次暂停应用程序，确保所有的可达对象都被标记。为了加快速度，这里也采用了多线程来同时标记可达对象。</li><br>    <li><br>    <strong>Concurrent Sweep阶段</strong> - 最后，恢复应用程序的执行，同时CMS执行sweep，来清除所有非可达对象所占用的内存空间。</li><br>    </ol><br>    <p>从下图可以看到PS和CMS垃圾收集器的区别：<br><img alt="" src="http://www.processon.com/chart_image/5369dd770cf21db1c3ee6a1a.png"></p><br>    <p>黑色箭头代表应用程序的运行，绿色箭头代表CMS垃圾收集器的运行。一根线条表示单线程，多个线条表示多线程。</p><br>    <p>所以，相比于PS垃圾收集器，CMS垃圾收集器成功的减少了应用程序暂时的时间。</p><br>    <h2>Garbage First(G1)垃圾收集器</h2><br>    <p>但是很不幸的是，CMS垃圾收集器虽然减少了暂停应用程序的运行时间，但是由于它没有Compact阶段，它还是存在着内存碎片问题。于是，为了去除内存碎片问题，同时又保留CMS垃圾收集器低暂停时间的优点，JAVA7发布了一个新的垃圾收集器 - G1垃圾收集器。它会在未来逐步替换掉CMS垃圾收集器。</p><br>    <p>G1垃圾收集器和CMS垃圾收集器有几点不同。首先，最大的不同是内存的组织方式变了。Eden，Survivor和Tenured等内存区域不再是连续的了，而是变成了一个个大小一样的region - 每个region从1M到32M不等。</p><br>    <p><img alt="" src="http://www.processon.com/chart_image/536b116e0cf290134a2ef1d9.png"></p><br>    <p>一个region有可能属于Eden，Survivor或者Tenured内存区域。图中的E表示该region属于Eden内存区域，S表示属于Survivor内存区域，T表示属于Tenured内存区域。图中空白的表示未使用的内存空间。G1垃圾收集器还增加了一种新的内存区域，叫做Humongous内存区域，如图中的H块。这种内存区域主要用于存储大对象-即大小超过一个region大小的50%的对象。</p><br>    <p>在G1垃圾收集器中，年轻代的垃圾回收过程跟PS垃圾收集器和CMS垃圾收集器差不多，新对象的分配还是在Eden region中，当所有Eden region的大小超过某个值时，触发minor gc，回收Eden region和Survivor region上的非可达对象，同时升级存活的可达对象到对应的Survivor region和Tenured region上。对象从Survivor region升级到Tenured region依然是取决于对象的年龄。<br><img alt="" src="http://www.processon.com/chart_image/536b17f90cf290134a2f01fd.png"></p><br>    <p>对于年老代上的垃圾收集，G1垃圾收集器也分为4个阶段，基本跟CMS垃圾收集器一样，但略有不同：</p><br>    <ol><br>    <li><br>    <strong>Initial Mark阶段</strong> - 同CMS垃圾收集器的Initial Mark阶段一样，G1也需要暂停应用程序的执行，它会标记从根对象出发，在根对象的第一层孩子节点中标记所有可达的对象。但是G1的垃圾收集器的Initial Mark阶段是跟minor gc一同发生的。也就是说，在G1中，你不用像在CMS那样，单独暂停应用程序的执行来运行Initial Mark阶段，而是在G1触发minor gc的时候一并将年老代上的Initial Mark给做了。</li><br>    <li><br>    <strong>Concurrent Mark阶段</strong> - 在这个阶段G1做的事情跟CMS一样。但G1同时还多做了一件事情，那就是，如果在Concurrent Mark阶段中，发现哪些Tenured region中对象的存活率很小或者基本没有对象存活，那么G1就会在这个阶段将其回收掉，而不用等到后面的clean up阶段。这也是Garbage First名字的由来。同时，在该阶段，G1会计算每个 region的对象存活率，方便后面的clean up阶段使用 。</li><br>    <li><br>    <strong>Remark阶段</strong> - 在这个阶段G1做的事情跟CMS一样, 但是采用的算法不同，G1采用一种叫做SATB(snapshot-at-the-begining)的算法能够在Remark阶段更快的标记可达对象。</li><br>    <li><br>    <strong>Clean up/Copy阶段</strong> - 在G1中，没有CMS中对应的Sweep阶段。相反 它有一个Clean up/Copy阶段，在这个阶段中,G1会挑选出那些对象存活率低的region进行回收，这个阶段也是和minor gc一同发生的,如下图所示：<br><img alt="" src="http://www.processon.com/chart_image/536b68100cf290134a30ecb4.png"><br>    </li><br>    </ol><br>    <p>从上可以看到，由于<strong>Initial Mark阶段</strong>和<strong>Clean up/Copy阶段</strong>都是跟minor gc同时发生的，相比于CMS，G1暂停应用程序的时间更少，从而提高了垃圾回收的效率。</p><br></div><br>    </div>
 
 
           
@@ -1602,8 +1603,8 @@ for (int i = 0; i &amp;lt; this.segments.length; ++i)
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">12</span>
-                <span class="site-state-item-name">posts</span>
+                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-name">Artikel</span>
               </a>
             </div>
           
@@ -1657,7 +1658,7 @@ for (int i = 0; i &amp;lt; this.segments.length; ++i)
 
 
 <div class="powered-by">
-  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
 </div>
 
 <div class="theme-info">
