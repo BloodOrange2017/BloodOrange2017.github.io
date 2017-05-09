@@ -1695,7 +1695,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #ff8cdd;
+  background: #ff87ff;
 }
 .links-of-blogroll {
   font-size: 13px;
@@ -2544,4 +2544,7 @@ embed {
 }
 .links-of-blogroll-inline .links-of-blogroll-item {
   display: inline-block;
+}
+body {
+  background: url("https://bloodorange2017.github.io/images/bg_01.jpeg");
 }
