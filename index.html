@@ -362,6 +362,119 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/09/jsf-02/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/05/09/jsf-02/" itemprop="url">转载：服务化框架技术选型与京东JSF解密</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-09T09:59:31+08:00">
+                2017-05-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <div class="text clear" itemprop="articleBody"><br>        <p>　　作者：章耿，原京东资深架构师，曾负责京东服务框架，配置中心等基础平台。近十年工作经验，专注于基础中间件等底层技术架构，对分布式系统/服务化/DevOps建设有一定经验。</p><br><p>　　<span style="font-size: 16px;"><strong>|前言</strong></span></p><br><p>　　首先本文不讨论为什么要服务化，包括服务化的优点缺点。</p><br><p>　　其次本文也不讨论什么是微服务，也不讨论微服务和SOA的区别。</p><br><p>　　最后本文也不讨论哪个技术最优。</p><br><p>　　<span style="font-size: 16px;"><strong>|服务化框架构成</strong></span><span style="font-size: 16px;"><strong>最基本的服务框架</strong></span></p><br><p>　　基本的服务化框架包括如下模块：统一的RPC框架，服务注册中心，管理平台。</p><br><p>　　有了这三个模块，就能实现基本的服务化。下面对三个模块进行具体分析。</p><br><p>　　<span style="font-size: 16px;"><strong>RPC框架选型</strong></span></p><br><p>　　为什么一定要是统一的RPC框架，而不是随便啥框架，这里主要是为了技术对齐，减少开发人员的学习成本，减少团队间沟通成本。</p><br><p>　　好，那么选择一个RPC框架，我们都需要考量什么东西呢？</p><br><p>　　这里我总结下：</p><br><ul><br> <li><p>代码规范：例如是对已有代码透明，还是代码生成；</p></li><br> <li><p>通讯协议：例如是TCP还是HTTP；</p></li><br> <li><p>序列化协议：例如是二进制还是文本，是否需要跨语言，性能；</p></li><br> <li><p>IO模型：异步/同步，阻塞/非阻塞；</p></li><br> <li><p>负载均衡：客户端软负载，代理模式，服务端负载。</p></li><br></ul><br><p>　　另外如果是从开源里面选择，那么我们还需要考量：</p><br><ul><br> <li><p>成熟度：包括学习成本，社区热度，文档数，是否有团队维护，稳定性（盲目追求的不一定是最适合）；</p></li><br> <li><p>可扩展性：是否有SPI支持扩展，是否支持上下兼容；</p></li><br> <li><p>跨语言：是否支持跨语言；</p></li><br> <li><p>性能：要想作为RPC框架，性能一般都不会太差 [滑稽脸]。</p></li><br></ul><br><p>　　下面是常见的一些开源框架的比较，大家可以看一下。</p><br><table><br> <tbody><br>  <tr><br>   <th></th><br>   <th><p>　　<span style="font-size: 16px;">thrift</span></p></th><br>   <th><p>　　<span style="font-size: 16px;">RESTful</span></p></th><br>   <th><p>　　<span style="font-size: 16px;">dubbo</span></p></th><br>   <th><p>　　<span style="font-size: 16px;">gRPC</span></p></th><br>  </tr><br>  <tr><br>   <td><p>　　<span style="font-size: 16px;">代码规范</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">基于Thrift的IDL生成代码</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">基于JAX-RS规范</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">无代码入侵</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">基于.Proto生成代码</span></p></td><br>  </tr><br>  <tr><br>   <td><p>　　<span style="font-size: 16px;">通讯协议</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">TCP</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">HTTP</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">TCP</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">HTTP/2</span></p></td><br>  </tr><br>  <tr><br>   <td><p>　　<span style="font-size: 16px;">序列化协议</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">thrift</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">JSON</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">多协议支持，默认hessian</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">protobuf</span></p></td><br>  </tr><br>  <tr><br>   <td><p>　　<span style="font-size: 16px;">IO框架</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">Thrift自带</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">Servlet容器</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">Netty3</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">Netty4</span></p></td><br>  </tr><br>  <tr><br>   <td><p>　　<span style="font-size: 16px;">负载均衡</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">无</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">无</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">客户端软负载</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">无</span></p></td><br>  </tr><br>  <tr><br>   <td><p>　　<span style="font-size: 16px;">跨语言</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">多种语言</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">多种语言</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">Java</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">多种语言</span></p></td><br>  </tr><br>  <tr><br>   <td><p>　　<span style="font-size: 16px;">可扩展性</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">一般</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">好</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">好</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">差</span></p></td><br>  </tr><br> </tbody><br></table><br><p>　　<span style="font-size: 16px;">Ps：SOAP，RMI，Hessian，ICE就不列举了。</span></p><br><p>　　选型小结：</p><br><ul><br> <li><p>如果需要与前端交互的，适合短链接、跨语言的RPC框架，例如RESTful、gRPC等；</p></li><br> <li><p>如果纯粹后台交互的，适合长链接、序列化为二进制的RPC框架，例如thrift、dubbo等更高效；</p></li><br> <li><p>如果是小公司，新公司从头开始推广服务化框架的，可以选择规范化的RPC框架，例如thrift、RESTful、gRPC；</p></li><br> <li><p>如果是已有大量业务代码的再推广服务框架的，那么最好选择无代码入侵的RPC框架，例如dubbo、RESTful。</p></li><br></ul><br><p>　　<span style="font-size: 16px;"><strong>注册中心选型</strong></span></p><br><p>　　注册中心相当于是服务提供者和服务调用者之间的引路人，在服务治理中的作用极为重要。</p><br><p>　　选择注册中心基本要考量：</p><br><ul><br> <li><p>服务注册：接收注册信息的方式；</p></li><br> <li><p>服务订阅：返回订阅信息的方式，推还是拉；</p></li><br> <li><p>状态检测：检测服务端存活状态。</p></li><br></ul><br><p>　　重点提一下这个状态检测，因为这个要是检测不准确会误判，导致严重后果，例如Zookeeper根据服务端注册的临时节点进行状态检测，如果服务端和Zookeeper之间的网络闪断，导致Zookeeper认为服务端已经死了，从而摘掉这个节点；但是其实客户端和服务端直接的网络是好的，这样就有可能把节点全部摘掉，导致无可用节点。</p><br><p>　　如果是从开源里面选择，那么还需要考量：</p><br><ul><br> <li><p>成熟度：包括学习成本，社区热度，文档数（盲目追求的不一定是最适合）；</p></li><br> <li><p>维护成本：注册中心维护；</p></li><br> <li><p>数据解构：是否能快速定位结果，是否能遍历；</p></li><br> <li><p>性能和稳定性；</p></li><br> <li><p>CAP原则：CP（关注一致性）还是AP（关注可用性）。</p></li><br></ul><br><p>　　下面是常见的一些使用开源项目做注册中心的比较，大家可以看一下。</p><br><table><br> <tbody><br>  <tr><br>   <th><span style="font-size: 16px;"></span></th><br>   <th><p>　　<span style="font-size: 16px;">ZooKeeper</span></p></th><br>   <th><p>　　<span style="font-size: 16px;">etcd</span></p></th><br>   <th><p>　　<span style="font-size: 16px;">Consul</span></p></th><br>   <th><p>　　<span style="font-size: 16px;">Eureka</span></p></th><br>  </tr><br>  <tr><br>   <td><p>　　<span style="font-size: 16px;">一致性</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">强一致性paxos</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">强一致性Raft</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">强一致性Raft</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">弱一致性</span></p></td><br>  </tr><br>  <tr><br>   <td><p>　　<span style="font-size: 16px;">数据结构</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">Tree</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">K/V</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">K/V</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">K/V</span></p></td><br>  </tr><br>  <tr><br>   <td><p>　　<span style="font-size: 16px;">通讯协议</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">TCP</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">HTTP、gRPC</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">HTTP、DNS</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">HTTP</span></p></td><br>  </tr><br>  <tr><br>   <td><p>　　<span style="font-size: 16px;">客户端</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">ZKClient</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">/</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">/</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">Eureka-client</span></p></td><br>  </tr><br>  <tr><br>   <td><p>　　<span style="font-size: 16px;">CAP原则</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">CP</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">CP</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">CP</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">AP</span></p></td><br>  </tr><br> </tbody><br></table><br><p>　　Ps：Redis和MySQL没有列举。</p><br><p>　　选型小结：</p><br><ul><br> <li><p>规模小选择CP，RPC框架可以直接接入数据源；</p></li><br> <li><p>规模大选择AP， RPC框架不可以直接接入数据源；</p></li><br> <li><p>存在跨机房，跨地域的尽量不要选有强一致性协议的注册中心；</p></li><br> <li><p>RPC框架必须要有注册中心不可用的容灾策略；</p></li><br> <li><p>服务状态检测十分重要。</p></li><br></ul><br><p>　　<span style="font-size: 16px;"><strong>简易管理端</strong></span></p><br><p>　　管理端没啥特殊要求，最起码能看到服务提供者和调用者即可。</p><br><p>　　<span style="font-size: 16px;"><strong>|完善的服务化框架</strong></span></p><br><p>　　如果需要一个完善的服务化框架，那么必须增加外部模块，常见的模块如下图：</p><br><p>　　<img src="http://img.mp.itc.cn/upload/20161222/eb690025fb4445269b170788c52c70ff_th.png"></p><br><p>　　<span style="font-size: 16px;"><strong>接口文档管理</strong></span></p><br><p>　　提供一个接口文档管理以及接口查询的入口，可以是一个公共的WIKI，也可以是独立的系统，等等。</p><br><p>　　这里可以定义接口的文档，包括接口描述，方法定义，字段定义。可以定义接口的SLA，包括支持的并发数，tp99多少，建议配置是什么。还有就是接口的负责人等一些查询的入口。</p><br><p>　　<span style="font-size: 16px;"><strong>配置中心</strong></span></p><br><p>　　提供一个配置管理的地方，这里说的配置主要指的是服务相关的一些配置。</p><br><p>　　配置包括分组配置、路由策略、黑白名单、降级开关、限流信息、超时时间、重试次数等等，任何可以动态变更的所有数据。</p><br><p>　　这样服务提供者和服务调用者可以不需要重启自己的应用，直接进行配置的变更。</p><br><p>　　配置中心可以独立于注册中心，也可以和注册中心合并。</p><br><p>　　<span style="font-size: 16px;"><strong>监控中心</strong></span></p><br><p>　　监控服务关注接口维度，实例（例如所在JVM实例）维度的数据。RPC框架可以定时上报调用次数，耗时，异常等信息。监控中心可以统计出服务质量信息，也可以进行监控报警。</p><br><p>　　<span style="font-size: 16px;"><strong>分布式跟踪</strong></span></p><br><p>　　区别于监控中心，以调用链的模式对服务进行。RPC框架作为分布式跟踪系统的一个天然埋点，可以很好的进行一个数据输出。</p><br><p>　　<span style="font-size: 16px;"><strong>服务治理（重点）</strong></span></p><br><p>　　我这边列了常见的服务治理功能，例如：</p><br><ul><br> <li><p>服务路由：</p></li><br> <ol><br>  <li><p>权重：例如机器配置高的权重高，机器配置低的权重低；</p></li><br>  <li><p>IP路由：例如某几台机器只能调某几台机器；</p></li><br>  <li><p>分组路由：例如自动根据配置调某个分组；</p></li><br>  <li><p>参数路由：例如根据方法名进行读写分类，或者根据参数走不同的节点；</p></li><br>  <li><p>机房路由：例如只走同机房，或者同机房优先。</p></li><br> </ol><br> <li><p>调用授权：</p></li><br> <ul><br>  <li><p>应用授权：只有授权后的应用才能调这组服务</p></li><br>  <li><p>token：只有token对的调这组服务</p></li><br>  <li><p>黑白名单：只有名单允许的才能调这组服务</p></li><br> </ul><br> <li><p>动态分组：</p></li><br> <ol><br>  <li><p>服务端切分组：可以根据分组的情况，对服务提供者进行一个动态的分组调度；</p></li><br>  <li><p>客户端切分组：可以对调用者进行一个分组调度。</p></li><br> </ol><br> <li><p>调用限流：</p></li><br> <ol><br>  <li><p>服务端限流：服务端基于令牌桶或者漏桶模型进行限流；</p></li><br>  <li><p>客户端限流：根据客户端的标识，进行调用次数限流。</p></li><br> </ol><br> <li><p>灰度部署：</p></li><br> <ol><br>  <li><p>灰度上线：先启动，验证后在提供服务；</p></li><br>  <li><p>预发标识：表示该服务为预发布服务；</p></li><br>  <li><p>接口测试：方便的提供接口自动化功能测试功能。</p></li><br> </ol><br> <li><p>配置下发：</p></li><br> <ol><br>  <li><p>服务配置；</p></li><br>  <li><p>全局配置。</p></li><br> </ol><br> <li><p>服务降级：</p></li><br> <ol><br>  <li><p>Mock：出现异常或者测试情况下，返回Mock数据；</p></li><br>  <li><p>熔断：客户端超时或者服务端超时；</p></li><br>  <li><p>拒绝服务：服务端压力大时，自动拒绝服务，保护自己。</p></li><br> </ol><br></ul><br><span style="font-size: 16px;"><strong>网关</strong></span><br><p>　　RPC框架大部分场景都是自己调用的，什么时候会需要一个网关呢？</p><br><p>　　网关可以提供如下功能：</p><br><ul><br> <li><p>统一的鉴权服务；</p></li><br> <li><p>限流服务；</p></li><br> <li><p>协议转换：外部协议转统一内部协议；</p></li><br> <li><p>Mock：服务测试，降级等；</p></li><br> <li><p>其它一些统一处理逻辑（例如请求解析，响应包装）。</p></li><br></ul><br><p>　　<span style="font-size: 16px;"><strong>服务注册中心Plus</strong></span></p><br><p>　　需要逻辑处理能力，例如对数据进行筛选过滤整合，计算服务路由等功能</p><br><p>　　同时还需要有与RPC框架交互的功能。</p><br><p>　　<span style="font-size: 16px;"><strong>管理端Plus</strong></span></p><br><p>　　管理端除了之前的简单服务管理功能外，还需要提供配置信息展示，监控信息展示，各种维度的数据展示。也就是下面提到的服务治理功能，都可以在管理端进行管理。另外，常见的服务治理功能，我们都可以作为开放服务供开发人员进行一个调用。</p><br><p>　　<span style="font-size: 16px;"><strong>|京东实践</strong></span><span style="font-size: 16px;"><strong>第一代SAF背景</strong></span></p><br><p>　　2012年初，京东从.NET转Java。各个部门，各个业务线都没有一个统一的服务化框架，有的是dubbo，有的是WebService，有的是Hessian等等。</p><br><p>　　同时各个业务系统自己有非常多的业务代码。通过统计接口规模在1K左右，服务节点在50K左右，机器规模在8K左右，机房比较少拓扑简单。</p><br><p>　　所以当时的愿景和目标比较明确：</p><br><ul><br> <li><p>京东系统服务化、API化的从无到有；</p></li><br> <li><p>统一京东的RPC调用框架；</p></li><br> <li><p>稳定可靠；</p></li><br> <li><p>提供简单的服务治理功能。</p></li><br></ul><br><p>　　<span style="font-size: 16px;"><strong>第一代SAF选择</strong></span></p><br><p>　　OK，结合我们的情况和上面的一些选型小结，我们当时的选择如下：</p><br><ul><br> <li><p>RPC框架：基于dubbo2.3.2做配置扩展，以及功能扩展包括：rest（resteasy）、webservice（cxf）、kryo/thrift序列化、调用压缩等；</p></li><br> <li><p>注册中心：Zookeeper，RPC框架直接接入数据源；</p></li><br> <li><p>监控中心：监控服务+HBase；</p></li><br> <li><p>管理平台：读取Zookeeper做管理平台，提供基本的上下线、黑白名单等功能。</p></li><br></ul><br><p>　　于2012年4月上线，最大规模时，接口数3K，接入最大IP数20K。</p><br><p>　　<span style="font-size: 16px;"><strong>第二代JSF背景</strong></span></p><br><p>　　随着京东业务的不断快速增长，接口、机器数也呈数量级增长。同时京东成立子公司，在全国各地新建机房，部署结构也变得比较复杂。</p><br><p>　　加上SAF遗留的一些问题，大概面临如下几点：</p><br><ul><br> <li><p>RPC框架较重，性能有提高的空间；</p></li><br> <li><p>注册中心无业务逻辑，直接对外暴露；</p></li><br> <li><p>京东复杂的部署架构需要更强大灵活的服务治理功能；</p></li><br> <li><p>监控数据不完整，维度不够；</p></li><br> <li><p>无应用依赖关系；</p></li><br> <li><p>跨语言调用需求。</p></li><br></ul><br><p>　　<span style="font-size: 16px;"><strong>第二代JSF选择</strong></span></p><br><p>　　所以在2014年初，我们进行了第二代JSF的一个全部自研过程。</p><br><p>　　我们主要做了如下技术选型：（全部自研）</p><br><ul><br> <li><p>RPC框架：轻量级，更佳的性能，兼容旧版本协议；</p></li><br> <li><p>注册中心：基于DB作为数据源，前置Index服务；支持十倍接入量；部分逻辑放在注册中心减少客户端负担；</p></li><br> <li><p>监控中心：监控Proxy服务+InfluxDB（2015后改为ElasticSearch）；</p></li><br> <li><p>管理端：基于DB，功能更强大，提供完善的服务治理管理功能；打通京东应用管理平台，提供应用依赖关系梳理；</p></li><br> <li><p>HTTP网关：基于Netty，支持跨语言调用。</p></li><br></ul><br><p>　　开发周期：7人/年(2014.1-2015.1)。包括开发、测试、预发、上线、推广。</p><br><p>　　<strong><span style="font-size: 16px;">JSF架构简图</span></strong></p><br><p>　　<img src="http://img.mp.itc.cn/upload/20161222/410a9194179745d58436dd3212cf33f2_th.jpeg"></p><br><p>　　<span style="font-size: 16px;"><strong>JSF注册中心</strong></span></p><br><p>　　京东的注册中心是自研的，基于DB做的数据最终一致，也就是上面说的AP系统。注册中心主要实现的就是服务列表的注册订阅推送，服务配置的获取下发，服务状态的实时查看等功能。注册中心节点是无状态的，可水平扩展的。整个注册中心集群下的所有注册中心几点都是等价的。</p><br><p>　　每个机房部署多个注册中心节点。同机房的RPC框架会优先连本机房的注册中心节点。</p><br><p>　　主要亮点如下：</p><br><ul><br> <li><p>引入Index服务概念：该服务就是一个最简单HTTP的服务，用于找注册中心节点（同机房或者压力最小或者其它特定场景），可以认为是不会挂的服务，RPC框架会优先连该服务拿注册中心地址，这样子的好处是注册中心地址变化后，RPC框架不用修改任何设置；</p></li><br> <li><p>注册中心内存有服务列表全量缓存，连不上数据库也保证可读；</p></li><br> <li><p>数据库的数据结构更适合各种维度展示、过滤、分析等，例如根据分组/IP/应用/机房等不同维度；</p></li><br> <li><p>注册中心就是个JSF服务，监控到压力大即可进行动态水平扩展，dogfooding，注册中心其实是第一个JSF接口；</p></li><br> <li><p>服务列表推送逻辑改进：例如原来100个Provider，现在加1个节点，之前的SAF是需要下发101个节点，自己判断加了哪个节点，进行长链接建立；现在的改进是：修改为下发一个add事件，告知RPC框架加了1个节点，RPC框架进行长链接建立；这样做大大减少了推送的数据量；</p></li><br> <li><p>注册中心与RPC框架可各种交互：注册中心和RPC框架是长链接，而且JSF是支持Callback的，注册中心可以调用RPC框架进行服务列表变化之外的操作；例如查看状态，查看配置，配置下发等。</p></li><br></ul><br><p>　　<span style="font-size: 16px;"><strong>JSF RPC框架</strong></span></p><br><p>　　<img src="http://img.mp.itc.cn/upload/20161222/359c3e5bc12c4480baf8fc7a6e39c1d3_th.jpeg"></p><br><p>　　RPC框架作为服务化里面的最基本的组件，其实都大同小异，因为RPC调用都绕不开代理、网络、序列化这些操作。</p><br><p>　　JSF的RPC框架也类似，主要分为图中的几个模块，下面大概列下一些功能特性：</p><br><ul><br> <li><p>Config：Spring/API/Annotation</p></li><br> <li><p>Proxy: Javassist/JDK</p></li><br> <li><p>Invoker/Filter：内置+自定义，Filter可扩展</p></li><br> <li><p>Client：Failover（默认）/FailFast/TransportPinpoint/MultiClientProxy</p></li><br> <li><p>调用方式：同步（默认）/异步并行/异步回调/Callback/泛化</p></li><br> <li><p>Loadbalance：Random（默认）/Roundrobin/ConsistentHash/ LocalPreference/LeastActiveCall</p></li><br> <li><p>路由：参数路由，分组路由，（IP级别路由逻辑在注册中心做）</p></li><br> <li><p>长连接维护：可用/死亡/亚健康</p></li><br> <li><p>协议：JSF（默认）/SAF(dubbo)/HTTP/Telnet/HTTP2</p></li><br> <li><p>第三方：REST/Webservice</p></li><br> <li><p>序列化：MsgPack（默认）/Hessian/Json/Java/protobuf(c++)</p></li><br> <li><p>压缩：Snappy/LZMA</p></li><br> <li><p>网络：基于Netty4.0，长连接复用</p></li><br> <li><p>线程模型：BOSS+WORKER+BIZ</p></li><br> <li><p>容灾：本地文件</p></li><br> <li><p>请求上下文：IP，参数，隐式传参</p></li><br> <li><p>事件监听：响应事件，连接事件，状态事件</p></li><br> <li><p>分布式跟踪支持：进行数据埋点</p></li><br></ul><br><p>　　<span style="font-size: 16px;"><strong>JSF管理平台</strong></span></p><br><p>　　提供强大管理功能，包括服务管理，监控管理，注册中心管理等功能。</p><br><p>　　<img src="http://img.mp.itc.cn/upload/20161222/bf77964deaa64684b21d5cdb9cb6b05d_th.jpeg"></p><br><p>　　<img src="http://img.mp.itc.cn/upload/20161222/a60cb287c4894d62a23e96914c77f3dc_th.jpeg"></p><br><p>　　<img src="http://img.mp.itc.cn/upload/20161222/9701d21a69c24bc4ab8aa391b6489225_th.jpeg"></p><br><p>　　我们针对服务治理的功能，提供了很多API，可以授权给开发人员或者外部系统使用。例如单元测试调用，限流配置/开关，动态分组，上下线等都提供了开放API。</p><br><p>　　<span style="font-size: 16px;"><strong>JSF HTTP网关</strong></span></p><br><p>　　网关是为了方便跨语言通过HTTP+JSON调用JSF服务，而不需要使用JSF的RPC框架。</p><br><p>　　特性如下：</p><br><ul><br> <li><p>基于Netty4.0实现HTTP网关，没有使用Servlet容器，轻量高效；</p></li><br> <li><p>支持服务自动发现：一般的HTTP服务，外面为了解决单点问题，都会用域名+VIP等实现高可用，故障转移等；现在网关同时原生接入了JSF的注册中心，知道了服务的提供者信息（JSF协议支持HTTP调用）；服务提供者也不用关系扩容缩容导致服务的IP端口发生变化，网关会自动维护服务列表；</p></li><br> <li><p>服务限流：针对方法级+应用进行授权，固定时间只能调用指定次数；同一个方法也只能占用网关内的部分线程；</p></li><br> <li><p>结果统一包装：对异常等响应进行包装。</p></li><br></ul><br><p>　　<span style="font-size: 16px;"><strong>JSF遇到京东弹性云</strong></span></p><br><p>　　京东的JSF服务开发在京东弹性云的研发推广之前完成，自从京东弹性云落地以来，也遇到不少问题。例如：</p><br><ul><br> <li><p>硬件指标：例如使用JDK获取的Docker的指标有些是物理机的，我们需要特殊处理；</p></li><br> <li><p>网络：结合京东的“胖”容器，每个容器其实有实际IP，对外提供服务；</p></li><br> <li><p>轻量：提高启动速度；</p></li><br> <li><p>开放服务：在容器销毁或者非优雅停机的情况下，提供API进行服务治理。</p></li><br></ul><br><p>　　<strong><span style="font-size: 16px;">JSF规模</span></strong></p><br><ul><br> <li><p><span style="font-size: 16px;">接口数：万级</span></p></li><br> <li><p><span style="font-size: 16px;">服务节点数：百万级</span></p></li><br> <li><p><span style="font-size: 16px;">接入实例数：十万级</span></p></li><br> <li><p><span style="font-size: 16px;">框架调用量：每天千亿级别</span></p></li><br> <li><p><span style="font-size: 16px;">监控数据：每天120亿条数据， 1.2T数据量</span></p></li><br> <li><p><span style="font-size: 16px;">HTTP网关：每天百亿级别</span></p></li><br></ul><br><p>　　<strong><span style="font-size: 16px;">|总结</span></strong></p><br><p>　　没有最好，只有最适合！意思就是不要人云亦云，盲目看大公司用什么，现在什么最新，或者什么性能最好。</p><br><p>　　因为架构不是让你一下子设计出来使用一辈子，好的架构都是慢慢演化而来的。不同的架构会做出不同的技术选型。所以无论什么时候都要结合自己的现状以及未来几年的规划，来进行技术选型。</p><br><p>　　It’s just the beginning！</p><br><p>　　服务化框架的选择只是开始，真正的变革是选择后，公司整体业务和开发的变革。这个大家有空可以看看康威定律。</p><br><p>　　======公众号推荐======</p><br><p>　　<span>IPD-Chat</span><span>为京东商城基础平台部门官方公众号。</span></p><br><p>　　<span><span>基础平台部门包括数据库、容器集群、中间件、图片存储、应用架构、机器学习、系统保障等技术方向。</span>运营多个数据中心数万台服务器，支撑京东无数在线任务。</span><span>IPD-Chat</span><span>公众号会对基础平台目前的技术实践方案、最新项目动态等进行分享，纯技术干货，共同寻求突破~欢迎大家多多关注、共同交流！</span></p><br><p>　　『中生代技术』：连接技术大咖的桥梁，促进科技技术的交流。 </p><br><p>　　<img src="http://img.mp.itc.cn/upload/20161222/3fdd1341c9404664be194c89bb1cf0da_th.png"></p><br>        </div>
+
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/08/jsf-01/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1347,7 +1460,7 @@ for (int i = 0; i &amp;lt; this.segments.length; ++i)
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-count">9</span>
                 <span class="site-state-item-name">Artikel</span>
               </a>
             </div>
