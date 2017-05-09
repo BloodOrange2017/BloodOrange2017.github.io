@@ -1,0 +1,652 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="SQL标准定义了4类隔离级别，包括了一些具体规则，用来限定事务内外的哪些改变是可见的，哪些是不可见的。低级别的隔离级一般支持更高的并发处理，并拥有更低的系统开销。Read Uncommitted（读取未提交内容）       在该隔离级别，所有事务都可以看到其他未提交事务的执行结果。本隔离级别很少用于实际应用，因为它的性能也不比其他级别好多少。读取未提交的数据，也被称之为脏读">
+<meta property="og:type" content="article">
+<meta property="og:title" content="转载:MySQL事务隔离级别详解">
+<meta property="og:url" content="http://yoursite.com/2017/05/09/Mysql-db-02/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="SQL标准定义了4类隔离级别，包括了一些具体规则，用来限定事务内外的哪些改变是可见的，哪些是不可见的。低级别的隔离级一般支持更高的并发处理，并拥有更低的系统开销。Read Uncommitted（读取未提交内容）       在该隔离级别，所有事务都可以看到其他未提交事务的执行结果。本隔离级别很少用于实际应用，因为它的性能也不比其他级别好多少。读取未提交的数据，也被称之为脏读">
+<meta property="og:image" content="http://dl.iteye.com/upload/picture/pic/72610/af5b9c1e-4517-3df2-ad62-af25d1672d12.jpg">
+<meta property="og:image" content="http://dl.iteye.com/upload/picture/pic/72618/1ca8ec0d-3b6c-3ae1-babc-5dd541c4d1a4.jpg">
+<meta property="og:image" content="http://dl.iteye.com/upload/picture/pic/72620/b37214c3-7726-3306-95ee-1b2fae5ccd6c.jpg">
+<meta property="og:image" content="http://dl.iteye.com/upload/picture/pic/72622/200d9c94-197a-3fe5-8925-3411cd88555e.jpg">
+<meta property="og:image" content="http://dl.iteye.com/upload/picture/pic/72626/ae414e52-c216-3bbb-b005-0d972f593456.jpg">
+<meta property="og:image" content="http://dl.iteye.com/upload/picture/pic/72628/12051f3d-c01e-34b3-a6b6-8b71e1b1dcc8.jpg">
+<meta property="og:image" content="http://dl.iteye.com/upload/picture/pic/72630/cc80744e-eb9f-3104-bb24-2218e9986d78.jpg">
+<meta property="og:image" content="http://dl.iteye.com/upload/picture/pic/72632/0bf52be3-e873-3f3f-8d56-d703a8f678ab.jpg">
+<meta property="og:image" content="http://dl.iteye.com/upload/picture/pic/72634/e58d1814-bdca-3313-bcf5-339e3678536a.jpg">
+<meta property="og:image" content="http://dl.iteye.com/upload/picture/pic/72636/83bfe583-2d57-345a-917e-4ee163235b62.jpg">
+<meta property="og:image" content="http://dl.iteye.com/upload/picture/pic/72638/192348aa-4fa5-3d5f-a4f9-4660ddd725cd.jpg">
+<meta property="og:image" content="http://dl.iteye.com/upload/picture/pic/72640/4398c5b1-434c-3380-ba19-060154cf2070.jpg">
+<meta property="og:image" content="http://dl.iteye.com/upload/picture/pic/72642/c604c5ce-311d-3923-8dcd-36b0188f4f31.jpg">
+<meta property="og:image" content="http://dl.iteye.com/upload/picture/pic/72644/c488f9d9-7da2-3e6d-9a82-2b92d1051afd.jpg">
+<meta property="og:image" content="http://dl.iteye.com/upload/picture/pic/72646/322ed59a-b2b9-338c-a2f0-09c9b7707577.jpg">
+<meta property="og:image" content="http://dl.iteye.com/upload/picture/pic/72648/8e60e19b-09af-31a7-b8d3-8e638bbf177c.jpg">
+<meta property="og:updated_time" content="2017-05-09T06:29:53.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="转载:MySQL事务隔离级别详解">
+<meta name="twitter:description" content="SQL标准定义了4类隔离级别，包括了一些具体规则，用来限定事务内外的哪些改变是可见的，哪些是不可见的。低级别的隔离级一般支持更高的并发处理，并拥有更低的系统开销。Read Uncommitted（读取未提交内容）       在该隔离级别，所有事务都可以看到其他未提交事务的执行结果。本隔离级别很少用于实际应用，因为它的性能也不比其他级别好多少。读取未提交的数据，也被称之为脏读">
+<meta name="twitter:image" content="http://dl.iteye.com/upload/picture/pic/72610/af5b9c1e-4517-3df2-ad62-af25d1672d12.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/05/09/Mysql-db-02/"/>
+
+
+
+
+
+  <title>转载:MySQL事务隔离级别详解 | Hexo</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Startseite
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archiv
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/09/Mysql-db-02/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">转载:MySQL事务隔离级别详解</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-09T14:28:36+08:00">
+                2017-05-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <div id="blog_content" class="blog_content"><br>    <div class="blog_content" style="text-align: left;"><br><p><span style="font-size: medium;">       SQL标准定义了4类隔离级别，包括了一些具体规则，用来限定事务内外的哪些改变是可见的，哪些是不可见的。低级别的隔离级一般支持更高的并发处理，并拥有更低的系统开销。<br><strong>Read Uncommitted（读取未提交内容）</strong><br></span><br></p><br><p><span style="font-size: medium;">       在该隔离级别，所有事务都可以看到其他未提交事务的执行结果。本隔离级别很少用于实际应用，因为它的性能也不比其他级别好多少。读取未提交的数据，也被称之为脏读（Dirty Read）。<br><strong>Read Committed（读取提交内容）</strong><br></span><br></p><br><p><span style="font-size: medium;">       这是大多数数据库系统的默认隔离级别（但不是MySQL默认的）。它满足了隔离的简单定义：一个事务只能看见已经提交事务所做的改变。这种隔离级别<br>也支持所谓的不可重复读（Nonrepeatable<br>Read），因为同一事务的其他实例在该实例处理其间可能会有新的commit，所以同一select可能返回不同结果。<br><strong>Repeatable Read（可重读）</strong><br></span><br></p><br><p><span style="font-size: medium;">       这是MySQL的默认事务隔离级别，它确保同一事务的多个实例在并发读取数据时，会看到同样的数据行。不过理论上，这会导致另一个棘手的问题：幻读<br>（Phantom<br>Read）。简单的说，幻读指当用户读取某一范围的数据行时，另一个事务又在该范围内插入了新行，当用户再读取该范围的数据行时，会发现有新的“幻影”<br>行。InnoDB和Falcon存储引擎通过多版本并发控制（MVCC，Multiversion Concurrency<br>Control）机制解决了该问题。</span><br></p><br><p><span style="font-size: medium;"><strong>Serializable（可串行化）</strong><br><br><br>       这是最高的隔离级别，它通过强制事务排序，使之不可能相互冲突，从而解决幻读问题。简言之，它是在每个读的数据行上加上共享锁。在这个级别，可能导致大量的超时现象和锁竞争。</span><br></p><br><p>         <span style="font-size: medium;">这四种隔离级别采取不同的锁类型来实现，若读取的是同一个数据的话，就容易发生问题。例如：</span><br></p><br><p>      <span style="font-size: medium;">   脏读(Drity Read)：某个事务已更新一份数据，另一个事务在此时读取了同一份数据，由于某些原因，前一个RollBack了操作，则后一个事务所读取的数据就会是不正确的。</span><br></p><br><p>         <span style="font-size: medium;">不可重复读(Non-repeatable read):在一个事务的两次查询之中数据不一致，这可能是两次查询过程中间插入了一个事务更新的原有的数据。</span><br></p><br><p><span style="font-size: medium;">         幻读(Phantom Read):在一个事务的两次查询中数据笔数不一致，例如有一个事务查询了几列(Row)数据，而另一个事务却在此时插入了新的几列数据，先前的事务在接下来的查询中，就会发现有几列数据是它先前所没有的。</span><br></p><br><p>         在MySQL中，实现了这四种隔离级别，分别有可能产生问题如下所示：</p><br><p style="text-align: center;"><img alt="" height="267" style="vertical-align: middle;" width="838" src="http://dl.iteye.com/upload/picture/pic/72610/af5b9c1e-4517-3df2-ad62-af25d1672d12.jpg"></p><br><p><span style="font-size: medium;"><br></span><br></p><br><p><span style="font-size: medium;">下面，将利用MySQL的客户端程序，分别测试几种隔离级别。测试数据库为test，表为tx；表结构：</span><br></p><br><table border="0" style="height: 50px;" width="440"><br><tr><br><td style="text-align: center;"><br><span style="font-size: medium;">id</span><br></td><br><td><br><span style="font-size: medium;">                              int</span><br></td><br></tr><br><tr><br><td><br><p style="text-align: center;"><span style="font-size: medium;">num</span><br></p><br></td><br><td><br><span style="font-size: medium;">                              int</span><br></td><br></tr><br></table><br><p><span style="font-size: medium;">两个命令行客户端分别为A，B；不断改变A的隔离级别，在B端修改数据。</span><br></p><br><p><span style="font-size: medium;"><strong><span>（一）、将A的隔离级别设置为read uncommitted(未提交读)</span><br></strong><br></span><br></p><br><p><span style="font-size: medium;"> 在B未更新数据之前：</span><br><br></p><br><p><strong><span style="font-size: medium;">客户端A：</span><br></strong><br><img alt="" height="379" width="645" src="http://dl.iteye.com/upload/picture/pic/72618/1ca8ec0d-3b6c-3ae1-babc-5dd541c4d1a4.jpg"></p><br><p> <span style="font-size: medium;">B更新数据：</span><br><br></p><br><p><strong><span style="font-size: medium;">客户端B：</span><br></strong><br></p><br><p><img alt="" height="397" width="640" src="http://dl.iteye.com/upload/picture/pic/72620/b37214c3-7726-3306-95ee-1b2fae5ccd6c.jpg"></p><br><p><strong><span style="font-size: medium;">客户端A：</span><br></strong><br></p><br><p style="text-align: left;"><img alt="" height="481" width="640" src="http://dl.iteye.com/upload/picture/pic/72622/200d9c94-197a-3fe5-8925-3411cd88555e.jpg"></p><br><p>    <span style="font-size: medium;">    经过上面的实验可以得出结论，事务B更新了一条记录，但是没有提交，此时事务A可以查询出未提交记录。造成脏读现象。未提交读是最低的隔离级别。</span><br></p><br><p><strong><span style="font-size: medium;">（二）、将客户端A的事务隔离级别设置为read committed(已提交读)</span><br></strong><br></p><br><p><span style="font-size: medium;"> 在B未更新数据之前：</span><br><br></p><br><strong><span style="font-size: medium;">客户端A：</span><br></strong><br><p><a class="underline" href="/upload/picture/pic/72626/ae414e52-c216-3bbb-b005-0d972f593456.jpg"><img alt="" height="351" width="644" src="http://dl.iteye.com/upload/picture/pic/72626/ae414e52-c216-3bbb-b005-0d972f593456.jpg"></a><br></p><br><p> <span style="font-size: medium;">B更新数据：</span><br><br></p><br><p><strong><span style="font-size: medium;">客户端B：</span><br></strong><br></p><br><p><img alt="" height="313" width="641" src="http://dl.iteye.com/upload/picture/pic/72628/12051f3d-c01e-34b3-a6b6-8b71e1b1dcc8.jpg"></p><br><p><strong><span style="font-size: medium;">客户端A：</span><br></strong><br></p><br><p><img alt="" height="351" width="642" src="http://dl.iteye.com/upload/picture/pic/72630/cc80744e-eb9f-3104-bb24-2218e9986d78.jpg"></p><br><p><span style="font-size: medium;">       经过上面的实验可以得出结论，已提交读隔离级别解决了脏读的问题，但是出现了不可重复读的问题，即事务A在两次查询的数据不一致，因为在两次查询之间事务B更新了一条数据。已提交读只允许读取已提交的记录，但不要求可重复读。</span><br></p><br><p>(三)、<span style="font-size: medium;"><strong><span>将A的隔离级别设置为repeatable read(可重复读)</span><br></strong><br></span><br></p><br><p><span style="font-size: medium;"> 在B未更新数据之前：</span><br><br></p><br><div class="blog_content" style="text-align: left;"><br><strong><span style="font-size: medium;">客户端A：</span><br></strong><br></div><br><div class="blog_content" style="text-align: left;"><img alt="" height="319" width="643" src="http://dl.iteye.com/upload/picture/pic/72632/0bf52be3-e873-3f3f-8d56-d703a8f678ab.jpg"></div><br><p> <span style="font-size: medium;">B更新数据：</span><br><br></p><br><p><strong><span style="font-size: medium;">客户端B：</span><br></strong><br></p><br><p><img alt="" height="333" width="645" src="http://dl.iteye.com/upload/picture/pic/72634/e58d1814-bdca-3313-bcf5-339e3678536a.jpg"></p><br><p><strong><span style="font-size: medium;">客户端A：</span><br></strong><br></p><br><p><img alt="" height="497" width="640" src="http://dl.iteye.com/upload/picture/pic/72636/83bfe583-2d57-345a-917e-4ee163235b62.jpg"></p><br><p><span style="font-size: medium;">B插入数据：</span><br></p><br><p><strong><span style="font-size: medium;">客户端B：</span><br></strong><br></p><br><p><img alt="" height="366" width="641" src="http://dl.iteye.com/upload/picture/pic/72638/192348aa-4fa5-3d5f-a4f9-4660ddd725cd.jpg"></p><br><p><strong><span style="font-size: medium;">客户端A：</span><br></strong><br></p><br><p><img alt="" height="351" width="641" src="http://dl.iteye.com/upload/picture/pic/72640/4398c5b1-434c-3380-ba19-060154cf2070.jpg"></p><br><p><span style="font-size: medium;">       由以上的实验可以得出结论，可重复读隔离级别只允许读取已提交记录，而且在一个事务两次读取一个记录期间，其他事务部的更新该记录。但该事务不要求与其他事务可串行化。例如，当一个事务可以找到由一个已提交事务更新的记录，但是可能产生幻读问题(注意是可能，因为数据库对隔离级别的实现有所差别)。像以上的实验，就没有出现数据幻读的问题。</span><br></p><br><p>(<strong>四)、<span style="font-size: medium;"><strong><span>将A的隔离级别设<span style="font-size: medium;">置为</span><br></span><br></strong><br></span><br><span style="font-size: medium;"><span><span style="font-size: medium;">可串行化</span><br><span style="font-size: medium;">(Serializable)</span><br></span><br></span><br></strong><br></p><br><p><strong><span style="font-size: medium;">A端打开事务，B端插入一条记录</span><br></strong><br></p><br><p><strong><span style="font-size: medium;">事务A端：</span><br></strong><br></p><br><p><img alt="" height="234" width="639" src="http://dl.iteye.com/upload/picture/pic/72642/c604c5ce-311d-3923-8dcd-36b0188f4f31.jpg"></p><br><p><strong><span style="font-size: medium;">事务B端：</span><br></strong><br></p><br><p><img alt="" height="141" width="640" src="http://dl.iteye.com/upload/picture/pic/72644/c488f9d9-7da2-3e6d-9a82-2b92d1051afd.jpg"></p><br><p><span style="font-size: medium;">因为此时事务A的隔离级别设置为serializable，开始事务后，并没有提交，所以事务B只能等待。</span><br></p><br><p><strong><span style="font-size: medium;">事务A提交事务：</span><br></strong><br></p><br><p><strong><span style="font-size: medium;">事务A端</span><br></strong><br></p><br><p><img alt="" height="73" width="639" src="http://dl.iteye.com/upload/picture/pic/72646/322ed59a-b2b9-338c-a2f0-09c9b7707577.jpg"></p><br><p><strong><span style="font-size: medium;">事务B端</span><br></strong><br></p><br><p><img alt="" height="47" width="644" src="http://dl.iteye.com/upload/picture/pic/72648/8e60e19b-09af-31a7-b8d3-8e638bbf177c.jpg"></p><br><p><span style="font-size: medium;">      </span><br></p><br><p>         <span style="font-size: medium;">serializable完全锁定字段，若一个事务来查询同一份数据就必须等待，直到前一个事务完成并解除锁定为止</span><br>。<span style="font-size: medium;">是完整的隔离级别，会锁定对应的数据表格，因而会有效率的问题。</span><br></p><br></div><br>  </div>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/05/09/nio-01/" rel="next" title="转载：Java NIO 系列教程">
+                <i class="fa fa-chevron-left"></i> 转载：Java NIO 系列教程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2099/09/09/img-01/" rel="prev" title="欢迎来到薛成的博客">
+                欢迎来到薛成的博客 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="John Doe" />
+          <p class="site-author-name" itemprop="name">John Doe</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">Artikel</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+</div>
+
+
+<div class="powered-by">
+  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

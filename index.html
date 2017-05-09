@@ -362,6 +362,118 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/09/Mysql-db-02/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/05/09/Mysql-db-02/" itemprop="url">转载:MySQL事务隔离级别详解</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-09T14:28:36+08:00">
+                2017-05-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <div id="blog_content" class="blog_content"><br>    <div class="blog_content" style="text-align: left;"><br><p><span style="font-size: medium;">       SQL标准定义了4类隔离级别，包括了一些具体规则，用来限定事务内外的哪些改变是可见的，哪些是不可见的。低级别的隔离级一般支持更高的并发处理，并拥有更低的系统开销。<br><strong>Read Uncommitted（读取未提交内容）</strong><br></span><br></p><br><p><span style="font-size: medium;">       在该隔离级别，所有事务都可以看到其他未提交事务的执行结果。本隔离级别很少用于实际应用，因为它的性能也不比其他级别好多少。读取未提交的数据，也被称之为脏读（Dirty Read）。<br><strong>Read Committed（读取提交内容）</strong><br></span><br></p><br><p><span style="font-size: medium;">       这是大多数数据库系统的默认隔离级别（但不是MySQL默认的）。它满足了隔离的简单定义：一个事务只能看见已经提交事务所做的改变。这种隔离级别<br>也支持所谓的不可重复读（Nonrepeatable<br>Read），因为同一事务的其他实例在该实例处理其间可能会有新的commit，所以同一select可能返回不同结果。<br><strong>Repeatable Read（可重读）</strong><br></span><br></p><br><p><span style="font-size: medium;">       这是MySQL的默认事务隔离级别，它确保同一事务的多个实例在并发读取数据时，会看到同样的数据行。不过理论上，这会导致另一个棘手的问题：幻读<br>（Phantom<br>Read）。简单的说，幻读指当用户读取某一范围的数据行时，另一个事务又在该范围内插入了新行，当用户再读取该范围的数据行时，会发现有新的“幻影”<br>行。InnoDB和Falcon存储引擎通过多版本并发控制（MVCC，Multiversion Concurrency<br>Control）机制解决了该问题。</span><br></p><br><p><span style="font-size: medium;"><strong>Serializable（可串行化）</strong><br><br><br>       这是最高的隔离级别，它通过强制事务排序，使之不可能相互冲突，从而解决幻读问题。简言之，它是在每个读的数据行上加上共享锁。在这个级别，可能导致大量的超时现象和锁竞争。</span><br></p><br><p>         <span style="font-size: medium;">这四种隔离级别采取不同的锁类型来实现，若读取的是同一个数据的话，就容易发生问题。例如：</span><br></p><br><p>      <span style="font-size: medium;">   脏读(Drity Read)：某个事务已更新一份数据，另一个事务在此时读取了同一份数据，由于某些原因，前一个RollBack了操作，则后一个事务所读取的数据就会是不正确的。</span><br></p><br><p>         <span style="font-size: medium;">不可重复读(Non-repeatable read):在一个事务的两次查询之中数据不一致，这可能是两次查询过程中间插入了一个事务更新的原有的数据。</span><br></p><br><p><span style="font-size: medium;">         幻读(Phantom Read):在一个事务的两次查询中数据笔数不一致，例如有一个事务查询了几列(Row)数据，而另一个事务却在此时插入了新的几列数据，先前的事务在接下来的查询中，就会发现有几列数据是它先前所没有的。</span><br></p><br><p>         在MySQL中，实现了这四种隔离级别，分别有可能产生问题如下所示：</p><br><p style="text-align: center;"><img alt="" height="267" style="vertical-align: middle;" width="838" src="http://dl.iteye.com/upload/picture/pic/72610/af5b9c1e-4517-3df2-ad62-af25d1672d12.jpg"></p><br><p><span style="font-size: medium;"><br></span><br></p><br><p><span style="font-size: medium;">下面，将利用MySQL的客户端程序，分别测试几种隔离级别。测试数据库为test，表为tx；表结构：</span><br></p><br><table border="0" style="height: 50px;" width="440"><br><tr><br><td style="text-align: center;"><br><span style="font-size: medium;">id</span><br></td><br><td><br><span style="font-size: medium;">                              int</span><br></td><br></tr><br><tr><br><td><br><p style="text-align: center;"><span style="font-size: medium;">num</span><br></p><br></td><br><td><br><span style="font-size: medium;">                              int</span><br></td><br></tr><br></table><br><p><span style="font-size: medium;">两个命令行客户端分别为A，B；不断改变A的隔离级别，在B端修改数据。</span><br></p><br><p><span style="font-size: medium;"><strong><span>（一）、将A的隔离级别设置为read uncommitted(未提交读)</span><br></strong><br></span><br></p><br><p><span style="font-size: medium;"> 在B未更新数据之前：</span><br><br></p><br><p><strong><span style="font-size: medium;">客户端A：</span><br></strong><br><img alt="" height="379" width="645" src="http://dl.iteye.com/upload/picture/pic/72618/1ca8ec0d-3b6c-3ae1-babc-5dd541c4d1a4.jpg"></p><br><p> <span style="font-size: medium;">B更新数据：</span><br><br></p><br><p><strong><span style="font-size: medium;">客户端B：</span><br></strong><br></p><br><p><img alt="" height="397" width="640" src="http://dl.iteye.com/upload/picture/pic/72620/b37214c3-7726-3306-95ee-1b2fae5ccd6c.jpg"></p><br><p><strong><span style="font-size: medium;">客户端A：</span><br></strong><br></p><br><p style="text-align: left;"><img alt="" height="481" width="640" src="http://dl.iteye.com/upload/picture/pic/72622/200d9c94-197a-3fe5-8925-3411cd88555e.jpg"></p><br><p>    <span style="font-size: medium;">    经过上面的实验可以得出结论，事务B更新了一条记录，但是没有提交，此时事务A可以查询出未提交记录。造成脏读现象。未提交读是最低的隔离级别。</span><br></p><br><p><strong><span style="font-size: medium;">（二）、将客户端A的事务隔离级别设置为read committed(已提交读)</span><br></strong><br></p><br><p><span style="font-size: medium;"> 在B未更新数据之前：</span><br><br></p><br><strong><span style="font-size: medium;">客户端A：</span><br></strong><br><p><a class="underline" href="/upload/picture/pic/72626/ae414e52-c216-3bbb-b005-0d972f593456.jpg"><img alt="" height="351" width="644" src="http://dl.iteye.com/upload/picture/pic/72626/ae414e52-c216-3bbb-b005-0d972f593456.jpg"></a><br></p><br><p> <span style="font-size: medium;">B更新数据：</span><br><br></p><br><p><strong><span style="font-size: medium;">客户端B：</span><br></strong><br></p><br><p><img alt="" height="313" width="641" src="http://dl.iteye.com/upload/picture/pic/72628/12051f3d-c01e-34b3-a6b6-8b71e1b1dcc8.jpg"></p><br><p><strong><span style="font-size: medium;">客户端A：</span><br></strong><br></p><br><p><img alt="" height="351" width="642" src="http://dl.iteye.com/upload/picture/pic/72630/cc80744e-eb9f-3104-bb24-2218e9986d78.jpg"></p><br><p><span style="font-size: medium;">       经过上面的实验可以得出结论，已提交读隔离级别解决了脏读的问题，但是出现了不可重复读的问题，即事务A在两次查询的数据不一致，因为在两次查询之间事务B更新了一条数据。已提交读只允许读取已提交的记录，但不要求可重复读。</span><br></p><br><p>(三)、<span style="font-size: medium;"><strong><span>将A的隔离级别设置为repeatable read(可重复读)</span><br></strong><br></span><br></p><br><p><span style="font-size: medium;"> 在B未更新数据之前：</span><br><br></p><br><div class="blog_content" style="text-align: left;"><br><strong><span style="font-size: medium;">客户端A：</span><br></strong><br></div><br><div class="blog_content" style="text-align: left;"><img alt="" height="319" width="643" src="http://dl.iteye.com/upload/picture/pic/72632/0bf52be3-e873-3f3f-8d56-d703a8f678ab.jpg"></div><br><p> <span style="font-size: medium;">B更新数据：</span><br><br></p><br><p><strong><span style="font-size: medium;">客户端B：</span><br></strong><br></p><br><p><img alt="" height="333" width="645" src="http://dl.iteye.com/upload/picture/pic/72634/e58d1814-bdca-3313-bcf5-339e3678536a.jpg"></p><br><p><strong><span style="font-size: medium;">客户端A：</span><br></strong><br></p><br><p><img alt="" height="497" width="640" src="http://dl.iteye.com/upload/picture/pic/72636/83bfe583-2d57-345a-917e-4ee163235b62.jpg"></p><br><p><span style="font-size: medium;">B插入数据：</span><br></p><br><p><strong><span style="font-size: medium;">客户端B：</span><br></strong><br></p><br><p><img alt="" height="366" width="641" src="http://dl.iteye.com/upload/picture/pic/72638/192348aa-4fa5-3d5f-a4f9-4660ddd725cd.jpg"></p><br><p><strong><span style="font-size: medium;">客户端A：</span><br></strong><br></p><br><p><img alt="" height="351" width="641" src="http://dl.iteye.com/upload/picture/pic/72640/4398c5b1-434c-3380-ba19-060154cf2070.jpg"></p><br><p><span style="font-size: medium;">       由以上的实验可以得出结论，可重复读隔离级别只允许读取已提交记录，而且在一个事务两次读取一个记录期间，其他事务部的更新该记录。但该事务不要求与其他事务可串行化。例如，当一个事务可以找到由一个已提交事务更新的记录，但是可能产生幻读问题(注意是可能，因为数据库对隔离级别的实现有所差别)。像以上的实验，就没有出现数据幻读的问题。</span><br></p><br><p>(<strong>四)、<span style="font-size: medium;"><strong><span>将A的隔离级别设<span style="font-size: medium;">置为</span><br></span><br></strong><br></span><br><span style="font-size: medium;"><span><span style="font-size: medium;">可串行化</span><br><span style="font-size: medium;">(Serializable)</span><br></span><br></span><br></strong><br></p><br><p><strong><span style="font-size: medium;">A端打开事务，B端插入一条记录</span><br></strong><br></p><br><p><strong><span style="font-size: medium;">事务A端：</span><br></strong><br></p><br><p><img alt="" height="234" width="639" src="http://dl.iteye.com/upload/picture/pic/72642/c604c5ce-311d-3923-8dcd-36b0188f4f31.jpg"></p><br><p><strong><span style="font-size: medium;">事务B端：</span><br></strong><br></p><br><p><img alt="" height="141" width="640" src="http://dl.iteye.com/upload/picture/pic/72644/c488f9d9-7da2-3e6d-9a82-2b92d1051afd.jpg"></p><br><p><span style="font-size: medium;">因为此时事务A的隔离级别设置为serializable，开始事务后，并没有提交，所以事务B只能等待。</span><br></p><br><p><strong><span style="font-size: medium;">事务A提交事务：</span><br></strong><br></p><br><p><strong><span style="font-size: medium;">事务A端</span><br></strong><br></p><br><p><img alt="" height="73" width="639" src="http://dl.iteye.com/upload/picture/pic/72646/322ed59a-b2b9-338c-a2f0-09c9b7707577.jpg"></p><br><p><strong><span style="font-size: medium;">事务B端</span><br></strong><br></p><br><p><img alt="" height="47" width="644" src="http://dl.iteye.com/upload/picture/pic/72648/8e60e19b-09af-31a7-b8d3-8e638bbf177c.jpg"></p><br><p><span style="font-size: medium;">      </span><br></p><br><p>         <span style="font-size: medium;">serializable完全锁定字段，若一个事务来查询同一份数据就必须等待，直到前一个事务完成并解除锁定为止</span><br>。<span style="font-size: medium;">是完整的隔离级别，会锁定对应的数据表格，因而会有效率的问题。</span><br></p><br></div><br>  </div>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/09/nio-01/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1440,121 +1552,13 @@ for (int i = 0; i &amp;lt; this.segments.length; ++i)
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/05/first/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="John Doe">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/05/05/first/" itemprop="url">HEXO教程-搭建一个属于自己的HEXO博客</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Veröffentlicht am</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-05T15:18:31+08:00">
-                2017-05-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <div class="show-content"><br>          <p><a href="https://github.com/BloodOrange2017/BloodOrange2017.github.io" target="_blank">原文 : BIGCC个人博客(gonghonglou.com)</a></p><br><p>这是一篇详细文章来讲述用Mac搭建Hexo博客于Github上的完整历程， 也是踩了无数的坑搭起来的，现在写下些经验来分享，希望能帮大家少踩些坑。</p><br><p>曾买过一款阿里的云虚拟主机，后来才发现不能自己装软件只能上传网站程序，除非另买<a href="https://www.aliyun.com/easybuy" target="_blank">ECS</a>，对于第一个月的实习工资还没拿到手的我想想还是算了，先用Wordpress搭起来玩玩吧。然而在上传网站程序中几次失败，本就觉得没劲，遂一怒转向Github。好了，废话少说，开始吧。</p><br><h2>环境配置</h2><br><br><p><a href="https://hexo.io/docs" target="_blank">Hexo官网</a>上本就有对Hexo安装及使用的详细介绍，墙裂推荐。这里来讲述自己安装的亲身步骤，或有区别。</p><br><h3>1.Node.js</h3><br><br><p>用来生成静态页面。移步<a href="https://nodejs.org/en/" target="_blank">Node.js官网</a>，下载v5.5.0 Stable 一路安装即可。</p><br><h3>2.Git</h3><br><br><p>用来将本地Hexo内容提交到Github上。Xcode自带Git，这里不再赘述。如果没有Xcode可以参考<a href="https://hexo.io/docs" target="_blank">Hexo官网</a>上的安装方法。    </p><br><h2>安装Hexo</h2><br><br><p>当Node.js和Git都安装好后就可以正式安装Hexo了，终端执行如下命令：</p><br><pre><code>$ sudo npm install -g hexo</code></pre><br><p>输入管理员密码（Mac登录密码）即开始安装 (<code>sudo</code>:linux系统管理指令  <code>-g</code>:全局安装)</p><br><blockquote><p>注意坑一：<a href="https://hexo.io/docs" target="_blank">Hexo官网</a>上的安装命令是<code>$ npm install -g hexo-cli</code>，安装时不要忘记前面加上<code>sudo</code>，否则会因为权限问题报错。</p></blockquote><br><h3>初始化</h3><br><br><p>终端cd到一个你选定的目录，执行<code>hexo init</code>命令：</p><br><pre><code>$ hexo init blog</code></pre><br><p><code>blog</code>是你建立的文件夹名称。cd到<code>blog</code>文件夹下，执行如下命令，安装npm：</p><br><pre><code>$ npm install</code></pre><br><p>执行如下命令，开启hexo服务器：</p><br><pre><code>$ hexo s</code></pre><br><p>此时，浏览器中打开网址<a href="http://0.0.0.0:4000" target="_blank">http://localhost:4000</a>，能看到如下页面：</p><br><div class="image-package"><br><img src="http://upload-images.jianshu.io/upload_images/985173-6538ff6c494aeb9d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-original-src="http://upload-images.jianshu.io/upload_images/985173-6538ff6c494aeb9d.png?imageMogr2/auto-orient/strip%7CimageView2/2"><br><div class="image-caption"><a href="http://localhost:4000" target="_blank" rel="external">http://localhost:4000</a></div><br></div><br><p>本地设置好后，接下来开始关联Github。</p><br><h2>关联Github</h2><br><br><h3>1.创建仓库</h3><br><br><p>登录你的Github帐号，新建仓库，名为<code>用户名.github.io</code>固定写法，如<code>gonghonglou.github.io</code>即下图中<code>1</code>所示：</p><br><div class="image-package"><br><img src="http://upload-images.jianshu.io/upload_images/985173-e04632cf98208a52.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-original-src="http://upload-images.jianshu.io/upload_images/985173-e04632cf98208a52.png?imageMogr2/auto-orient/strip%7CimageView2/2"><br><div class="image-caption"></div><br></div><br><p>本地的<code>blog</code>文件夹下内容为：</p><br><pre><code>_config.yml<br>db.json<br>node_modules<br>package.json<br>scaffolds<br>source<br>themes</code></pre><br><p>终端cd到<code>blog</code>文件夹下，<code>vim</code>打开<code>_config.yml</code>，命令如下：</p><br><pre><code>$ vim _config.yml</code></pre><br><p>打开后往下滑到最后，修改成下边的样子：</p><br><pre><code>deploy:<br>    type: git<br>    repository: <a href="https://github.com/BloodOrange2017/BloodOrange2017.github.io.git" target="_blank" rel="external">https://github.com/BloodOrange2017/BloodOrange2017.github.io.git</a><br>    branch: master</code></pre><br><p>你需要将<code>repository</code>后<code>gonghonglou</code>换成你自己的用户名，地址在上图<code>2</code>位置获取。hexo 3.1.1版本后<code>type:</code>值为<code>git</code>。</p><br><blockquote><p>注意坑二：在配置所有的<code>_config.yml</code>文件时（包括theme中的），在所有的冒号<code>:</code>后边都要加一个空格，否则执行hexo命令会报错，切记 切记</p></blockquote><br><p>在<code>blog</code>文件夹目录下执行生成静态页面命令：</p><br><pre><code>$ hexo generate        或者：hexo g</code></pre><br><pre>此时若出现如下报错：<br>ERROR Local hexo not found in ~/blog<br>ERROR Try runing: ‘npm install hexo –save’<br>则执行命令：<br>npm install hexo –save<br>若无报错，自行忽略此步骤。</pre><br><br><p>再执行配置命令：</p><br><pre><code>$ hexo deploy            或者：hexo d</code></pre><br><blockquote><br><p>注意坑三：若执行命令<code>hexo deploy</code>仍然报错：无法连接git或找不到git，则执行如下命令来安装<a href="https://github.com/hexojs/hexo-deployer-git" target="_blank">hexo-deployer-git</a>：</p><br><pre><code>   $ npm install hexo-deployer-git –save</code></pre><br></blockquote><br><p>再次执行<code>hexo generate</code>和<code>hexo deploy</code>命令。</p><br><p>若你未关联Github，则执行<code>hexo deploy</code>命令时终端会提示你输入Github的用户名和密码，即</p><br><pre><code>Username for ‘<a href="https://github.com" target="_blank" rel="external">https://github.com</a>‘:<br>Password for ‘<a href="https://github.com" target="_blank" rel="external">https://github.com</a>‘:</code></pre><br><p><code>hexo deploy</code>命令执行成功后，浏览器中打开网址<a href="http://gonghonglou.github.io" target="_blank">http://gonghonglou.github.io</a>（将<code>gonghonglou</code>换成你的用户名）能看到和打开<code><a href="http://localhost:4000" target="_blank" rel="external">http://localhost:4000</a></code>时一样的页面。</p><br><p><strong>为避免每次输入Github用户名和密码的麻烦，可参照第二节方法</strong></p><br><h3>2.添加ssh key到Github</h3><br><br><h4>1.1.检查SSH keys是否存在Github</h4><br><br><p>执行如下命令，检查SSH keys是否存在。如果有文件<code>id_rsa.pub</code>或<code>id_dsa.pub</code>，则直接进入步骤1.3将SSH key添加到Github中，否则进入下一步生成SSH key。</p><br><pre><code>$ ls -al ~/.ssh</code></pre><br><h4>1.2.生成新的ssh key</h4><br><br><p>执行如下命令生成public/private rsa key pair，注意将<code>your_email@example.com</code>换成你自己注册Github的邮箱地址。</p><br><pre><code>$ ssh-keygen -t rsa -C “your_email@example.com”</code></pre><br><p>默认会在相应路径下（<code>~/.ssh/id_rsa.pub</code>）生成<code>id_rsa</code>和<code>id_rsa.pub</code>两个文件。</p><br><h4>1.3.将ssh key添加到Github中</h4><br><br><p>Find前往文件夹<code>~/.ssh/id_rsa.pub</code>打开id_rsa.pub文件，里面的信息即为SSH key，将这些信息复制到Github的Add SSH key页面即可。</p><br><p>进入Github –&gt; Settings –&gt; SSH keys –&gt; add SSH key:</p><br><p>Title里任意添一个标题，将复制的内容粘贴到Key里，点击下方<code>Add key</code>绿色按钮即可。</p><br><h3>3.发布文章</h3><br><br><p>终端cd到<code>blog</code>文件夹下，执行如下命令新建文章：</p><br><pre><code>hexo new “postName”</code></pre><br><p>名为<code>postName.md</code>的文件会建在目录<code>/blog/source/_posts</code>下。你当然可以用vim来编辑文章。我在用Mou编辑器，支持预览，虽然其预览主题并非我喜欢，如果你有好用的markdown编辑器请推荐给我，感激不尽！</p><br><p>文章编辑完成后，终端cd到<code>blog</code>文件夹下，执行如下命令来发布：</p><br><pre><code>hexo generate             //生成静态页面</code></pre><br><pre>hexo deploy            //将文章部署到Github</pre><br><br><p><strong>至此，Mac上搭建基于Github的Hexo博客就完成了。下面的内容是介绍安装theme，添加评论功能和绑定个人域名，如果有兴趣且还有耐心的话，请继续吧。</strong></p><br><h2>安装theme</h2><br><br><p>你可以到<a href="https://hexo.io/themes/" target="_blank">Hexo官网主题页</a>去搜寻自己喜欢的theme。这里以<a href="https://github.com/iissnan/hexo-theme-next" target="_blank">hexo-theme-next</a>为例</p><br><p>终端cd到 <code>blog</code> 目录下执行如下命令：</p><br><pre><code>$ git clone <a href="https://github.com/iissnan/hexo-theme-next" target="_blank" rel="external">https://github.com/iissnan/hexo-theme-next</a> themes/next</code></pre><br><p>将<code>blog</code>目录下<code>_config.yml</code>里<code>theme</code>的名称<code>landscape</code>修改为<code>next</code></p><br><p>终端cd到<code>blog</code>目录下执行如下命令(每次部署文章的步骤)：</p><br><pre><code>$ hexo clean           //清除缓存文件 (db.json) 和已生成的静态文件 (public)</code></pre><br><pre>$ hexo g             //生成缓存和静态文件</pre><br><br><pre>$ hexo d             //重新部署到服务器</pre><br><br><p>至于更改theme内容，比如名称，描述，头像等去修改<code>blog/_config.yml</code>文件和<code>blog/themes/next/_config.yml</code>文件中对应的属性名称即可， 不要忘记冒号<code>:</code>后加空格。  <a href="http://theme-next.iissnan.com/" target="_blank"> NexT 使用文档</a>里有极详细的介绍。</p><br><h2>绑定个人域名</h2><br><br><p>现在使用的域名是Github提供的二级域名，也可以绑定为自己的个性域名。购买域名，可以到<a href="https://sg.godaddy.com/zh/" target="_blank">GoDaddy官网</a>，网友亲切称呼为：狗爹，也可以到<a href="http://wanwang.aliyun.com/" target="_blank">阿里万网</a>购买。我是在万网买的，可直接在其网站做域名解析。</p><br><h3>1.Github端</h3><br><br><p>在<code>/blog/themes/landscape/source</code>目录下新建文件名为：<code>CNAME</code>文件，注意没有后缀名！直接将自己的域名如：<code>gonghonglou.com</code>写入。</p><br><p>终端cd到<code>blog</code>目录下执行如下命令重新部署：</p><br><pre><code>$ hexo clean</code></pre><br><pre>$ hexo g</pre>                                                        <pre>$ hexo d</pre><br><br><blockquote><p>注意坑四：网上许多都是说在Github上直接新建<code>CNAME</code>文件，如果这样的话，在你下一次执行<code>hexo d</code>部署命令后<code>CNAME</code>文件就消失了，因为本地没有此文件嘛。</p></blockquote><br><h3>2.域名解析</h3><br><br><p>如果将域名指向一个域名，实现与被指向域名相同的访问效果，需要增加CNAME记录。登录万网，在你购买的域名后边点击：解析 –&gt; 添加解析</p><br><p>记录类型：CNAME</p><br><p>主机记录：将域名解析为example.com（不带www），填写@或者不填写</p><br><p>记录值：gonghonglou.github.io.    (不要忘记最后的<code>.</code>，<code>gonghonglou</code>改为你自己的用户名)，点击保存即可，如下图：</p><br><div class="image-package"><br><img src="http://upload-images.jianshu.io/upload_images/985173-f1c2cd896991e05f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-original-src="http://upload-images.jianshu.io/upload_images/985173-f1c2cd896991e05f.png?imageMogr2/auto-orient/strip%7CimageView2/2"><br><div class="image-caption">域名解析</div><br></div><br><p>此时，点击访问<a href="http://gonghonglou.com" target="_blank">http://gonghonglou.com</a>和访问<a href="http://gonghonglou.github.io" target="_blank">http://gonghonglou.github.io</a>效果一致，大功告成！</p><br><h4>——11.10更新 以下————————————————</h4><br><h4>1、解决 deploy 后博客空白问题</h4><br><p>昨晚更新了一下 blog 做了个部署，结果blog就挂了，打开 <code>gonghonglou.com</code> 页面显示一片空白。然而 <code>hexo s</code> 开启本地服务器 <code>localhost:4000</code> 访问是没问题的。<br>上网查了一下，原来是 GitHub Pages 禁止了 <code>source/vendors</code> 目录的访问。Github 在 11 月 3 日更新了版本。其中包括升级了 Jekyll 到 3.3。Jekyll 为了加快构建速度，忽略 <code>vendor</code> 和 <code>node_modules</code> 文件夹。所以部署到 GitHub 后，识别不到本地下的的这个文件夹 <code>blog/themes/next/source/vendor</code>，你只需要给这个文件夹换个名字再重新部署一次就 OK 了。<code>nexT</code> 在 GitHub 上的 isusses 已经给出了解决方案：<a href="https://github.com/iissnan/hexo-theme-next/issues/1214" target="_blank">#1214<br></a></p><br><div class="image-package"><br><img src="http://upload-images.jianshu.io/upload_images/985173-31f883a8da001b85.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-original-src="http://upload-images.jianshu.io/upload_images/985173-31f883a8da001b85.png?imageMogr2/auto-orient/strip%7CimageView2/2"><br><div class="image-caption">#1214</div><br></div><br><p>还有另一种解决方案就是升级 <code>nexT</code> 主题，cd 到 <code>blog/themes/next/</code> 下执行命令 <code>git pull</code> 更新。<br>然而，有可能升级后多说评论等第三方工具会失效，慎用。</p><br><h4>2、将个人博客同时部署到 GitHub 和 Coding</h4><br><p>1、首先到 <a href="https://coding.net" target="_blank">Coding</a> 上注册并开一个项目，项目名称和用户个性后缀相同（方便二级域名访问博客），拿到项目的 https 地址</p><br><p>2、打开本地 <code>blog</code> 目录下的 <code>_config.yml</code> 文件，修改如下</p><br><pre><code>deploy:<br>  type: git<br>  repository:<br>            github: <a href="https://github.com/gonghonglou/gonghonglou.github.io.git" target="_blank" rel="external">https://github.com/gonghonglou/gonghonglou.github.io.git</a><br>            coding: <a href="https://git.coding.net/gonghonglou/gonghonglou.git" target="_blank" rel="external">https://git.coding.net/gonghonglou/gonghonglou.git</a><br>  branch: master</code></pre><br><p>3、cd 到本地 <code>blog/source</code> 目录下执行如下命令新建 <code>Staticfile</code> 文件</p><br><pre><code>$ touch Staticfile  #名字必须是Staticfile</code></pre><br><p>原因是 coding.net 需要以这个文件来作为静态文件部署的标志，就是说看到这个 Staticfile 就知道按照静态文件来发布。</p><br><p>4、执行发布命令 <code>hexo g</code> 、 <code>hexo d</code>  </p><br><p>5、个人域名添加两条 <code>CNAME</code> 解析。将 <code>gonghonglou.github.io.</code> 解析为 [海外] ，将 <code>gonghonglou.coding.me.</code> 解析为 [默认]<br></p><div class="image-package"><br><img src="http://upload-images.jianshu.io/upload_images/985173-d560ebb84b300986.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-original-src="http://upload-images.jianshu.io/upload_images/985173-d560ebb84b300986.png?imageMogr2/auto-orient/strip%7CimageView2/2"><br><div class="image-caption"></div><br></div><br><p>这样就是为了从国内访问 <code>gonghonglou.com</code> 就是访问 Coding 上的博客项目，从国外访问 <code>gonghonglou.com</code> 就是访问 GitHub 上的博客项目。</p><br><p>6、到 Coding 上的博客项目主页，点击 <code>Pages服务</code> 输入部署分支 <code>master</code> 立即开启</p><br><div class="image-package"><br><img src="http://upload-images.jianshu.io/upload_images/985173-ea5b4dad460b4f8d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-original-src="http://upload-images.jianshu.io/upload_images/985173-ea5b4dad460b4f8d.png?imageMogr2/auto-orient/strip%7CimageView2/2"><br><div class="image-caption"></div><br></div><br><p>这样就可以访问自己在 Coding 上的个人博客了 <a href="http://gonghonglou.coding.me/gonghonglou" target="_blank">gonghonglou.coding.me/gonghonglou</a> 如果像这样你的用户后缀名与博客项目名称相同你还可以省略项目名称直接访问 <a href="http://gonghonglou.coding.me" target="_blank">gonghonglou.coding.me</a> </p><br><p>7、添加域名绑定，输入个人域名就 OK 了，可能需要耐心等待几分钟，这样在国内访问自己的博客就快得多了。</p><br><p>试了一下在国内访问 <a href="http://gonghonglou.com" target="_blank">gonghonglou.com</a> 拦不住 要飞起来了😂</p><br><h4>——11.10更新 以上————————————————</h4><br><h2>参考链接</h2><br><br><ul><br><li><a href="https://hexo.io/docs" target="_blank">Hexo官网</a></li><br><li><a href="http://leopardpan.github.io/2015/08/12/hexo/" target="_blank">HEXO</a></li><br><li><a href="http://www.jianshu.com/p/31cbbbc5f9fa/" target="_blank">如何生成SSH key</a></li><br></ul><br><br>        </div><br>        <!--  --><br><br>        <div class="show-foot"><br>          <a class="notebook" href="/nb/2004750"><br>            <i class="iconfont ic-search-notebook"></i> <span></span><br></a>          <div class="copyright" data-toggle="tooltip" data-html="true" data-original-title=""><br>          </div><br>          <div class="modal-wrap" data-report-note=""><br><br>          </div><br>        </div><br>    
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+  </nav>
+
 
 
           </div>
@@ -1597,7 +1601,7 @@ for (int i = 0; i &amp;lt; this.segments.length; ++i)
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-count">11</span>
                 <span class="site-state-item-name">Artikel</span>
               </a>
             </div>
