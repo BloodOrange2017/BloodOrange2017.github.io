@@ -5,7 +5,7 @@
   
 
 
-<html class="theme-next muse use-motion" lang="">
+<html class="theme-next muse use-motion" lang="zh-CN">
 <head>
   <meta charset="UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -93,8 +93,8 @@
 <meta name="description" content="MySQL中的存储引擎：1、存储引擎的概念2、查看MySQL所支持的存储引擎3、MySQL中几种常用存储引擎的特点4、存储引擎之间的相互转化一、存储引擎1、存储引擎其实就是如何实现存储数据，如何为存储的数据建立索引以及如何更新，查询数据等技术实现的方法。2、MySQL中的数据用各种不同的技术存储在文件（或内存）中，这些技术中的每一种技术都使用不同的存储机制，索引技巧，锁定水平并且最终提供广泛的不同">
 <meta property="og:type" content="article">
 <meta property="og:title" content="转载:MySQL中的存储引擎讲解（InnoDB,MyISAM,Memory等各存储引擎对比）">
-<meta property="og:url" content="http://yoursite.com/2017/05/07/Mysql-db-01/index.html">
-<meta property="og:site_name" content="Hexo">
+<meta property="og:url" content="https://bloodorange2017.github.io/archives/2017/05/07/Mysql-db-01/index.html">
+<meta property="og:site_name" content="XueCheng Notes">
 <meta property="og:description" content="MySQL中的存储引擎：1、存储引擎的概念2、查看MySQL所支持的存储引擎3、MySQL中几种常用存储引擎的特点4、存储引擎之间的相互转化一、存储引擎1、存储引擎其实就是如何实现存储数据，如何为存储的数据建立索引以及如何更新，查询数据等技术实现的方法。2、MySQL中的数据用各种不同的技术存储在文件（或内存）中，这些技术中的每一种技术都使用不同的存储机制，索引技巧，锁定水平并且最终提供广泛的不同">
 <meta property="og:image" content="http://img.blog.csdn.net/20150106223151155?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvUUhfSkFWQQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
 <meta property="og:image" content="http://img.blog.csdn.net/20150106222921332?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvUUhfSkFWQQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
@@ -134,16 +134,16 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2017/05/07/Mysql-db-01/"/>
+  <link rel="canonical" href="https://bloodorange2017.github.io/archives/2017/05/07/Mysql-db-01/"/>
 
 
 
 
 
-  <title>转载:MySQL中的存储引擎讲解（InnoDB,MyISAM,Memory等各存储引擎对比） | Hexo</title>
+  <title>转载:MySQL中的存储引擎讲解（InnoDB,MyISAM,Memory等各存储引擎对比） | XueCheng Notes</title>
 </head>
 
-<body itemscope itemtype="http://schema.org/WebPage" lang="">
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
 
   
 
@@ -176,12 +176,12 @@
     <div class="custom-logo-site-title">
       <a href="/"  class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
-        <span class="site-title">Hexo</span>
+        <span class="site-title">XueCheng Notes</span>
         <span class="logo-line-after"><i></i></span>
       </a>
     </div>
       
-        <p class="site-subtitle"></p>
+        <p class="site-subtitle">JAVA</p>
       
   </div>
 
@@ -206,7 +206,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
-            Startseite
+            Home
           </a>
         </li>
       
@@ -216,7 +216,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
-            Archiv
+            Archives
           </a>
         </li>
       
@@ -259,16 +259,16 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/07/Mysql-db-01/">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/05/07/Mysql-db-01/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="John Doe">
+      <meta itemprop="name" content="XueCheng">
       <meta itemprop="description" content="">
       <meta itemprop="image" content="/images/avatar.gif">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
+      <meta itemprop="name" content="XueCheng Notes">
     </span>
 
     
@@ -286,7 +286,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-07T17:17:06+08:00">
                 2017-05-07
@@ -425,10 +425,10 @@
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/avatar.gif"
-               alt="John Doe" />
-          <p class="site-author-name" itemprop="name">John Doe</p>
+               alt="XueCheng" />
+          <p class="site-author-name" itemprop="name">XueCheng</p>
            
-              <p class="site-description motion-element" itemprop="description"></p>
+              <p class="site-description motion-element" itemprop="description">this is my first notes</p>
           
         </div>
         <nav class="site-state motion-element">
@@ -437,7 +437,7 @@
             <div class="site-state-item site-state-posts">
               <a href="/archives">
                 <span class="site-state-item-count">13</span>
-                <span class="site-state-item-name">Artikel</span>
+                <span class="site-state-item-name">posts</span>
               </a>
             </div>
           
@@ -486,12 +486,12 @@
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
-  <span class="author" itemprop="copyrightHolder">John Doe</span>
+  <span class="author" itemprop="copyrightHolder">XueCheng</span>
 </div>
 
 
 <div class="powered-by">
-  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
 </div>
 
 <div class="theme-info">

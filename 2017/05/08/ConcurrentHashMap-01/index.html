@@ -5,7 +5,7 @@
   
 
 
-<html class="theme-next muse use-motion" lang="">
+<html class="theme-next muse use-motion" lang="zh-CN">
 <head>
   <meta charset="UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -93,8 +93,8 @@
 <meta name="description" content="集合是编程中最常用的数据结构。而谈到并发，几乎总是离不开集合这类高级数据结构的支持。比如两个线程需要同时访问一个中间临界区（Queue），比如常会用缓存作为外部文件的副本（HashMap）。这篇文章主要分析jdk1.5的3种并发集合类型（concurrent，copyonright，queue）中的ConcurrentHashMap，让我们从原理上细致的了解它们，能够让我们在深度项目开发中">
 <meta property="og:type" content="article">
 <meta property="og:title" content="转载:ConcurrentHashMap简要原理分析">
-<meta property="og:url" content="http://yoursite.com/2017/05/08/ConcurrentHashMap-01/index.html">
-<meta property="og:site_name" content="Hexo">
+<meta property="og:url" content="https://bloodorange2017.github.io/archives/2017/05/08/ConcurrentHashMap-01/index.html">
+<meta property="og:site_name" content="XueCheng Notes">
 <meta property="og:description" content="集合是编程中最常用的数据结构。而谈到并发，几乎总是离不开集合这类高级数据结构的支持。比如两个线程需要同时访问一个中间临界区（Queue），比如常会用缓存作为外部文件的副本（HashMap）。这篇文章主要分析jdk1.5的3种并发集合类型（concurrent，copyonright，queue）中的ConcurrentHashMap，让我们从原理上细致的了解它们，能够让我们在深度项目开发中">
 <meta property="og:image" content="http://p.blog.csdn.net/images/p_blog_csdn_net/liuzhengkang/EntryImages/20080912/58adc9e7b4725349c149a.jpg">
 <meta property="og:updated_time" content="2017-05-08T10:14:21.000Z">
@@ -129,16 +129,16 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2017/05/08/ConcurrentHashMap-01/"/>
+  <link rel="canonical" href="https://bloodorange2017.github.io/archives/2017/05/08/ConcurrentHashMap-01/"/>
 
 
 
 
 
-  <title>转载:ConcurrentHashMap简要原理分析 | Hexo</title>
+  <title>转载:ConcurrentHashMap简要原理分析 | XueCheng Notes</title>
 </head>
 
-<body itemscope itemtype="http://schema.org/WebPage" lang="">
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
 
   
 
@@ -171,12 +171,12 @@
     <div class="custom-logo-site-title">
       <a href="/"  class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
-        <span class="site-title">Hexo</span>
+        <span class="site-title">XueCheng Notes</span>
         <span class="logo-line-after"><i></i></span>
       </a>
     </div>
       
-        <p class="site-subtitle"></p>
+        <p class="site-subtitle">JAVA</p>
       
   </div>
 
@@ -201,7 +201,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
-            Startseite
+            Home
           </a>
         </li>
       
@@ -211,7 +211,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
-            Archiv
+            Archives
           </a>
         </li>
       
@@ -254,16 +254,16 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/08/ConcurrentHashMap-01/">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/05/08/ConcurrentHashMap-01/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="John Doe">
+      <meta itemprop="name" content="XueCheng">
       <meta itemprop="description" content="">
       <meta itemprop="image" content="/images/avatar.gif">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
+      <meta itemprop="name" content="XueCheng Notes">
     </span>
 
     
@@ -281,7 +281,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-08T18:12:45+08:00">
                 2017-05-08
@@ -419,10 +419,10 @@
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/avatar.gif"
-               alt="John Doe" />
-          <p class="site-author-name" itemprop="name">John Doe</p>
+               alt="XueCheng" />
+          <p class="site-author-name" itemprop="name">XueCheng</p>
            
-              <p class="site-description motion-element" itemprop="description"></p>
+              <p class="site-description motion-element" itemprop="description">this is my first notes</p>
           
         </div>
         <nav class="site-state motion-element">
@@ -431,7 +431,7 @@
             <div class="site-state-item site-state-posts">
               <a href="/archives">
                 <span class="site-state-item-count">13</span>
-                <span class="site-state-item-name">Artikel</span>
+                <span class="site-state-item-name">posts</span>
               </a>
             </div>
           
@@ -480,12 +480,12 @@
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
-  <span class="author" itemprop="copyrightHolder">John Doe</span>
+  <span class="author" itemprop="copyrightHolder">XueCheng</span>
 </div>
 
 
 <div class="powered-by">
-  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
 </div>
 
 <div class="theme-info">
