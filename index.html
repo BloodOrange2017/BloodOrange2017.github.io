@@ -200,7 +200,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
-            Startseite
+            Home
           </a>
         </li>
       
@@ -210,7 +210,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
-            Archiv
+            Archives
           </a>
         </li>
       
@@ -282,7 +282,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2099-09-09T12:00:00+08:00">
                 2099-09-09
@@ -366,6 +366,119 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/05/11/lock-02/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="XueCheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XueCheng Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/05/11/lock-02/" itemprop="url">转载:synchronized和lock的实现原理</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-11T10:18:33+08:00">
+                2017-05-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <div id="article_content" class="article_content"><br><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>本文转载自<a href="http://wenku.baidu.com/view/41480552f01dc281e53af090.html?re=view" target="_blank" rel="external">http://wenku.baidu.com/view/41480552f01dc281e53af090.html?re=view</a></p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br><span style="line-height:28.8px">目前在Java中存在两种锁机制：synchronized和Lock，Lock接口及其实现类是JDK5增加的内容，其作者是大名鼎鼎的并发专家Doug Lea。本文并不比较synchronized与Lock孰优孰劣，只是介绍二者的实现原理。</span></p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>数据同步需要依赖锁，那锁的同步又依赖谁？synchronized给出的答案是在软件层面依赖JVM，而Lock给出的方案是在硬件层面依赖特殊的CPU指令，大家可能会进一步追问：JVM底层又是如何实现synchronized的？</p><br><h1 style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>一、synchronized的实现：</h1><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>synrhronized关键字简洁、清晰、语义明确，因此即使有了Lock接口，使用的还是非常广泛。其应用层的语义是可以把任何一个非null对象 作为&quot;锁&quot;，当synchronized作用在方法上时，锁住的便是对象实例（this）；当作用在静态方法时锁住的便是对象对应的Class实例，因为 Class数据存在于永久带，因此静态方法锁相当于该类的一个全局锁；当synchronized作用于某一个对象实例时，锁住的便是对应的代码块。在 HotSpot JVM实现中，锁有个专门的名字：对象监视器。&nbsp;</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br><span style="font-size:14px; font-family:Helvetica,Tahoma,Arial,sans-serif; line-height:25px; background-color:rgb(250,250,250)">在java虚拟机中，每个对象和类在逻辑上都是和一个监视器相关联的。&nbsp;</span><br style="font-size:14px; font-family:Helvetica,Tahoma,Arial,sans-serif; line-height:25px; background-color:rgb(250,250,250)"><br><span style="font-size:14px; font-family:Helvetica,Tahoma,Arial,sans-serif; line-height:25px; background-color:rgb(250,250,250)">对于对象来说，相关联的监视器保护对象的实例变量。&nbsp;</span><br style="font-size:14px; font-family:Helvetica,Tahoma,Arial,sans-serif; line-height:25px; background-color:rgb(250,250,250)"><br><span style="font-size:14px; font-family:Helvetica,Tahoma,Arial,sans-serif; line-height:25px; background-color:rgb(250,250,250)">对于类来说，监视器保护类的类变量。</span><br><br></p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br><span style="font-weight:700">1.&nbsp;</span><span style="font-weight:700">线程状态及状态转换</span></p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>当多个线程同时请求某个对象监视器时，对象监视器会设置几种状态用来区分请求的线程：</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>Contention List：所有请求锁的线程将被首先放置到该竞争队列</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>Entry List：Contention List中那些有资&#26684;成为候选人的线程被移到Entry List</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>Wait Set：那些调用wait方法被阻塞的线程被放置到Wait Set</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>OnDeck：任何时刻最多只能有一个线程正在竞争锁，该线程称为OnDeck</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>Owner：获得锁的线程称为Owner</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>!Owner：释放锁的线程</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>下图反映了个状态转换关系：</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br><img alt="JVM底层又是如何实现synchronized的" src="http://static.open-open.com/lib/uploadImg/20121109/20121109112521_220.jpg" width="656" height="288" style="border:0px; vertical-align:middle; max-width:100%"></p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>新请求锁的线程将首先被加入到ConetentionList中，当某个拥有锁的线程（Owner状态）调用unlock之后，如果发现 EntryList为空则从ContentionList中移动线程到EntryList，下面说明下ContentionList和EntryList 的实现方式：</p><br><span style="font-weight:700; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px; line-height:28.8px">1.1 ContentionList</span><span style="color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px; line-height:28.8px">&nbsp;</span><span style="font-weight:700; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px; line-height:28.8px">虚拟队列</span><span style="color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px; line-height:28.8px"></span><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>ContentionList并不是一个真正的Queue，而只是一个虚拟队列，原因在于ContentionList是由Node及其next指 针逻辑构成，并不存在一个Queue的数据结构。ContentionList是一个后进先出（LIFO）的队列，每次新加入Node时都会在队头进行， 通过CAS改变第一个节点的的指针为新增节点，同时设置新增节点的next指向后续节点，而取得操作则发生在队尾。显然，该结构其实是个Lock- Free的队列。</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>因为只有Owner线程才能从队尾取元素，也即线程出列操作无争用，当然也就避免了CAS的ABA问题。</p><br><img alt="JVM底层又是如何实现synchronized的" src="http://static.open-open.com/lib/uploadImg/20121109/20121109112521_981.jpg" width="597" height="217" style="border:0px; vertical-align:middle; max-width:100%; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px; line-height:28.8px"><span style="color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px; line-height:28.8px"></span><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br><span style="font-weight:700">1.2 EntryList</span></p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>EntryList与ContentionList逻辑上同属等待队列，ContentionList会被线程并发访问，为了降低对 ContentionList队尾的争用，而建立EntryList。Owner线程在unlock时会从ContentionList中迁移线程到 EntryList，并会指定EntryList中的某个线程（一般为Head）为Ready（OnDeck）线程。Owner线程并不是把锁传递给 OnDeck线程，只是把竞争锁的权利交给OnDeck，OnDeck线程需要重新竞争锁。这样做虽然牺牲了一定的公平性，但极大的提高了整体吞吐量，在<br> Hotspot中把OnDeck的选择行为称之为“竞争切换”。</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>OnDeck线程获得锁后即变为owner线程，无法获得锁则会依然留在EntryList中，考虑到公平性，在EntryList中的位置不 发生变化（依然在队头）。如果Owner线程被wait方法阻塞，则转移到WaitSet队列；如果在某个时刻被notify/notifyAll唤醒， 则再次转移到EntryList。</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br><span style="font-weight:700">2.&nbsp;</span><span style="font-weight:700">自旋锁</span></p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>那些处于ContetionList、EntryList、WaitSet中的线程均处于阻塞状态，阻塞操作由操作系统完成（在Linxu下通 过pthread_mutex_lock函数）。线程被阻塞后便进入内核（Linux）调度状态，这个会导致系统在用户态与内核态之间来回切换，严重影响 锁的性能</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>缓解上述问题的办法便是自旋，其原理是：当发生争用时，若Owner线程能在很短的时间内释放锁，则那些正在争用线程可以稍微等一等（自旋）， 在Owner线程释放锁后，争用线程可能会立即得到锁，从而避免了系统阻塞。但Owner运行的时间可能会超出了临界&#20540;，争用线程自旋一段时间后还是无法 获得锁，这时争用线程则会停止自旋进入阻塞状态（后退）。基本思路就是自旋，不成功再阻塞，尽量降低阻塞的可能性，这对那些执行时间很短的代码块来说有非 常重要的性能提高。自旋锁有个更贴切的名字：自旋-指数后退锁，也即复合锁。很显然，自旋在多处理器上才有意义。</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>还有个问题是，线程自旋时做些啥？其实啥都不做，可以执行几次for循环，可以执行几条空的汇编指令，目的是占着CPU不放，等待获取锁的机 会。所以说，自旋是把双刃剑，如果旋的时间过长会影响整体性能，时间过短又达不到延迟阻塞的目的。显然，自旋的周期选择显得非常重要，但这与操作系统、硬 件体系、系统的负载等诸多场景相关，很难选择，如果选择不当，不但性能得不到提高，可能还会下降，因此大家普遍认为自旋锁不具有扩展性。</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>自旋优化策略</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>对自旋锁周期的选择上，HotSpot认为最佳时间应是一个线程上下文切换的时间，但目前并没有做到。经过调查，目前只是通过汇编暂停了几个CPU周期，除了自旋周期选择，HotSpot还进行许多其他的自旋优化策略，具体如下：</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>如果平均负载小于CPUs则一直自旋</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>如果有超过(CPUs/2)个线程正在自旋，则后来线程直接阻塞</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>如果正在自旋的线程发现Owner发生了变化则延迟自旋时间（自旋计数）或进入阻塞</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>如果CPU处于节电模式则停止自旋</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>自旋时间的最坏情况是CPU的存储延迟（CPU A存储了一个数据，到CPU B得知这个数据直接的时间差）</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>自旋时会适当放弃线程优先级之间的差异</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>那synchronized实现何时使用了自旋锁？答案是在线程进入ContentionList时，也即第一步操作前。线程在进入等待队列时 首先进行自旋尝试获得锁，如果不成功再进入等待队列。这对那些已经在等待队列中的线程来说，稍微显得不公平。还有一个不公平的地方是自旋线程可能会抢占了 Ready线程的锁。自旋锁由每个监视对象维护，每个监视对象一个。</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br><span style="font-weight:700">3. JVM1.6</span><span style="font-weight:700">偏向锁</span></p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>在JVM1.6中引入了偏向锁，偏向锁主要解决无竞争下的锁性能问题，首先我们看下无竞争下锁存在什么问题：</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>现在几乎所有的锁都是可重入的，也即已经获得锁的线程可以多次锁住/解锁监视对象，按照之前的HotSpot设计，每次加锁/解锁都会涉及到一些CAS操 作（比如对等待队列的CAS操作），CAS操作会延迟本地调用，因此偏向锁的想法是一旦线程第一次获得了监视对象，之后让监视对象“偏向”这个 线程，之后的多次调用则可以避免CAS操作，说白了就是置个变量，如果发现为true则无需再走各种加锁/解锁流程。但还有很多概念需要解释、很多引入的 问题需要解决：</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br><span style="font-weight:700">3.1 CAS</span><span style="font-weight:700">及</span><span style="font-weight:700">SMP</span><span style="font-weight:700">架构</span></p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>CAS为什么会引入本地延迟？这要从SMP（对称多处理器）架构说起，下图大概表明了SMP的结构：</p><br><img alt="JVM底层又是如何实现synchronized的" src="http://static.open-open.com/lib/uploadImg/20121109/20121109112521_777.jpg" width="544" height="220" style="border:0px; vertical-align:middle; max-width:100%; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px; line-height:28.8px"><span style="color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px; line-height:28.8px"></span><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>其意思是所有的CPU会共享一条系统总线（BUS），靠此总线连接主存。每个核都有自己的一级缓存，各核相对于BUS对称分布，因此这种结构称为“对称多处理器”。</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>而CAS的全称为Compare-And-Swap，是一条CPU的原子指令，其作用是让CPU比较后原子地更新某个位置的&#20540;，经过调查发现， 其实现方式是基于硬件平台的汇编指令，就是说CAS是靠硬件实现的，JVM只是封装了汇编调用，那些AtomicInteger类便是使用了这些封装后的 接口。</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>Core1和Core2可能会同时把主存中某个位置的&#20540;Load到自己的L1 Cache中，当Core1在自己的L1 Cache中修改这个位置的&#20540;时，会通过总线，使Core2中L1 Cache对应的&#20540;“失效”，而Core2一旦发现自己L1 Cache中的&#20540;失效（称为Cache命中缺失）则会通过总线从内存中加载该地址最新的&#20540;，大家通过总线的来回通信称为“Cache一致性流量”，因为总 线被设计为固定的“通信能力”，如果Cache一致性流量过大，总线将成为瓶颈。而当Core1和Core2中的&#20540;再次一致时，称为“Cache一致<br> 性”，从这个层面来说，锁设计的终极目标便是减少Cache一致性流量。</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>而CAS恰好会导致Cache一致性流量，如果有很多线程都共享同一个对象，当某个Core CAS成功时必然会引起总线风暴，这就是所谓的本地延迟，本质上偏向锁就是为了消除CAS，降低Cache一致性流量。</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br><span style="font-weight:700">Cache</span><span style="font-weight:700">一致性：</span></p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>上面提到Cache一致性，其实是有协议支持的，现在通用的协议是MESI（最早由Intel开始支持），具体参考：<a target="_blank" href="http://en.wikipedia.org/wiki/MESI_protocol" rel="nofollow" style="color:rgb(0,95,169); text-decoration:none; background-color:transparent">http://en.wikipedia.org/wiki/MESI_protocol</a>，以后会仔细讲解这部分。</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br><span style="font-weight:700">Cache</span><span style="font-weight:700">一致性流量的例外情况：</span></p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>其实也不是所有的CAS都会导致总线风暴，这跟Cache一致性协议有关，具体参考：<a target="_blank" href="http://blogs.oracle.com/dave/entry/biased_locking_in_hotspot" rel="nofollow" style="color:rgb(0,95,169); text-decoration:none; background-color:transparent">http://blogs.oracle.com/dave/entry/biased_locking_in_hotspot</a></p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>NUMA(Non Uniform Memory Access Achitecture）架构：</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>与SMP对应还有非对称多处理器架构，现在主要应用在一些高端处理器上，主要特点是没有总线，没有公用主存，每个Core有自己的内存，针对这种结构此处不做讨论。</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br><span style="font-weight:700">3.2&nbsp;</span><span style="font-weight:700">偏向解除</span></p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>偏向锁引入的一个重要问题是，在多争用的场景下，如果另外一个线程争用偏向对象，拥有者需要释放偏向锁，而释放的过程会带来一些性能开销，但总体说来偏向锁带来的好处还是大于CAS代价的。</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br><span style="font-weight:700">4.&nbsp;</span><span style="font-weight:700">总结</span></p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>关于锁，JVM中还引入了一些其他技术比如锁膨胀等，这些与自旋锁、偏向锁相比影响不是很大，这里就不做介绍。</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>通过上面的介绍可以看出，synchronized的底层实现主要依靠Lock-Free的队列，基本思路是自旋后阻塞，竞争切换后继续竞争锁，稍微牺牲了公平性，但获得了高吞吐量。</p><br><h1>二、lock的实现</h1><br><div>前文（深入JVM锁机制-synchronized）分析了JVM中的synchronized实现，本文继续分析JVM中的另一种锁Lock的实现。与synchronized不同的是，Lock完全用Java写成，在java这个层面是无关JVM实现的。&nbsp;<br><br>在 java.util.concurrent.locks包中有很多Lock的实现类，常用的有ReentrantLock、 ReadWriteLock（实现类ReentrantReadWriteLock），其实现都依赖 java.util.concurrent.AbstractQueuedSynchronizer类，实现思路都大同小异，因此我们以 ReentrantLock作为讲解切入点。<br><br></div><br><div><br><br></div><br><div>1、ReentrantLock的调用过程</div><br><div>经过观察ReentrantLock把所有Lock接口的操作都委派到一个Sync类上，该类继承了AbstractQueuedSynchronizer：&nbsp;<br><br>static abstract class Sync extends AbstractQueuedSynchronizer&nbsp;</div><br><div>Sync又有两个子类：<br><br>final static class NonfairSync extends Sync &nbsp; view plain&nbsp;<br><br>final static class FairSync extends Sync &nbsp;&nbsp;<br><br>显然是为了支持公平锁和非公平锁而定义，默认情况下为非公平锁。<br><br></div><br><p><img src="http://img.blog.csdn.net/20160816130147073?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br><br></p><br><p>其实通过上面调用过程及AbstractQueuedSynchronizer的注释可以发现，AbstractQueuedSynchronizer中抽象了绝大多数Lock的功能，而只把tryAcquire方法延迟到子类中实现。 tryAcquire方法的语义在于用具体子类判断请求线程是否可以获得锁，无论成功与否AbstractQueuedSynchronizer都将处理后面的流程。<br><br></p><br><p>2、锁实现</p><br><p>简单说来，AbstractQueuedSynchronizer会把所有的请求线程构成一个CLH队列，当一个线程执行完毕（lock.unlock()）时会激活自己的后继节点，但正在执行的线程并不在队列中，而那些等待执行的线程全 部处于阻塞状态，经过调查线程的显式阻塞是通过调用LockSupport.park()完成，而LockSupport.park()则调用 sun.misc.Unsafe.park()本地方法，再进一步，HotSpot在Linux中中通过调用pthread_mutex_lock函数把<br> 线程交给系统内核进行阻塞。<br><br></p><br><p><img src="http://img.blog.csdn.net/20160816130836911?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br><br></p><br><p>与synchronized相同的是，这也是一个虚拟队列，不存在队列实例，仅存在节点之间的前后关系。令人疑惑的是为什么采用CLH队列呢？原生的CLH队列是用于自旋锁，但Doug Lea把其改造为阻塞锁。&nbsp;<br><br>当有线程竞争锁时，该线程会首先尝试获得锁，这对于那些已经在队列中排队的线程来说显得不公平，这也是非公平锁的由来，与synchronized实现类&#20284;，这样会极大提高吞吐量。&nbsp;如果已经存在Running线程，则新的竞争线程会被追加到队尾，具体是采用基于CAS的Lock-Free算法，因为线程并发对Tail调用CAS可能会 导致其他线程CAS失败，解决办法是循环CAS直至成功。<br><br></p><br><p><br><br></p><br><p>AbstractQueuedSynchronizer通过构造一个基于阻塞的CLH队列容纳所有的阻塞线程，而对该队列的操作均通过Lock-Free（CAS）操作，但对已经获得锁的线程而言，ReentrantLock实现了偏向锁的功能。&nbsp;<br><br>synchronized 的底层也是一个基于CAS操作的等待队列，但JVM实现的更精细，把等待队列分为ContentionList和EntryList，目的是为了降低线程的出列速度；当然也实现了偏向锁，从数据结构来说二者设计没有本质区别。但synchronized还实现了自旋锁，并针对不同的系统和硬件体系进行了优 化，而Lock则完全依靠系统阻塞挂起等待线程。&nbsp;<br><br>当然Lock比synchronized更适合在应用层扩展，可以继承 AbstractQueuedSynchronizer定义各种实现，比如实现读写锁（ReadWriteLock），公平或不公平锁；同时，Lock对 应的Condition也比wait/notify要方便的多、灵活的多。<br><br></p><br><br></div>
+
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/05/10/lock-01/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -395,7 +508,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-10T18:54:50+08:00">
                 2017-05-10
@@ -508,7 +621,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-10T09:46:50+08:00">
                 2017-05-10
@@ -645,7 +758,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-09T18:27:23+08:00">
                 2017-05-09
@@ -759,7 +872,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-09T15:51:17+08:00">
                 2017-05-09
@@ -873,7 +986,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-09T14:28:36+08:00">
                 2017-05-09
@@ -913,143 +1026,6 @@
         
           
             <div id="blog_content" class="blog_content"><br>    <div class="blog_content" style="text-align: left;"><br><p><span style="font-size: medium;">       SQL标准定义了4类隔离级别，包括了一些具体规则，用来限定事务内外的哪些改变是可见的，哪些是不可见的。低级别的隔离级一般支持更高的并发处理，并拥有更低的系统开销。<br><strong>Read Uncommitted（读取未提交内容）</strong><br></span><br></p><br><p><span style="font-size: medium;">       在该隔离级别，所有事务都可以看到其他未提交事务的执行结果。本隔离级别很少用于实际应用，因为它的性能也不比其他级别好多少。读取未提交的数据，也被称之为脏读（Dirty Read）。<br><strong>Read Committed（读取提交内容）</strong><br></span><br></p><br><p><span style="font-size: medium;">       这是大多数数据库系统的默认隔离级别（但不是MySQL默认的）。它满足了隔离的简单定义：一个事务只能看见已经提交事务所做的改变。这种隔离级别<br>也支持所谓的不可重复读（Nonrepeatable<br>Read），因为同一事务的其他实例在该实例处理其间可能会有新的commit，所以同一select可能返回不同结果。<br><strong>Repeatable Read（可重读）</strong><br></span><br></p><br><p><span style="font-size: medium;">       这是MySQL的默认事务隔离级别，它确保同一事务的多个实例在并发读取数据时，会看到同样的数据行。不过理论上，这会导致另一个棘手的问题：幻读<br>（Phantom<br>Read）。简单的说，幻读指当用户读取某一范围的数据行时，另一个事务又在该范围内插入了新行，当用户再读取该范围的数据行时，会发现有新的“幻影”<br>行。InnoDB和Falcon存储引擎通过多版本并发控制（MVCC，Multiversion Concurrency<br>Control）机制解决了该问题。</span><br></p><br><p><span style="font-size: medium;"><strong>Serializable（可串行化）</strong><br><br><br>       这是最高的隔离级别，它通过强制事务排序，使之不可能相互冲突，从而解决幻读问题。简言之，它是在每个读的数据行上加上共享锁。在这个级别，可能导致大量的超时现象和锁竞争。</span><br></p><br><p>         <span style="font-size: medium;">这四种隔离级别采取不同的锁类型来实现，若读取的是同一个数据的话，就容易发生问题。例如：</span><br></p><br><p>      <span style="font-size: medium;">   脏读(Drity Read)：某个事务已更新一份数据，另一个事务在此时读取了同一份数据，由于某些原因，前一个RollBack了操作，则后一个事务所读取的数据就会是不正确的。</span><br></p><br><p>         <span style="font-size: medium;">不可重复读(Non-repeatable read):在一个事务的两次查询之中数据不一致，这可能是两次查询过程中间插入了一个事务更新的原有的数据。</span><br></p><br><p><span style="font-size: medium;">         幻读(Phantom Read):在一个事务的两次查询中数据笔数不一致，例如有一个事务查询了几列(Row)数据，而另一个事务却在此时插入了新的几列数据，先前的事务在接下来的查询中，就会发现有几列数据是它先前所没有的。</span><br></p><br><p>         在MySQL中，实现了这四种隔离级别，分别有可能产生问题如下所示：</p><br><p style="text-align: center;"><img alt="" height="267" style="vertical-align: middle;" width="838" src="http://dl.iteye.com/upload/picture/pic/72610/af5b9c1e-4517-3df2-ad62-af25d1672d12.jpg"></p><br><p><span style="font-size: medium;"><br></span><br></p><br><p><span style="font-size: medium;">下面，将利用MySQL的客户端程序，分别测试几种隔离级别。测试数据库为test，表为tx；表结构：</span><br></p><br><table border="0" style="height: 50px;" width="440"><br><tr><br><td style="text-align: center;"><br><span style="font-size: medium;">id</span><br></td><br><td><br><span style="font-size: medium;">                              int</span><br></td><br></tr><br><tr><br><td><br><p style="text-align: center;"><span style="font-size: medium;">num</span><br></p><br></td><br><td><br><span style="font-size: medium;">                              int</span><br></td><br></tr><br></table><br><p><span style="font-size: medium;">两个命令行客户端分别为A，B；不断改变A的隔离级别，在B端修改数据。</span><br></p><br><p><span style="font-size: medium;"><strong><span>（一）、将A的隔离级别设置为read uncommitted(未提交读)</span><br></strong><br></span><br></p><br><p><span style="font-size: medium;"> 在B未更新数据之前：</span><br><br></p><br><p><strong><span style="font-size: medium;">客户端A：</span><br></strong><br><img alt="" height="379" width="645" src="http://dl.iteye.com/upload/picture/pic/72618/1ca8ec0d-3b6c-3ae1-babc-5dd541c4d1a4.jpg"></p><br><p> <span style="font-size: medium;">B更新数据：</span><br><br></p><br><p><strong><span style="font-size: medium;">客户端B：</span><br></strong><br></p><br><p><img alt="" height="397" width="640" src="http://dl.iteye.com/upload/picture/pic/72620/b37214c3-7726-3306-95ee-1b2fae5ccd6c.jpg"></p><br><p><strong><span style="font-size: medium;">客户端A：</span><br></strong><br></p><br><p style="text-align: left;"><img alt="" height="481" width="640" src="http://dl.iteye.com/upload/picture/pic/72622/200d9c94-197a-3fe5-8925-3411cd88555e.jpg"></p><br><p>    <span style="font-size: medium;">    经过上面的实验可以得出结论，事务B更新了一条记录，但是没有提交，此时事务A可以查询出未提交记录。造成脏读现象。未提交读是最低的隔离级别。</span><br></p><br><p><strong><span style="font-size: medium;">（二）、将客户端A的事务隔离级别设置为read committed(已提交读)</span><br></strong><br></p><br><p><span style="font-size: medium;"> 在B未更新数据之前：</span><br><br></p><br><strong><span style="font-size: medium;">客户端A：</span><br></strong><br><p><a class="underline" href="/upload/picture/pic/72626/ae414e52-c216-3bbb-b005-0d972f593456.jpg"><img alt="" height="351" width="644" src="http://dl.iteye.com/upload/picture/pic/72626/ae414e52-c216-3bbb-b005-0d972f593456.jpg"></a><br></p><br><p> <span style="font-size: medium;">B更新数据：</span><br><br></p><br><p><strong><span style="font-size: medium;">客户端B：</span><br></strong><br></p><br><p><img alt="" height="313" width="641" src="http://dl.iteye.com/upload/picture/pic/72628/12051f3d-c01e-34b3-a6b6-8b71e1b1dcc8.jpg"></p><br><p><strong><span style="font-size: medium;">客户端A：</span><br></strong><br></p><br><p><img alt="" height="351" width="642" src="http://dl.iteye.com/upload/picture/pic/72630/cc80744e-eb9f-3104-bb24-2218e9986d78.jpg"></p><br><p><span style="font-size: medium;">       经过上面的实验可以得出结论，已提交读隔离级别解决了脏读的问题，但是出现了不可重复读的问题，即事务A在两次查询的数据不一致，因为在两次查询之间事务B更新了一条数据。已提交读只允许读取已提交的记录，但不要求可重复读。</span><br></p><br><p>(三)、<span style="font-size: medium;"><strong><span>将A的隔离级别设置为repeatable read(可重复读)</span><br></strong><br></span><br></p><br><p><span style="font-size: medium;"> 在B未更新数据之前：</span><br><br></p><br><div class="blog_content" style="text-align: left;"><br><strong><span style="font-size: medium;">客户端A：</span><br></strong><br></div><br><div class="blog_content" style="text-align: left;"><img alt="" height="319" width="643" src="http://dl.iteye.com/upload/picture/pic/72632/0bf52be3-e873-3f3f-8d56-d703a8f678ab.jpg"></div><br><p> <span style="font-size: medium;">B更新数据：</span><br><br></p><br><p><strong><span style="font-size: medium;">客户端B：</span><br></strong><br></p><br><p><img alt="" height="333" width="645" src="http://dl.iteye.com/upload/picture/pic/72634/e58d1814-bdca-3313-bcf5-339e3678536a.jpg"></p><br><p><strong><span style="font-size: medium;">客户端A：</span><br></strong><br></p><br><p><img alt="" height="497" width="640" src="http://dl.iteye.com/upload/picture/pic/72636/83bfe583-2d57-345a-917e-4ee163235b62.jpg"></p><br><p><span style="font-size: medium;">B插入数据：</span><br></p><br><p><strong><span style="font-size: medium;">客户端B：</span><br></strong><br></p><br><p><img alt="" height="366" width="641" src="http://dl.iteye.com/upload/picture/pic/72638/192348aa-4fa5-3d5f-a4f9-4660ddd725cd.jpg"></p><br><p><strong><span style="font-size: medium;">客户端A：</span><br></strong><br></p><br><p><img alt="" height="351" width="641" src="http://dl.iteye.com/upload/picture/pic/72640/4398c5b1-434c-3380-ba19-060154cf2070.jpg"></p><br><p><span style="font-size: medium;">       由以上的实验可以得出结论，可重复读隔离级别只允许读取已提交记录，而且在一个事务两次读取一个记录期间，其他事务部的更新该记录。但该事务不要求与其他事务可串行化。例如，当一个事务可以找到由一个已提交事务更新的记录，但是可能产生幻读问题(注意是可能，因为数据库对隔离级别的实现有所差别)。像以上的实验，就没有出现数据幻读的问题。</span><br></p><br><p>(<strong>四)、<span style="font-size: medium;"><strong><span>将A的隔离级别设<span style="font-size: medium;">置为</span><br></span><br></strong><br></span><br><span style="font-size: medium;"><span><span style="font-size: medium;">可串行化</span><br><span style="font-size: medium;">(Serializable)</span><br></span><br></span><br></strong><br></p><br><p><strong><span style="font-size: medium;">A端打开事务，B端插入一条记录</span><br></strong><br></p><br><p><strong><span style="font-size: medium;">事务A端：</span><br></strong><br></p><br><p><img alt="" height="234" width="639" src="http://dl.iteye.com/upload/picture/pic/72642/c604c5ce-311d-3923-8dcd-36b0188f4f31.jpg"></p><br><p><strong><span style="font-size: medium;">事务B端：</span><br></strong><br></p><br><p><img alt="" height="141" width="640" src="http://dl.iteye.com/upload/picture/pic/72644/c488f9d9-7da2-3e6d-9a82-2b92d1051afd.jpg"></p><br><p><span style="font-size: medium;">因为此时事务A的隔离级别设置为serializable，开始事务后，并没有提交，所以事务B只能等待。</span><br></p><br><p><strong><span style="font-size: medium;">事务A提交事务：</span><br></strong><br></p><br><p><strong><span style="font-size: medium;">事务A端</span><br></strong><br></p><br><p><img alt="" height="73" width="639" src="http://dl.iteye.com/upload/picture/pic/72646/322ed59a-b2b9-338c-a2f0-09c9b7707577.jpg"></p><br><p><strong><span style="font-size: medium;">事务B端</span><br></strong><br></p><br><p><img alt="" height="47" width="644" src="http://dl.iteye.com/upload/picture/pic/72648/8e60e19b-09af-31a7-b8d3-8e638bbf177c.jpg"></p><br><p><span style="font-size: medium;">      </span><br></p><br><p>         <span style="font-size: medium;">serializable完全锁定字段，若一个事务来查询同一份数据就必须等待，直到前一个事务完成并解除锁定为止</span><br>。<span style="font-size: medium;">是完整的隔离级别，会锁定对应的数据表格，因而会有效率的问题。</span><br></p><br></div><br>  </div>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/05/09/nio-01/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="XueCheng">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="XueCheng Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/05/09/nio-01/" itemprop="url">转载：Java NIO 系列教程</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Veröffentlicht am</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-09T11:37:45+08:00">
-                2017-05-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p></p><p>Java NIO(New IO)是一个可以替代标准Java IO API的IO API（从Java 1.4开始)，Java NIO提供了与标准IO不同的IO工作方式。</p><p></p>
-<p></p><p><strong>Java NIO: Channels and Buffers（通道和缓冲区）</strong></p><p></p>
-<p></p><p>标准的IO基于字节流和字符流进行操作的，而NIO是基于通道（Channel）和缓冲区（Buffer）进行操作，数据总是从通道读取到缓冲区中，或者从缓冲区写入到通道中。</p><p></p>
-<p></p><p><strong>Java NIO: Non-blocking IO（非阻塞IO）</strong></p><p></p>
-<p></p><p>Java NIO可以让你非阻塞的使用IO，例如：当线程从通道读取数据到缓冲区时，线程还是可以进行其他事情。当数据被写入到缓冲区时，线程可以继续处理它。从缓冲区写入通道也类似。</p><p></p>
-<p></p><p><strong>Java NIO: Selectors（选择器）</strong></p><p></p>
-<p></p><p>Java NIO引入了选择器的概念，选择器用于监听多个通道的事件（比如：连接打开，数据到达）。因此，单个的线程可以监听多个数据通道。<br><br>下面是Java NIO系列文章的目录：<a href="http://tutorials.jenkov.com/java-nio/index.html" target="_blank" rel="external">Java NIO Tutorial</a></p><p></p>
-<p><ol></ol></p>
-<p><li><a href="http://tutorials.jenkov.com/java-nio/index.html" target="_blank">Java NIO 教程</a></li></p>
-<p><li><a href="http://ifeve.com/overview/" target="_blank">Java NIO概述</a></li></p>
-<p><li><a href="http://ifeve.com/channels/" target="_blank" rel="external">Java NIO Channel</a></li></p>
-<p><li><a href="http://ifeve.com/buffers/" target="_blank" rel="external">Java NIO Buffer</a></li></p>
-<p><li><a href="http://ifeve.com/java-nio-scattergather/" target="_blank" rel="external">Java NIO Scatter / Gather</a></li></p>
-<p><li><a href="http://ifeve.com/java-nio-channel-to-channel/" target="_blank" rel="external">Java NIO 通道之间的数据传输</a></li></p>
-<p><li><a href="http://ifeve.com/selectors/" target="_blank" rel="external">Java NIO Selector</a></li></p>
-<p><li><a href="http://ifeve.com/file-channel/" target="_blank" rel="external">Java NIO FileChannel</a></li></p>
-<p><li><a href="http://ifeve.com/socket-channel/" target="_blank" rel="external">Java NIO SocketChannel</a></li></p>
-<p><li><a href="http://ifeve.com/server-socket-channel/" target="_blank">Java NIO ServerSocketChannel</a></li></p>
-<p><li><a href="http://ifeve.com/non-blocking-server/" target="_blank"><b>Java NIO 非阻塞式服务器</b></a></li></p>
-<p><li><a href="http://ifeve.com/datagram-channel/" target="_blank" rel="external">Java NIO DataGramChannel</a></li></p>
-<p><li><a href="http://ifeve.com/pipe/" target="_blank" rel="external">Java NIO Pipe</a></li></p>
-<p><li><a href="http://ifeve.com/java-nio-vs-io/" target="_blank" rel="external">Java NIO 与IO</a></li></p>
-<p><li><a href="http://tutorials.jenkov.com/java-nio/path.html" target="_blank" rel="external">Java NIO Path</a> （待翻译）</li></p>
-<p><li><a href="http://tutorials.jenkov.com/java-nio/files.html" target="_blank" rel="external">Java NIO Files</a> （待翻译）</li></p>
-<p><li><a href="http://tutorials.jenkov.com/java-nio/asynchronousfilechannel.html" target="_blank" rel="external">Java NIO AsynchronousFileChannel</a> （待翻译）</li><br></p>
-<div style="margin-top: 15px; font-style: italic"><br><p><strong>原创文章，转载请注明：</strong> 转载自<a href="http://ifeve.com/" target="_blank" rel="external">并发编程网 &#8211; ifeve.com</a><strong>本文链接地址:</strong> <a href="http://ifeve.com/java-nio-all/" target="_blank" rel="external">Java NIO 系列教程</a></p><br></div>
 
           
         
@@ -1133,8 +1109,8 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">15</span>
-                <span class="site-state-item-name">Artikel</span>
+                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-name">posts</span>
               </a>
             </div>
           
@@ -1188,7 +1164,7 @@
 
 
 <div class="powered-by">
-  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
 </div>
 
 <div class="theme-info">
