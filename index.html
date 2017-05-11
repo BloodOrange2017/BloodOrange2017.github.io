@@ -200,7 +200,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
-            Home
+            Startseite
           </a>
         </li>
       
@@ -210,7 +210,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
-            Archives
+            Archiv
           </a>
         </li>
       
@@ -282,7 +282,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2099-09-09T12:00:00+08:00">
                 2099-09-09
@@ -366,6 +366,119 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/05/11/restful-01/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="XueCheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XueCheng Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/05/11/restful-01/" itemprop="url">转载:RESTful 接口规范</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-11T11:52:43+08:00">
+                2017-05-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <div id="cnblogs_post_body"><p>原文地址：<a href="http://www.coderli.com/translate-restful-standard-resolved" target="_blank" rel="external">http://www.coderli.com/translate-restful-standard-resolved</a></p><br><p>&nbsp;</p><br><p><a href="http://www.coder.com/" target="_blank" rel="external">OneCoder</a>最近一直在使用Restful API，最近正好看到一篇自定义restful接口规范的&ldquo;抛砖引玉&rdquo;得的文章，索性翻译一下，与大家分享。</p><br><div>原文地址：<a href="http://java.dzone.com/articles/restful-standard-resolved" target="_blank" rel="external">http://java.dzone.com/articles/restful-standard-resolved</a>&nbsp;&nbsp;</div><br><div>&nbsp;</div><br><div>最近，我正在使用RESTfull的方式构建一个web服务。尽管现在有很多的一般的指导和提示告诉你如何定义restful接口，但是却没有一个明确的标准或大家都接受的schema定义去遵循。</div><br><div>&nbsp;</div><br><div>在网上获取了一些信息后，我打算打破这一局面：）我打算分享一下我定义的规则和结构，并且很希望能得到一些反馈来帮助我完善这个规则，所以，不要犹豫，请毫无留情给我指出错误和毛病吧。</div><br><div>&nbsp;</div><br><div>高级别的模式是：</div><br><div>http(s)://server.com/app-name/{version}/{domain}/{rest-convention}</div><br><div>&nbsp;</div><br><div>这里，{version}代表api的版本信息。{domain}是一个你可以用来定义任何技术的区域(例如：安全-允许指定的用户可以访问这个区域。)或者业务上的原因。(例如：同样的功能在同一个前缀之下。)</div><br><div>&nbsp;</div><br><div>{rest-convention} 代表这个域(domain)下，约定的rest接口集合。</div><br><div>&nbsp;</div><br><div><strong>单资源(&nbsp;singular-resourceX&nbsp;)</strong></div><br><div>url样例：order/&nbsp; (order即指那个单独的资源X)</div><br><ul><br><li>GET &ndash; 返回一个新的order</li><br><li>POST- 创建一个新的order，从post请求携带的内容获取值。</li><br></ul><br><div>&nbsp;</div><br><div><strong>单资源带id(singular-resourceX/{id}&nbsp;)</strong></div><br><div>URL样例：order/1 ( order即指那个单独的资源X&nbsp;)</div><br><ul><br><li>GET &ndash; 返回id是1的order</li><br><li>DELETE &ndash; 删除id是1的order</li><br><li>PUT &ndash; 更新id是1的order，order的值从请求的内容体中获取。</li><br></ul><br><div>&nbsp;</div><br><div><strong>复数资源(plural-resourceX/)</strong></div><br><div>URL样例:orders/</div><br><ul><br><li>GET &ndash; 返回所有orders</li><br></ul><br><div>&nbsp;</div><br><div><strong>复数资源查找(plural-resourceX/search)</strong></div><br><div>URL样例：orders/search?name=123</div><br><ul><br><li>GET &ndash; 返回所有满足查询条件的order资源。(实例查询，无关联) &ndash; order名字等于123的。</li><br></ul><br><div>&nbsp;</div><br><div><strong>复数资源查找(plural-resourceX/searchByXXX)</strong></div><br><div>URL样例：orders/searchByItems?name=ipad</div><br><ul><br><li>GET &ndash; 将返回所有满足自定义查询的orders &ndash; 获取所有与items名字是ipad相关联的orders。</li><br></ul><br><div>&nbsp;</div><br><div><strong>单数资源(singular-resourceX/{id}/pluralY)</strong></div><br><div>URL样例：order/1/items/ (这里order即为资源X，items是复数资源Y)</div><br><ul><br><li>GET &ndash; 将返回所有与order id 是1关联的items。</li><br></ul><br><div>&nbsp;</div><br><div><strong>singular-resourceX/{id}/singular-resourceY/</strong></div><br><div>URL样例：order/1/item/</div><br><ul><br><li>GET &ndash; 返回一个瞬时的新的与order id是1关联的item实例。</li><br><li>POST &ndash; 创建一个与order id 是1关联的item实例。Item的值从post请求体中获取。</li><br></ul><br><div>&nbsp;</div><br><div><strong>singular-resourceX/{id}/singular-resourceY/{id}/singular-resourceZ/</strong></div><br><div>URL样例：order/1/item/2/package/</div><br><ul><br><li>GET &ndash; 返回一个瞬时的新的与item2和order1关联的package实例。</li><br><li>POST &ndash; 创建一个新的与item 2和order1关联的package实例，package的值从post请求体中获得。</li><br></ul><br><div>&nbsp;</div><br><div>上面的规则可以在继续递归下去，并且复数资源后面永远不会再跟随负数资源。</div><br><div>总结几个关键点，来更清晰的表述规则。</div><br><div><br><ul><br><li>在使用复数资源的时候，返回的是最后一个复数资源使用的实例。</li><br><li>在使用单个资源的时候，返回的是最后一个但是资源使用的实例。</li><br><li>查询的时候，返回的是最后一个复数实体使用的实例(们)。</li><br></ul><br></div><br><div>希望你的关注能帮助我完整这个结构并解决你可能偶然遇到的问题。</div><br><div>&nbsp;</div><br><div>在下一篇文章里，在这个结构完善之后，我将会一些技术上的样例如何在Spring MVC3.1中，使用它。</div></div><div id="MySignature"></div><br><div class="clear"></div><br><div id="blog_post_info_block"><br><div id="BlogPostCategory"></div><br><div id="EntryTag"></div><br><div id="blog_post_info"><br></div><br><div class="clear"></div><br><div id="post_next_prev"></div><br></div>
+
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/05/11/lock-02/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -395,7 +508,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-11T10:18:33+08:00">
                 2017-05-11
@@ -508,7 +621,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-10T18:54:50+08:00">
                 2017-05-10
@@ -621,7 +734,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-10T09:46:50+08:00">
                 2017-05-10
@@ -758,7 +871,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-09T18:27:23+08:00">
                 2017-05-09
@@ -872,7 +985,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-09T15:51:17+08:00">
                 2017-05-09
@@ -914,118 +1027,6 @@
             <div id="article_content" class="article_content"><br>    <h1>一．mysql体系结构和存储引擎</h1><br>    <h2>1.1、数据库和实例的区别</h2><br>    <p></p><br>    <p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>数据库：物理操作系统或其他形式文件类型的集合。在mysql下数据库文件可以是frm，myd，myi，ibd结尾的文件。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 数据库实例：由数据库后台进程/线程以及一个共享内存区组成。数据库实例才是真正用来操作数据库文件的。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mysql数据库是单进程多线程的程序，与sql server比较类&#20284;。也就是说，Mysql数据库实例在系统上的表现就是一个进程。</p><br>    <h2>1.2、mysql的体系结构</h2><br>    <p style="text-align:center"><strong><img src="http://img.my.csdn.net/uploads/201212/07/1354848770_3087.jpg" alt=""><br><br>    </strong></p><br>    <p></p><br>    <p>mysql由连接池组件、管理服务和工具组件、sql接口组建、查询分析器组件、优化器组件、缓存组件、插件是存储引擎、物理文件。</p><br>    <h2>1.3、mysql存储引擎</h2><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.3.1、innodb存储引擎，特点支持外键、行锁、非锁定读(默认情况下读取不会产生锁)、mysql-4.1开始支持每个innodb引擎的表单独放到一个表空间里。innodb通过使用MVCC来获取高并发性，并且实现sql标准的4种隔离级别，同时使用一种被称成next-key locking的策略来避免换读(phantom)现象。除此之外innodb引擎还提供了插入缓存(insert buffer)、二次写(double write)、自适应哈西索引(adaptive hash index)、预读(read<br>    ahead)等高性能技术。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.3.2、myisam存储引擎，myisam特点是不支持事物，适合olap应用，myisam表由MYD和MYI组成。mysql-5.0版本之前，myisam默认支持的表大小为4G，从mysql-5.0以后，myisam默认支持256T的表单数据。myisam只缓存索引数据。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.3.3、NDB存储引擎，特点是数据放在内存中，mysql-5.1版本开始可以将非索引数据放到磁盘上。NDB之前的缺陷是join查询是mysql数据库层完成的，而不是存储引擎完成的，复杂的join查询需要巨大的网络开销，速度很慢。当前mysql cluster7.2版本中已经解决此问题，join查询效率提高了70倍。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.3.4、memeory存储引擎，将数据放到内存中，默认使用hash索引，不支持text和blob类型，varchara是按照char的方式来存储的。mysql数据库使用memory存储引擎作为临时表还存储中间结果集(intermediate result)，如果中间集结果大于memorg表的容量设置，又或者中间结果集包含text和blog列类型字段，则mysql会把他们转换到myisam存储引擎表而放到磁盘上，会对查询产生性能影响。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.3.5、archive存储引擎，压缩能力较强，主要用于归档存储。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.3.6、federated存储引擎，不存储数据，他指向一台远程mysql数据库上的表。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.3.7、maria存储引擎，myisam的后续版本,支持缓存数据和索引，行锁设计，支持mvcc，支持事务和非事务安全的选项，以及更好的BLOG字符类型的处理性能。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.3.8、其他存储引擎，sphinx用于全文索引，infobright用于数据仓库。</p><br>    <h2>1.4连接Mysql</h2><br>    <p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>1.4.1、TCP/IP：基于网络的连接，连接进行权限检查。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.4.2、命名管道和共享内存：Windows系统上同一服务器上的两进程可通过命名管道连接，需在配置文件中启用–enable-named-pipe选项。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.4.3、Unix套接字：客户端与服务端位于同一服务器时才可使用，可以在my.cnf中指定-socket=/tmp/mysql.sock，连接时指定./mysql -S/tmp/mysql.sock。</p><br>    <h1>二．InnoDB存储引擎</h1><br>    <h2>2.2、innodb引擎架构</h2><br>    <p>&nbsp; &nbsp; &nbsp; &nbsp;InnoDB的多个内存块组成了内存池，负责如下工作：</p><br>    <p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>1)<strong>.</strong>维护所有进程/线程需要访问的多个内部数据结构。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2).缓存磁盘上的数据，方便快速的读取，并且在对磁盘文件的数据进行修改之前在这里缓存。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3).重做日志缓存。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 后台线程的主要作用是负责刷新内存池中的数据，保证缓冲池中的内存缓存是最近的数据，此外、将已经修改的数据文件刷新到磁盘文件</p><br>    <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.2.1、后台线程</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; innodb存储引擎后台有7个线程，—–4个IO线程(insert buffer thread,log thread,read thread,write thread)，1个master thread，一个lock监控线程，一个错误监控线程。</p><br>    <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.2.2、内存</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; innodb存储引擎内存由以下三个部分组成：缓冲池(buffer pool),重做日志缓存(redo log buffer),额外的内存池(additional memory pool)。可以使用 show engine innodb status来查看innodb_buffer_pool的使用情况。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; innodb_buffer_pool_size：具体看，缓冲池中的数据库类型有：索引页、数据库页、undo页、插入缓存页(insert buffer)、自适应hash(adaptive hashindex)、innodb存储的锁信息(lock info)、数据字典信息(data dictionary)。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; InnoDB工作方式：将数据文件按页(每页16K)读入InnoDBbuffer pool，然后按最近最少使用算法(LRU)保留缓存数据，最后通过一定频率将脏页刷新到文件。</p><br>    <p style="text-align:center"><img src="http://img.my.csdn.net/uploads/201212/07/1354848800_2688.jpg" alt=""><br><br>    </p><br>    <p></p><br>    <h2>2.3、master thread</h2><br>    <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.3.1、master thread源码分析</h3><br>    <p style="text-align:center"><img src="http://img.my.csdn.net/uploads/201212/07/1354848808_4628.jpg" alt=""><br><br>    </p><br>    <p></p><br>    <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.3.2、master thread的潜在问题</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1、由于硬件的发展，现在的硬件性能已经提高了很多，如果innodb每秒最大刷新100个脏页，那么效率会很低，为了解决这个问题，innodb plugin提供了一个参数innodb_io_capacity，用来表示磁盘IO的吞吐量，默认&#20540;是200，规则如下：在合并插入缓存时，合并插入缓存的数量为innodb_io_capacity的5%；在从缓冲区刷新脏页时，啥新脏页的数量为innodb_io_capacity。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2、关于innodb_max_dirty_pages_pct&#20540;的争议，如果&#20540;过大，内存也很大或者服务器压力很大，那么效率很降低，如果设置的&#20540;过小，那么硬盘的压力会增加，建议是在75-80.并且innodb plugin引进了innodb_adaptive_flushng(自适应的刷新)，该&#20540;影响每秒刷新脏页的数量。</p><br>    <h2>2.4、关键特性,为innodb提高性能的技术</h2><br>    <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.4.1、插入缓存</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 当一个表有非聚集索引时，对于非聚集索引的叶子节点的插入不是顺序的，这时候需要离散的访问非聚集索引页，性能就在这里降低了，这是由于b&#43;树的原理导致的。插入缓存就是用来解决这个问题的。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 对于非聚集索引的插入和更新操作，不是每一次都直接插入索引页，而是先判断插入的非聚集索引页是否在缓存中，如果在就直接插入，如果不在就放入到一个插入缓冲区中，好&#20284;欺骗数据库这个非聚集索引已经插入到叶子节点了。然后再以一定的频率插入缓存和非聚集索引页字节点的合并操作。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 插入缓存的使用需要满足以下两个条件(也就是非唯一的辅助索引)：索引是辅助索引；索引不是唯一的。</p><br>    <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.4.2、两次写</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 两次写给innodb带来的是可靠性，主要用来解决部分写失败(partial page write)。在应用重做日之前，我们需要一个页的副本，当写入失效发生时，先通过页的副本来还原该页，再进行重做，这就是doublewrite。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; doublewrite有两部分组成，一部分是内存中的doublewrite buffer，大小为2M，另外一部分就是物理磁盘上的共享表空间中联系的128个页，即两个区，大小同样为2M。当缓冲池的张也刷新时，并不直接写硬盘，而是回通过memcpy函数将脏页先拷贝到内存中的doublewrite buffer，之后通过doublewrite buffer再分两次写，每次写入1M到共享表空间的物理磁盘上，然后马上调用fsync函数，同步磁盘。</p><br>    <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.4.3、自适应哈西索引</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 由于innodb不支持hash索引，但是在某些情况下hash索引的效率很高，于是出现了 adaptive hash index功能，innodb存储引擎会监控对表上索引的查找，如果观察到建立hash索引可以提高性能的时候，则自动建立hash索引。</p><br>    <h2>2.5、启动、关闭、恢复</h2><br>    <p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>innodb_fast_shutdown影响InnoDB表关闭。该参数有0、1、2三个参数。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0 MySQL关闭时&nbsp; 完成所有的full purge和merge insertbuffer操作</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1默认&#20540; 只将缓冲池内的一些脏页刷新至磁盘</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2将日志都写入日志文件不会有任何事务丢失但下次启动时会进行recovery</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; innodb_force_recovery影响整个innodb存储引擎的恢复状况，该&#20540;默认为0，表示当需要恢复时，需要执行所有的恢复操作，当不能进行有效恢复时，如数据页发生了corruption，mysql数据库可能宕机，并把错误写入错误日志中。</p><br>    <h1>三．文件</h1><br>    <h2>3.1参数文件</h2><br>    <p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mysql实例可以不需要参数文件，这是所有的参数&#20540;取决于编译Mysql时指定的默认&#20540;和源代码中指定参数的默认&#20540;。其参数文件是Mysql.cnf。</strong></p><br>    <h3>3.1.1、什么是参数</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 参数是一个键/&#20540;对。可以使用show variables like命令查看，也可以通过information_schema的GLOBAL_VARIABLES视图来查找。</p><br>    <h3>3.1.2、参数类型</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 参数文件分为两类：动态参数和静态参数。动态参数意味着你可以在Mysql实例运行中进行更改；静态参数说明在整个实例生命周期内都不得进行更改，好像是只读的。对于动态参数，又可以分为global和session关键字，表明该参数的修改是基于当前会话还是真&#26684;实例的生命周期。有些动态参数只能在会话中进行修改，如autocommit；有些参数修改完后，在整个实例生命周期中都会生效，如binlog_cache_size；而有些参数既可以在会话又可以在整个实例的生命周期内生效，如read_buffer_size。</p><br>    <h2>3.2、日志文件</h2><br>    <h3>3.2.1、错误日志</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 错误日志对Mysql的启动、运行、关闭过程进行了记录。出现Mysql不能正常启动时，第一个必须查找的文件应该就是错误日志文件。使用show variables like ‘log_error’来定位文件。</p><br>    <h3>3.2.2、慢查询日志</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 慢查询能为SQL语句的优化带来很好的帮助。设定一个阀&#20540;，将运行时间超过该&#20540;的所有SQL语句都记录到慢查询日志文件中。用参数long_query_time来设置。另一个参数log_queries_not_using_indexes，若运行的SQL语句没有使用索引，则这条SQL语句会被记录下来。</p><br>    <h3>3.2.3、查询日志</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 查询日志记录了所有对Mysql请求的信息，不论这些请求是否得到正确的执行。默认文件名为：主机名.log。</p><br>    <h3>3.2.4、二进制日志</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 二进制记录了对数据库执行更改的所有操作，但是不包括SELECT和SHOW操作，还包括了执行时间和更改操作时间。可用来恢复某些数据，同时也可以用来复制同步远程数据库。将binlog_format设置成row，可以支持事务隔离级别为READ COMMITTED，以获得更好的并发性。在使用MIXED&#26684;式下，mysql采用STATEMENT&#26684;式进行二进制日志文件的记录，但是有一些情况下会使用ROW&#26684;式，可能的情况如下：</p><br>    <p>1、表的存储引擎为NDB，这个时候DML操作都会以ROW&#26684;式记录。</p><br>    <p>2、使用了uuid()、user(),current_user(),found_rows(),row_count(),等不确定函数。</p><br>    <p>3、使用了insert delay语句</p><br>    <p>4、使用了用户定于的函数(UDF)</p><br>    <p>5、使用了临时表(temporary table)</p><br>    <p>注意：针对系统库mysql里面的表发生变化的处理规则如下：</p><br>    <p>1、 如果采用insert，update，delete直接操作表，则日志根据binlog_format设定的&#26684;式记录。</p><br>    <p>2、 如果使用grant，revoke，set password等DCL语句，那么无论如何都会使用SBR模式记录。</p><br>    <p>3、 blockhole引擎不支持row&#26684;式，ndb引擎不支持statement&#26684;式。</p><br>    <h2>3.3、套件字文件</h2><br>    <p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>&nbsp;Unix系统下本地连接Mysql可以采用Unix套接字方法，需要一个套接字文件，可以使用show variableslike ‘socket’查询。</p><br>    <h2>3.4、pid文件和表结构定义文件</h2><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pid文件是实例启动是记录自己进程ID号的文件，表结构定义文件是以frm为后缀名的文件，还可以用来存放视图的定义。</p><br>    <h3>3.5、innodb引擎文件</h3><br>    <h3>3.5.1、表空间文件</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 默认表空间文件为ibdata1文件innodb_data_file_path存储数据，innodb_file_per_table可以按表分别产生一个表空间.db文件，但仅存该表的数据索引和插入缓冲等信息，其他信息如undo信息，系统事务信息，double write buffer等还是存放在默认表空间(ibdata1或表空间组)里。</p><br>    <h3>3.5.2、重做日志文件</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; redo log是在实例或者介质失败的时候，用来保证数据完整性。每个innodb存储引擎至少有一个重做日志组,每个重做日志文件组下至少又2个重做日志文件，如默认的ib_logfile0、ib_logfile1.为了得到更高的可靠性，你可以设置多个重做镜像日志组。</p><br>    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 因为重做日志条目先被写到日志缓冲中，然后根据一定条件刷新到磁盘重做日志文件中。与redo log相关的就是innodb_flush_log_at_trx_commit的&#20540;，对innodb的性能影响很大。他有0，1，2三个&#20540;，0代表提交事务时，并不同步写redo log，而是等master threas每秒写。1代表commit的时候就将redo log缓存写入磁盘，2代表commit的时候将redo log缓存异步的写入磁盘。<br>    <p></p><br><br>    </div> 
 
 
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/05/09/Mysql-db-02/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="XueCheng">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="XueCheng Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/05/09/Mysql-db-02/" itemprop="url">转载:MySQL事务隔离级别详解</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-09T14:28:36+08:00">
-                2017-05-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <div id="blog_content" class="blog_content"><br>    <div class="blog_content" style="text-align: left;"><br><p><span style="font-size: medium;">       SQL标准定义了4类隔离级别，包括了一些具体规则，用来限定事务内外的哪些改变是可见的，哪些是不可见的。低级别的隔离级一般支持更高的并发处理，并拥有更低的系统开销。<br><strong>Read Uncommitted（读取未提交内容）</strong><br></span><br></p><br><p><span style="font-size: medium;">       在该隔离级别，所有事务都可以看到其他未提交事务的执行结果。本隔离级别很少用于实际应用，因为它的性能也不比其他级别好多少。读取未提交的数据，也被称之为脏读（Dirty Read）。<br><strong>Read Committed（读取提交内容）</strong><br></span><br></p><br><p><span style="font-size: medium;">       这是大多数数据库系统的默认隔离级别（但不是MySQL默认的）。它满足了隔离的简单定义：一个事务只能看见已经提交事务所做的改变。这种隔离级别<br>也支持所谓的不可重复读（Nonrepeatable<br>Read），因为同一事务的其他实例在该实例处理其间可能会有新的commit，所以同一select可能返回不同结果。<br><strong>Repeatable Read（可重读）</strong><br></span><br></p><br><p><span style="font-size: medium;">       这是MySQL的默认事务隔离级别，它确保同一事务的多个实例在并发读取数据时，会看到同样的数据行。不过理论上，这会导致另一个棘手的问题：幻读<br>（Phantom<br>Read）。简单的说，幻读指当用户读取某一范围的数据行时，另一个事务又在该范围内插入了新行，当用户再读取该范围的数据行时，会发现有新的“幻影”<br>行。InnoDB和Falcon存储引擎通过多版本并发控制（MVCC，Multiversion Concurrency<br>Control）机制解决了该问题。</span><br></p><br><p><span style="font-size: medium;"><strong>Serializable（可串行化）</strong><br><br><br>       这是最高的隔离级别，它通过强制事务排序，使之不可能相互冲突，从而解决幻读问题。简言之，它是在每个读的数据行上加上共享锁。在这个级别，可能导致大量的超时现象和锁竞争。</span><br></p><br><p>         <span style="font-size: medium;">这四种隔离级别采取不同的锁类型来实现，若读取的是同一个数据的话，就容易发生问题。例如：</span><br></p><br><p>      <span style="font-size: medium;">   脏读(Drity Read)：某个事务已更新一份数据，另一个事务在此时读取了同一份数据，由于某些原因，前一个RollBack了操作，则后一个事务所读取的数据就会是不正确的。</span><br></p><br><p>         <span style="font-size: medium;">不可重复读(Non-repeatable read):在一个事务的两次查询之中数据不一致，这可能是两次查询过程中间插入了一个事务更新的原有的数据。</span><br></p><br><p><span style="font-size: medium;">         幻读(Phantom Read):在一个事务的两次查询中数据笔数不一致，例如有一个事务查询了几列(Row)数据，而另一个事务却在此时插入了新的几列数据，先前的事务在接下来的查询中，就会发现有几列数据是它先前所没有的。</span><br></p><br><p>         在MySQL中，实现了这四种隔离级别，分别有可能产生问题如下所示：</p><br><p style="text-align: center;"><img alt="" height="267" style="vertical-align: middle;" width="838" src="http://dl.iteye.com/upload/picture/pic/72610/af5b9c1e-4517-3df2-ad62-af25d1672d12.jpg"></p><br><p><span style="font-size: medium;"><br></span><br></p><br><p><span style="font-size: medium;">下面，将利用MySQL的客户端程序，分别测试几种隔离级别。测试数据库为test，表为tx；表结构：</span><br></p><br><table border="0" style="height: 50px;" width="440"><br><tr><br><td style="text-align: center;"><br><span style="font-size: medium;">id</span><br></td><br><td><br><span style="font-size: medium;">                              int</span><br></td><br></tr><br><tr><br><td><br><p style="text-align: center;"><span style="font-size: medium;">num</span><br></p><br></td><br><td><br><span style="font-size: medium;">                              int</span><br></td><br></tr><br></table><br><p><span style="font-size: medium;">两个命令行客户端分别为A，B；不断改变A的隔离级别，在B端修改数据。</span><br></p><br><p><span style="font-size: medium;"><strong><span>（一）、将A的隔离级别设置为read uncommitted(未提交读)</span><br></strong><br></span><br></p><br><p><span style="font-size: medium;"> 在B未更新数据之前：</span><br><br></p><br><p><strong><span style="font-size: medium;">客户端A：</span><br></strong><br><img alt="" height="379" width="645" src="http://dl.iteye.com/upload/picture/pic/72618/1ca8ec0d-3b6c-3ae1-babc-5dd541c4d1a4.jpg"></p><br><p> <span style="font-size: medium;">B更新数据：</span><br><br></p><br><p><strong><span style="font-size: medium;">客户端B：</span><br></strong><br></p><br><p><img alt="" height="397" width="640" src="http://dl.iteye.com/upload/picture/pic/72620/b37214c3-7726-3306-95ee-1b2fae5ccd6c.jpg"></p><br><p><strong><span style="font-size: medium;">客户端A：</span><br></strong><br></p><br><p style="text-align: left;"><img alt="" height="481" width="640" src="http://dl.iteye.com/upload/picture/pic/72622/200d9c94-197a-3fe5-8925-3411cd88555e.jpg"></p><br><p>    <span style="font-size: medium;">    经过上面的实验可以得出结论，事务B更新了一条记录，但是没有提交，此时事务A可以查询出未提交记录。造成脏读现象。未提交读是最低的隔离级别。</span><br></p><br><p><strong><span style="font-size: medium;">（二）、将客户端A的事务隔离级别设置为read committed(已提交读)</span><br></strong><br></p><br><p><span style="font-size: medium;"> 在B未更新数据之前：</span><br><br></p><br><strong><span style="font-size: medium;">客户端A：</span><br></strong><br><p><a class="underline" href="/upload/picture/pic/72626/ae414e52-c216-3bbb-b005-0d972f593456.jpg"><img alt="" height="351" width="644" src="http://dl.iteye.com/upload/picture/pic/72626/ae414e52-c216-3bbb-b005-0d972f593456.jpg"></a><br></p><br><p> <span style="font-size: medium;">B更新数据：</span><br><br></p><br><p><strong><span style="font-size: medium;">客户端B：</span><br></strong><br></p><br><p><img alt="" height="313" width="641" src="http://dl.iteye.com/upload/picture/pic/72628/12051f3d-c01e-34b3-a6b6-8b71e1b1dcc8.jpg"></p><br><p><strong><span style="font-size: medium;">客户端A：</span><br></strong><br></p><br><p><img alt="" height="351" width="642" src="http://dl.iteye.com/upload/picture/pic/72630/cc80744e-eb9f-3104-bb24-2218e9986d78.jpg"></p><br><p><span style="font-size: medium;">       经过上面的实验可以得出结论，已提交读隔离级别解决了脏读的问题，但是出现了不可重复读的问题，即事务A在两次查询的数据不一致，因为在两次查询之间事务B更新了一条数据。已提交读只允许读取已提交的记录，但不要求可重复读。</span><br></p><br><p>(三)、<span style="font-size: medium;"><strong><span>将A的隔离级别设置为repeatable read(可重复读)</span><br></strong><br></span><br></p><br><p><span style="font-size: medium;"> 在B未更新数据之前：</span><br><br></p><br><div class="blog_content" style="text-align: left;"><br><strong><span style="font-size: medium;">客户端A：</span><br></strong><br></div><br><div class="blog_content" style="text-align: left;"><img alt="" height="319" width="643" src="http://dl.iteye.com/upload/picture/pic/72632/0bf52be3-e873-3f3f-8d56-d703a8f678ab.jpg"></div><br><p> <span style="font-size: medium;">B更新数据：</span><br><br></p><br><p><strong><span style="font-size: medium;">客户端B：</span><br></strong><br></p><br><p><img alt="" height="333" width="645" src="http://dl.iteye.com/upload/picture/pic/72634/e58d1814-bdca-3313-bcf5-339e3678536a.jpg"></p><br><p><strong><span style="font-size: medium;">客户端A：</span><br></strong><br></p><br><p><img alt="" height="497" width="640" src="http://dl.iteye.com/upload/picture/pic/72636/83bfe583-2d57-345a-917e-4ee163235b62.jpg"></p><br><p><span style="font-size: medium;">B插入数据：</span><br></p><br><p><strong><span style="font-size: medium;">客户端B：</span><br></strong><br></p><br><p><img alt="" height="366" width="641" src="http://dl.iteye.com/upload/picture/pic/72638/192348aa-4fa5-3d5f-a4f9-4660ddd725cd.jpg"></p><br><p><strong><span style="font-size: medium;">客户端A：</span><br></strong><br></p><br><p><img alt="" height="351" width="641" src="http://dl.iteye.com/upload/picture/pic/72640/4398c5b1-434c-3380-ba19-060154cf2070.jpg"></p><br><p><span style="font-size: medium;">       由以上的实验可以得出结论，可重复读隔离级别只允许读取已提交记录，而且在一个事务两次读取一个记录期间，其他事务部的更新该记录。但该事务不要求与其他事务可串行化。例如，当一个事务可以找到由一个已提交事务更新的记录，但是可能产生幻读问题(注意是可能，因为数据库对隔离级别的实现有所差别)。像以上的实验，就没有出现数据幻读的问题。</span><br></p><br><p>(<strong>四)、<span style="font-size: medium;"><strong><span>将A的隔离级别设<span style="font-size: medium;">置为</span><br></span><br></strong><br></span><br><span style="font-size: medium;"><span><span style="font-size: medium;">可串行化</span><br><span style="font-size: medium;">(Serializable)</span><br></span><br></span><br></strong><br></p><br><p><strong><span style="font-size: medium;">A端打开事务，B端插入一条记录</span><br></strong><br></p><br><p><strong><span style="font-size: medium;">事务A端：</span><br></strong><br></p><br><p><img alt="" height="234" width="639" src="http://dl.iteye.com/upload/picture/pic/72642/c604c5ce-311d-3923-8dcd-36b0188f4f31.jpg"></p><br><p><strong><span style="font-size: medium;">事务B端：</span><br></strong><br></p><br><p><img alt="" height="141" width="640" src="http://dl.iteye.com/upload/picture/pic/72644/c488f9d9-7da2-3e6d-9a82-2b92d1051afd.jpg"></p><br><p><span style="font-size: medium;">因为此时事务A的隔离级别设置为serializable，开始事务后，并没有提交，所以事务B只能等待。</span><br></p><br><p><strong><span style="font-size: medium;">事务A提交事务：</span><br></strong><br></p><br><p><strong><span style="font-size: medium;">事务A端</span><br></strong><br></p><br><p><img alt="" height="73" width="639" src="http://dl.iteye.com/upload/picture/pic/72646/322ed59a-b2b9-338c-a2f0-09c9b7707577.jpg"></p><br><p><strong><span style="font-size: medium;">事务B端</span><br></strong><br></p><br><p><img alt="" height="47" width="644" src="http://dl.iteye.com/upload/picture/pic/72648/8e60e19b-09af-31a7-b8d3-8e638bbf177c.jpg"></p><br><p><span style="font-size: medium;">      </span><br></p><br><p>         <span style="font-size: medium;">serializable完全锁定字段，若一个事务来查询同一份数据就必须等待，直到前一个事务完成并解除锁定为止</span><br>。<span style="font-size: medium;">是完整的隔离级别，会锁定对应的数据表格，因而会有效率的问题。</span><br></p><br></div><br>  </div>
 
           
         
@@ -1109,8 +1110,8 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">17</span>
-                <span class="site-state-item-name">posts</span>
+                <span class="site-state-item-count">18</span>
+                <span class="site-state-item-name">Artikel</span>
               </a>
             </div>
           
@@ -1164,7 +1165,7 @@
 
 
 <div class="powered-by">
-  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
 </div>
 
 <div class="theme-info">
