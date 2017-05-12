@@ -90,13 +90,16 @@
 
 
 
+<meta name="description" content="什么是ReflectASM&amp;nbsp;&amp;nbsp;&amp;nbsp; ReflectASM是一个很小的java类库，主要是通过asm生产类来实现java反射，执行速度非常快，看了网上很多和反射的对比，觉得ReflectASM比较神奇，很想知道其原理，下面介绍下如何使用及原理。如何使用 public class User {    private int id;    private Stri">
 <meta property="og:type" content="article">
-<meta property="og:title" content="cat">
-<meta property="og:url" content="https://bloodorange2017.github.io/archives/2016/05/11/game-01/index.html">
+<meta property="og:title" content="转载:浅析高性能反射ReflectASM">
+<meta property="og:url" content="https://bloodorange2017.github.io/archives/2017/05/12/reflectASM-02/index.html">
 <meta property="og:site_name" content="XueCheng Notes">
-<meta property="og:updated_time" content="2017-05-11T02:50:28.000Z">
+<meta property="og:description" content="什么是ReflectASM&amp;nbsp;&amp;nbsp;&amp;nbsp; ReflectASM是一个很小的java类库，主要是通过asm生产类来实现java反射，执行速度非常快，看了网上很多和反射的对比，觉得ReflectASM比较神奇，很想知道其原理，下面介绍下如何使用及原理。如何使用 public class User {    private int id;    private Stri">
+<meta property="og:updated_time" content="2017-05-12T08:20:06.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="cat">
+<meta name="twitter:title" content="转载:浅析高性能反射ReflectASM">
+<meta name="twitter:description" content="什么是ReflectASM&amp;nbsp;&amp;nbsp;&amp;nbsp; ReflectASM是一个很小的java类库，主要是通过asm生产类来实现java反射，执行速度非常快，看了网上很多和反射的对比，觉得ReflectASM比较神奇，很想知道其原理，下面介绍下如何使用及原理。如何使用 public class User {    private int id;    private Stri">
 
 
 
@@ -124,13 +127,13 @@
 
 
 
-  <link rel="canonical" href="https://bloodorange2017.github.io/archives/2016/05/11/game-01/"/>
+  <link rel="canonical" href="https://bloodorange2017.github.io/archives/2017/05/12/reflectASM-02/"/>
 
 
 
 
 
-  <title>cat | XueCheng Notes</title>
+  <title>转载:浅析高性能反射ReflectASM | XueCheng Notes</title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
@@ -249,7 +252,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2016/05/11/game-01/">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/05/12/reflectASM-02/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="XueCheng">
@@ -266,7 +269,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">cat</h1>
+          <h1 class="post-title" itemprop="name headline">转载:浅析高性能反射ReflectASM</h1>
         
 
         <div class="post-meta">
@@ -278,8 +281,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-05-11T10:38:59+08:00">
-                2016-05-11
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-12T16:18:38+08:00">
+                2017-05-12
               </time>
             
 
@@ -313,7 +316,10 @@
       
 
       
-        <iframe frameborder="0" width="800" height="600" marginheight="0" marginwidth="0" scrolling="no" src="https://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/05/11/cat.html"></iframe>
+          <div id="blog_content" class="blog_content"><br>    <strong>什么是ReflectASM</strong>&nbsp;&nbsp;&nbsp; ReflectASM是一个很小的java类库，主要是通过asm生产类来实现java反射，执行速度非常快，看了网上很多和反射的对比，觉得ReflectASM比较神奇，很想知道其原理，下面介绍下如何使用及原理。<br><br><br><br><strong>如何使用</strong> <pre name="code" class="java"><br>public class User {<br>    private int id;<br>    private String name;<br><br>    public int getId() {<br>        return id;<br>    }<br><br>    public void setId(int id) {<br>        this.id = id;<br>    }<br><br>    public String getName() {<br>        return name;<br>    }<br><br>    public void setName(String name) {<br>        this.name = name;<br>    }<br>}<br><br><br><br>public class ReflectAsmTest {<br>    public static void main(String[] args) {<br>        User user = new User();<br>        //使用reflectasm生产User访问类<br>        MethodAccess access = MethodAccess.get(User.class);<br>        //invoke setName方法name值<br>        access.invoke(user, “setName”, “张三”);<br>        //invoke getName方法 获得值<br>        String name = (String)access.invoke(user, “getName”, null);<br>        System.out.println(name);<br>    }<br>}</pre><br><br><br><br>输出：<br><br>张三<br><br><br><br><strong>原理</strong><br><br>&nbsp;&nbsp; 上面代码的确实现反射的功能，代码主要的核心是 MethodAccess.get(User.class);<br><br>看了下源码，这段代码主要是通过asm生产一个User的处理类 UserMethodAccess（这个类主要是实现了invoke方法）的ByteCode，然后获得该对象，通过上面的invoke操作user类。<br><br><br><br>MethodAccess反编辑源码<br><br><pre name="code" class="java"><br>// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.<br>// Jad home page: <a href="http://www.kpdus.com/jad.html" target="_blank" rel="external">http://www.kpdus.com/jad.html</a><br>// Decompiler options: packimports(3)<br><br>package com.johhny.ra;<br><br>import com.esotericsoftware.reflectasm.MethodAccess;<br><br>// Referenced classes of package com.johhny.ra:<br>//            User<br><br>public class UserMethodAccess extends MethodAccess<br>{<br><br>    public UserMethodAccess()<br>    {<br>    }<br><br>    /<em>*
+     </em> 这个方法是主要是实现了MethodAccess 的抽象方法，来实现反射的功能<br>     <em> @param obj  需要反射的对象
+     </em> @param i  class.getDeclaredMethods 对应方法的index<br>     <em> @param 参数对象集合
+     </em> @return<br>     */<br>    public transient Object invoke(Object obj, int i, Object aobj[])<br>    {<br>        User user = (User)obj;<br>        switch(i)<br>        {<br>        case 0: // ‘\0’<br>            return user.getName();<br><br>        case 1: // ‘\001’<br>            return Integer.valueOf(user.getId());<br><br>        case 2: // ‘\002’<br>            user.setName((String)aobj[0]);<br>            return null;<br><br>        case 3: // ‘\003’<br>            user.setId(((Integer)aobj[0]).intValue());<br>            return null;<br>        }<br>        throw new IllegalArgumentException((new StringBuilder(“Method not found: “)).append(i).toString());<br>    }<br>}<br></pre>：<br><br><br><br>看了UserMethodAccess源码后明白 ReflectASM 为什么会比java放射快那么多，其实就是我们的bean调用里面的方法，速度当然很快<br><br><br><br><strong>注意：</strong><br><br>&nbsp;&nbsp;&nbsp; 1. MethodAccess.get()方法比较耗时的,特别是类方法比较多的时候，如果生成的反射类用到的地方比较多或者会多次调用，建议缓存下来，如果使用次数很少建议还是使用反射来完成功能<br><br>&nbsp;&nbsp;&nbsp;<br>  </div>
 
       
     </div>
@@ -350,14 +356,18 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
+              <a href="/2017/05/12/class-01/" rel="next" title="转载:Java类加载机制">
+                <i class="fa fa-chevron-left"></i> 转载:Java类加载机制
+              </a>
+            
           </div>
 
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/05/05/first/" rel="prev" title="HEXO教程-搭建一个属于自己的HEXO博客">
-                HEXO教程-搭建一个属于自己的HEXO博客 <i class="fa fa-chevron-right"></i>
+              <a href="/2017/05/12/reflectASM-01/" rel="prev" title="转载:JAVA下高效的反射工具包ReflectASM 使用例解">
+                转载:JAVA下高效的反射工具包ReflectASM 使用例解 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
