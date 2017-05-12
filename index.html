@@ -366,6 +366,119 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/05/12/class-01/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="XueCheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XueCheng Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/05/12/class-01/" itemprop="url">转载:Java类加载机制</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-12T16:02:45+08:00">
+                2017-05-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <div id="tony_body"><br><h2>一、Java类加载机制</h2><br></div><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">1．概述</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Class文件由类装载器装载后，在JVM中将形成一份描述Class结构的元信息对象，通过该元信息对象可以获知Class的结构信息：如构造函数，属性和方法等，Java允许用户借由这个Class相关的元信息对象间接调用Class对象的功能。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;虚拟机把描述类的数据从class文件加载到内存，并对数据进行校验，转换解析和初始化，最终形成可以被虚拟机直接使用的Java类型，这就是虚拟机的类加载机制。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">2．工作机制</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;类装载器就是寻找类的字节码文件，并构造出类在JVM内部表示的对象组件。在Java中，类装载器把一个类装入JVM中，要经过以下步骤：</span></p><br><p class="p0" style="margin-left: 60px;"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(1)&nbsp;装载：查找和导入Class文件；</span></p><br><p class="p0" style="margin-left: 60px;"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(2)&nbsp;链接：把类的二进制数据合并到JRE中；</span></p><br><p class="p0" style="margin-left: 60px;"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(a)校验：检查载入Class文件数据的正确性；</span></p><br><p class="p0" style="margin-left: 60px;"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(b)准备：给类的静态变量分配存储空间；</span></p><br><p class="p0" style="margin-left: 60px;"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(c)解析：将符号引用转成直接引用；</span></p><br><p class="p0" style="margin-left: 60px;"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(3)&nbsp;初始化：对类的静态变量，静态代码块执行初始化操作</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;"><img style="display: block; margin-left: auto; margin-right: auto;" src="http://images.cnitblog.com/blog/400827/201409/172116264092898.png" alt=""></span></p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp; &nbsp; &nbsp; Java程序可以动态扩展是由运行期动态加载和动态链接实现的；比如：如果编写一个使用接口的应用程序，可以等到运行时再指定其实际的实现(多态)，解析过程有时候还可以在初始化之后执行；比如：动态绑定(多态)；</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="background-color: #ff0000;">【类初始化】</span>&nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(1)&nbsp;遇到new、getstatic、putstatic或invokestatic这4条字节码指令时，如果类没有进行过初始化，则需要先触发其初始化。生成这4条指令的最常见的Java代码场景是：使用new关键字实例化对象的时候，读取或设置一个类的静态字段（被final修饰、已在编译期把结果放入常量池的静态字段除外）的时候，以及调用一个类的静态方法的时候。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(2)&nbsp;使用java.lang.reflect包的方法对类进行反射调用的时候，如果类没有进行过初始化，则需要先触发其初始化。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(3)&nbsp;当初始化一个类的时候，如果发现其父类还没有进行过初始化，则需要先触发其父类的初始化。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp; &nbsp; &nbsp; (4)当虚拟机启动时，用户需要指定一个要执行的主类（包含main()方法的那个类），虚拟机会先初始化这个主类。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">只有上述四种情况会触发初始化，也称为对一个类进行主动引用，除此以外，所有其他方式都不会触发初始化，称为被动引用</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">代码清单1</span></p><br><p class="p0" style="margin-left: 60px;"><span style="font-family: 'courier new', courier; font-size: 16px;"><img style="float: left;" src="http://images.cnitblog.com/blog/400827/201409/172118431435624.png" alt=""></span></p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">上述代码运行后，只会输出【—SuperClass&nbsp;init】,&nbsp;而不会输出【SubClass&nbsp;init】,<span style="background-color: #33cccc;">对于静态字段，只有直接定义这个字段的类才会被初始化</span>,因此，通过子类来调用父类的静态字段，只会触发父类的初始化,但是这是要看不同的虚拟机的不同实现。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">代码清单2</span></p><br><p class="p0" style="margin-left: 60px;"><span style="font-family: 'courier new', courier; font-size: 16px;"><img style="float: left;" src="http://images.cnitblog.com/blog/400827/201409/172122331434025.png" alt=""></span></p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">此处不会引起SuperClass的初始化，但是却触发了【[Ltest.SuperClass】的初始化，通过arr.toString()可以看出，对于用户代码来说，这不是一个合法的类名称，它是由虚拟机自动生成的，直接继承于Object的子类，创建动作由字节码指令newarray触发,此时数组越界检查也会伴随数组对象的所有调用过程，越界检查并不是封装在数组元素访问的类中，而是封装在数组访问的xaload,xastore字节码指令中.</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">代码清单3</span></p><br><p class="p0" style="margin-left: 60px;"><span style="font-family: 'courier new', courier; font-size: 16px;"><img style="float: left;" src="http://images.cnitblog.com/blog/400827/201409/172123338006093.png" alt=""></span></p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">对常量ConstClass.value&nbsp;的引用实际都被转化为NotInitialization类对自身常量池的引用，这两个类被编译成class后不存在任何联系。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="background-color: #ff0000;">【装载】</span></span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp; &nbsp; 在装载阶段，虚拟机需要完成以下3件事情</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(1)&nbsp;通过一个类的全限定名来获取定义此类的二进制字节流</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(2)&nbsp;将这个字节流所代表的静态存储结构转化为方法区的运行时数据结构</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(3)&nbsp;在Java堆中生成一个代表这个类的java.lang.Class对象，作为方法区这些数据的访问入口。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;虚拟机规范中并没有准确说明二进制字节流应该从哪里获取以及怎样获取,这里可以通过定义自己的类加载器去控制字节流的获取方式。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<span style="background-color: #ff0000;">【验证】</span></span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;虚拟机如果不检查输入的字节流，对其完全信任的话，很可能会因为载入了有害的字节流而导致系统奔溃。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<span style="background-color: #ff0000;">【准备】</span></span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp; &nbsp; 准备阶段是正式为类变量分配并设置类变量初始值的阶段，这些内存都将在方法区中进行分配,需要说明的是：</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">这时候进行内存分配的仅包括类变量(被static修饰的变量),而不包括实例变量,实例变量将会在对象实例化时随着对象一起分配在Java堆中;这里所说的初始值&ldquo;通常情况&rdquo;是数据类型的零值，假如:</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">public&nbsp;static&nbsp;int&nbsp;value&nbsp;=&nbsp;123;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">value在准备阶段过后的初始值为0而不是123,而把value赋值的putstatic指令将在初始化阶段才会被执行</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;</span>&nbsp;</p><br><div id="tony_body"><br><h2>二、类加载器与双亲委派模型</h2><br></div><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="background-color: #c0c0c0;">类加载器</span></span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(1)&nbsp;Bootstrap&nbsp;ClassLoader&nbsp;:&nbsp;将存放于&lt;JAVA_HOME&gt;\lib目录中的，或者被-Xbootclasspath参数所指定的路径中的，并且是虚拟机识别的（仅按照文件名识别，如&nbsp;rt.jar&nbsp;名字不符合的类库即使放在lib目录中也不会被加载）类库加载到虚拟机内存中。启动类加载器无法被Java程序直接引用</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(2)&nbsp;Extension&nbsp;ClassLoader&nbsp;:&nbsp;将&lt;JAVA_HOME&gt;\lib\ext目录下的，或者被java.ext.dirs系统变量所指定的路径中的所有类库加载。开发者可以直接使用扩展类加载器。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(3)&nbsp;Application&nbsp;ClassLoader&nbsp;:&nbsp;负责加载用户类路径(ClassPath)上所指定的类库,开发者可直接使用。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></p><br><p class="p0" style="text-align: center;"><span style="font-family: 'courier new', courier; font-size: 16px;">双亲委派模型</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;"><img style="display: block; margin-left: auto; margin-right: auto;" src="http://images.cnitblog.com/blog/400827/201409/172124489257909.png" alt=""></span></p><br><p class="p0">&nbsp;</p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">工作过程：如果一个类加载器接收到了类加载的请求，它首先把这个请求委托给他的父类加载器去完成，每个层次的类加载器都是如此，因此所有的加载请求都应该传送到顶层的启动类加载器中，只有当父加载器反馈自己无法完成这个加载请求（它在搜索范围中没有找到所需的类）时，子加载器才会尝试自己去加载。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;好处：java类随着它的类加载器一起具备了一种带有优先级的层次关系。例如类java.lang.Object，它存放在rt.jar中，无论哪个类加载器要加载这个类，最终都会委派给启动类加载器进行加载，因此Object类在程序的各种类加载器环境中都是同一个类。相反，如果用户自己写了一个名为java.lang.Object的类，并放在程序的Classpath中，那系统中将会出现多个不同的Object类，java类型体系中最基础的行为也无法保证，应用程序也会变得一片混乱。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;java.lang.ClassLoader中几个最重要的方法:</span></p><br><div class="cnblogs_code"><br><pre><span style="font-family: 'courier new', courier; font-size: 16px;"><span style="color: #008000;">//</span><span style="color: #008000;">加载指定名称（包括包名）的二进制类型，供用户调用的接口</span><br><span style="color: #0000ff;">public</span> Class&lt;?&gt;<span style="color: #000000;"> loadClass(String name);<br></span><span style="color: #008000;">//</span><span style="color: #008000;">加载指定名称（包括包名）的二进制类型，同时指定是否解析（但是，这里的resolve参数不一定真正能达到解析的效果），供继承用</span><br><span style="color: #0000ff;">protected</span> synchronized Class&lt;?&gt;<span style="color: #000000;"> loadClass(String name, boolean resolve);<br></span><span style="color: #0000ff;">protected</span> Class&lt;?&gt;<span style="color: #000000;"> findClass(String name)<br></span><span style="color: #008000;">//</span><span style="color: #008000;">定义类型，一般在findClass方法中读取到对应字节码后调用，可以看出不可继承（说明：JVM已经实现了对应的具体功能，解析对应的字节码，产生对应的内部数据结构放置到方法区，所以无需覆写，直接调用就可以了）</span><br><span style="color: #0000ff;">protected</span> final Class&lt;?&gt; defineClass(String name, <span style="color: #0000ff;">byte</span>[] b, <span style="color: #0000ff;">int</span> off, <span style="color: #0000ff;">int</span> len) throws ClassFormatError{}</span></pre><br></div><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">如下是实现双亲委派模型的主要代码：</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;"><img style="float: left;" src="http://images.cnitblog.com/blog/400827/201409/172127007684697.png" alt=""></span></p><br><p>&nbsp;</p><br><div id="tony_body"><br><p>&nbsp;</p><br><p>&nbsp;</p><br><p>&nbsp;</p><br><p>&nbsp;</p><br><p>&nbsp;</p><br><p>&nbsp;</p><br><p>&nbsp;</p><br><p>&nbsp;</p><br><p>&nbsp;</p><br><p>&nbsp;</p><br><h2>三、反射</h2><br></div><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Reflection机制允许程序在正在执行的过程中，利用Reflection&nbsp;APIs取得任何已知名称的类的内部信息，包括：package、&nbsp;type&nbsp;parameters、&nbsp;superclass、&nbsp;implemented&nbsp;interfaces、&nbsp;inner&nbsp;classes、&nbsp;outer&nbsp;classes、&nbsp;fields、&nbsp;constructors、&nbsp;methods、&nbsp;modifiers等，并可以在执行的过程中，动态生成instances、变更fields内容或唤起methods。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1、获取构造方法</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">Class类提供了四个public方法，用于获取某个类的构造方法。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">Constructor&nbsp;getConstructor(Class[]&nbsp;params) &nbsp; &nbsp;&nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">根据构造函数的参数，返回一个具体的具有public属性的构造函数</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">　　　　Constructor&nbsp;getConstructors() &nbsp; &nbsp;&nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">返回所有具有public属性的构造函数数组</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">　　　　Constructor&nbsp;getDeclaredConstructor(Class[]&nbsp;params) &nbsp; &nbsp;&nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">根据构造函数的参数，返回一个具体的构造函数（不分public和非public属性）</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">　　　　Constructor&nbsp;getDeclaredConstructors() &nbsp; &nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">返回该类中所有的构造函数数组（不分public和非public属性）</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;"><img style="float: left;" src="http://images.cnitblog.com/blog/400827/201409/172128068463077.png" alt=""></span></p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">2、获取类的成员方法</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">与获取构造方法的方式相同，存在四种获取成员方法的方式。</span><span style="font-family: 'courier new', courier; font-size: 16px;">　</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">Method&nbsp;getMethod(String&nbsp;name,&nbsp;Class[]&nbsp;params) &nbsp; &nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">根据方法名和参数，返回一个具体的具有public属性的方法</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">　　　　Method[]&nbsp;getMethods() &nbsp; &nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">返回所有具有public属性的方法数组</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">　　　　Method&nbsp;getDeclaredMethod(String&nbsp;name,&nbsp;Class[]&nbsp;params)&nbsp;&nbsp;&nbsp;&nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">根据方法名和参数，返回一个具体的方法（不分public和非public属性）</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">　　　　Method[]&nbsp;getDeclaredMethods() &nbsp; &nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">返回该类中的所有的方法数组（不分public和非public属性）</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">　　</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;"><img style="float: left;" src="http://images.cnitblog.com/blog/400827/201409/172128597681209.png" alt=""></span></p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">3、获取类的成员变量（成员属性）</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">存在四种获取成员属性的方法</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">　　　　Field&nbsp;getField(String&nbsp;name) &nbsp; &nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">根据变量名，返回一个具体的具有public属性的成员变量</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">　　　　Field[]&nbsp;getFields() &nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">返回具有public属性的成员变量的数组</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">　　　　Field&nbsp;getDeclaredField(String&nbsp;name) &nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">根据变量名，返回一个成员变量（不分public和非public属性）</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">　　　　Field[]&nbsp;getDelcaredFields() &nbsp; &nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">返回所有成员变量组成的数组（不分public和非public属性）</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;</span></p><br><p><span style="font-size: 16px;">&nbsp;参考：</span></p><br><p><span style="font-size: 16px;">《深入理解JVM虚拟机》</span></p><br><p><span style="font-size: 16px;"><span style="font-family: 'courier new', courier;"><a href="http://unmi.cc/java-reflectasm-bytecode-usage/" target="_blank">Java 下高效的反射工具包 ReflectASM 使用例解</a></span></span>&nbsp;</p><br><p><span style="font-size: 16px;"><a id="cb_post_title_url" href="http://www.cnblogs.com/mengdd/p/3725472.html" target="_blank" rel="external">ReflectUitls类的编写和对反射机制的解析</a></span></p><br><p>&nbsp;<a href="https://github.com/cglib/cglib" target="_blank">Cglib源码</a></p><div id="MySignature"></div><br><div class="clear"></div><br><div id="blog_post_info_block"><br><div id="BlogPostCategory"></div><br><div id="EntryTag"></div><br><div id="blog_post_info"><br></div>
+
+</div>
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/05/11/restful-02/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -946,120 +1059,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/05/09/innoDB-2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="XueCheng">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="XueCheng Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/05/09/innoDB-2/" itemprop="url">转载：innoDB -MVCC浅析</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-09T18:27:23+08:00">
-                2017-05-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <div id="article_content" class="article_content"><br><p><span style="white-space:pre">    </span>在并发读写数据库时，读操作可能会不一致的数据（脏读）。为了避免这种情况，需要实现数据库的并发访问控制，最简单的方式就是加锁访问。由于，加锁会将读写操作串行化，所以不会出现不一致的状态。但是，读操作会被写操作阻塞，大幅降低读性能。在java concurrent包中，有copyonwrite系列的类，专门用于<strong>优化读远大于写</strong>的情况。而其优化的手段就是，在进行写操作时，将数据copy一份，不会影响原有数据，然后进行修改，修改完成后原子替换掉旧的数据，而读操作只会读取原有数据。通过这种方式实现写操作不会阻塞读操作，从而优化读效率。而写操作之间是要互斥的，并且每次写操作都会有一次copy，所以只适合读大于写的情况。</p><p><span style="white-space:pre">    </span>MVCC的原理与copyonwrite类似，全称是Multi-Version Concurrent Control，即多版本并发控制。在MVCC协议下，每个读操作会看到一个一致性的snapshot，并且可以实现非阻塞的读。MVCC允许数据具有多个版本，这个版本可以是时间戳或者是全局递增的事务ID，在同一个时间点，不同的事务看到的数据是不同的。</p><p><span style="white-space:pre">    </span>实现原理：&nbsp;</p><p><span style="white-space:pre">    </span>——————————————————————————————&gt; 时间轴</p><p><span style="white-space:pre">            </span>|——-R(T1)—–|</p><p><span style="white-space:pre">        </span>|———–U(T2)———–|</p><p><span style="white-space:pre">    </span>如上图，假设有两个并发操作R(T1)和U(T2)，T1和T2是事务ID，T1小于T2，系统中包含数据a = 1(T1)，R和W的操作如下：</p><p><span style="white-space:pre">        </span>R：read a (T1)</p><p><span style="white-space:pre">        </span>U：a = 2 &nbsp; &nbsp;(T2)</p><p><span style="white-space:pre">    </span>R（读操作）的版本T1表示要读取数据的版本，而之后写操作才会更新版本，读操作不会。在时间轴上，R晚于U，而由于U在R开始之后提交，所以对于R是不可见的。所以，R只会读取T1版本的数据，即a = 1。</p><p><span style="white-space:pre">    </span>由于在update操作提交之前，不能影响已有数据的一致性，所以不会改变旧的数据，update操作会被拆分成insert + delete。需要标记删除旧的数据，insert新的数据。只有update提交之后，才会影响后续的读操作。而对于读操作而且，只能读到在其之前的所有的写操作，正在执行中的写操作对其是不可见的。</p><p><span style="white-space:pre">    </span>上面说了一堆的虚的理论，下面来点干活，看一下mysql的innodb引擎是如何实现MVCC的。innodb会为每一行添加两个字段，分别表示该行<strong>创建的版本</strong>和<strong>删除的版本</strong>，填入的是事务的版本号，这个版本号随着事务的创建不断递增。在repeated read的隔离级别（<a target="_blank" href="http://blog.csdn.net/chosen0ne/article/details/10036775">事务的隔离级别请看这篇文章</a>）下，具体各种数据库操作的实现：</p><p><span style="white-space:pre">    </span>select：满足以下两个条件innodb会返回该行数据：（1）该行的创建版本号小于等于当前版本号，用于保证在select操作之前所有的操作已经执行落地。（2）该行的删除版本号大于当前版本或者为空。删除版本号大于当前版本意味着有一个并发事务将该行删除了。</p><p><span style="white-space:pre">    </span>insert：将新插入的行的创建版本号设置为当前系统的版本号。</p><p><span style="white-space:pre">    </span>delete：将要删除的行的删除版本号设置为当前系统的版本号。</p><p><span style="white-space:pre">    </span>update：不执行原地update，而是转换成insert + delete。将旧行的删除版本号设置为当前版本号，并将新行insert同时设置创建版本号为当前版本号。</p><p><span style="white-space:pre">    </span>其中，写操作（insert、delete和update）执行时，需要将系统版本号递增。</p><p><span style="white-space:pre">    </span>由于旧数据并不真正的删除，所以必须对这些数据进行清理，innodb会开启一个后台线程执行清理工作，具体的规则是将删除版本号小于当前系统版本的行删除，这个过程叫做purge。</p><p><span style="white-space:pre">    </span>通过MVCC很好的实现了事务的隔离性，可以达到repeated read级别，要实现serializable还必须加锁。</p><br></div>
-
-
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -1109,7 +1108,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">19</span>
+                <span class="site-state-item-count">20</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>

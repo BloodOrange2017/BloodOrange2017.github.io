@@ -1,0 +1,670 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="一、Java类加载机制1．概述&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Class文件由类装载器装载后，在JVM中将形成一份描述Class结构的元信息对象，通过该元信息对象可以获知Class的结构信息：如构造函数，属性和方法等，Java允许用户借由这个Class相关的元信息对象间接调用Class对象的功能。&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="转载:Java类加载机制">
+<meta property="og:url" content="https://bloodorange2017.github.io/archives/2017/05/12/class-01/index.html">
+<meta property="og:site_name" content="XueCheng Notes">
+<meta property="og:description" content="一、Java类加载机制1．概述&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Class文件由类装载器装载后，在JVM中将形成一份描述Class结构的元信息对象，通过该元信息对象可以获知Class的结构信息：如构造函数，属性和方法等，Java允许用户借由这个Class相关的元信息对象间接调用Class对象的功能。&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;">
+<meta property="og:image" content="http://images.cnitblog.com/blog/400827/201409/172116264092898.png">
+<meta property="og:image" content="http://images.cnitblog.com/blog/400827/201409/172118431435624.png">
+<meta property="og:image" content="http://images.cnitblog.com/blog/400827/201409/172122331434025.png">
+<meta property="og:image" content="http://images.cnitblog.com/blog/400827/201409/172123338006093.png">
+<meta property="og:image" content="http://images.cnitblog.com/blog/400827/201409/172124489257909.png">
+<meta property="og:image" content="http://images.cnitblog.com/blog/400827/201409/172127007684697.png">
+<meta property="og:image" content="http://images.cnitblog.com/blog/400827/201409/172128068463077.png">
+<meta property="og:image" content="http://images.cnitblog.com/blog/400827/201409/172128597681209.png">
+<meta property="og:updated_time" content="2017-05-12T08:04:23.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="转载:Java类加载机制">
+<meta name="twitter:description" content="一、Java类加载机制1．概述&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;Class文件由类装载器装载后，在JVM中将形成一份描述Class结构的元信息对象，通过该元信息对象可以获知Class的结构信息：如构造函数，属性和方法等，Java允许用户借由这个Class相关的元信息对象间接调用Class对象的功能。&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;">
+<meta name="twitter:image" content="http://images.cnitblog.com/blog/400827/201409/172116264092898.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://bloodorange2017.github.io/archives/2017/05/12/class-01/"/>
+
+
+
+
+
+  <title>转载:Java类加载机制 | XueCheng Notes</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">XueCheng Notes</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Where there is a will, there is a way.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/05/12/class-01/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="XueCheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XueCheng Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">转载:Java类加载机制</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-12T16:02:45+08:00">
+                2017-05-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <div id="tony_body"><br><h2>一、Java类加载机制</h2><br></div><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">1．概述</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Class文件由类装载器装载后，在JVM中将形成一份描述Class结构的元信息对象，通过该元信息对象可以获知Class的结构信息：如构造函数，属性和方法等，Java允许用户借由这个Class相关的元信息对象间接调用Class对象的功能。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;虚拟机把描述类的数据从class文件加载到内存，并对数据进行校验，转换解析和初始化，最终形成可以被虚拟机直接使用的Java类型，这就是虚拟机的类加载机制。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">2．工作机制</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;类装载器就是寻找类的字节码文件，并构造出类在JVM内部表示的对象组件。在Java中，类装载器把一个类装入JVM中，要经过以下步骤：</span></p><br><p class="p0" style="margin-left: 60px;"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(1)&nbsp;装载：查找和导入Class文件；</span></p><br><p class="p0" style="margin-left: 60px;"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(2)&nbsp;链接：把类的二进制数据合并到JRE中；</span></p><br><p class="p0" style="margin-left: 60px;"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(a)校验：检查载入Class文件数据的正确性；</span></p><br><p class="p0" style="margin-left: 60px;"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(b)准备：给类的静态变量分配存储空间；</span></p><br><p class="p0" style="margin-left: 60px;"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(c)解析：将符号引用转成直接引用；</span></p><br><p class="p0" style="margin-left: 60px;"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(3)&nbsp;初始化：对类的静态变量，静态代码块执行初始化操作</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;"><img style="display: block; margin-left: auto; margin-right: auto;" src="http://images.cnitblog.com/blog/400827/201409/172116264092898.png" alt=""></span></p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp; &nbsp; &nbsp; Java程序可以动态扩展是由运行期动态加载和动态链接实现的；比如：如果编写一个使用接口的应用程序，可以等到运行时再指定其实际的实现(多态)，解析过程有时候还可以在初始化之后执行；比如：动态绑定(多态)；</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="background-color: #ff0000;">【类初始化】</span>&nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(1)&nbsp;遇到new、getstatic、putstatic或invokestatic这4条字节码指令时，如果类没有进行过初始化，则需要先触发其初始化。生成这4条指令的最常见的Java代码场景是：使用new关键字实例化对象的时候，读取或设置一个类的静态字段（被final修饰、已在编译期把结果放入常量池的静态字段除外）的时候，以及调用一个类的静态方法的时候。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(2)&nbsp;使用java.lang.reflect包的方法对类进行反射调用的时候，如果类没有进行过初始化，则需要先触发其初始化。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(3)&nbsp;当初始化一个类的时候，如果发现其父类还没有进行过初始化，则需要先触发其父类的初始化。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp; &nbsp; &nbsp; (4)当虚拟机启动时，用户需要指定一个要执行的主类（包含main()方法的那个类），虚拟机会先初始化这个主类。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">只有上述四种情况会触发初始化，也称为对一个类进行主动引用，除此以外，所有其他方式都不会触发初始化，称为被动引用</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">代码清单1</span></p><br><p class="p0" style="margin-left: 60px;"><span style="font-family: 'courier new', courier; font-size: 16px;"><img style="float: left;" src="http://images.cnitblog.com/blog/400827/201409/172118431435624.png" alt=""></span></p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">上述代码运行后，只会输出【—SuperClass&nbsp;init】,&nbsp;而不会输出【SubClass&nbsp;init】,<span style="background-color: #33cccc;">对于静态字段，只有直接定义这个字段的类才会被初始化</span>,因此，通过子类来调用父类的静态字段，只会触发父类的初始化,但是这是要看不同的虚拟机的不同实现。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">代码清单2</span></p><br><p class="p0" style="margin-left: 60px;"><span style="font-family: 'courier new', courier; font-size: 16px;"><img style="float: left;" src="http://images.cnitblog.com/blog/400827/201409/172122331434025.png" alt=""></span></p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">此处不会引起SuperClass的初始化，但是却触发了【[Ltest.SuperClass】的初始化，通过arr.toString()可以看出，对于用户代码来说，这不是一个合法的类名称，它是由虚拟机自动生成的，直接继承于Object的子类，创建动作由字节码指令newarray触发,此时数组越界检查也会伴随数组对象的所有调用过程，越界检查并不是封装在数组元素访问的类中，而是封装在数组访问的xaload,xastore字节码指令中.</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">代码清单3</span></p><br><p class="p0" style="margin-left: 60px;"><span style="font-family: 'courier new', courier; font-size: 16px;"><img style="float: left;" src="http://images.cnitblog.com/blog/400827/201409/172123338006093.png" alt=""></span></p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">对常量ConstClass.value&nbsp;的引用实际都被转化为NotInitialization类对自身常量池的引用，这两个类被编译成class后不存在任何联系。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="background-color: #ff0000;">【装载】</span></span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp; &nbsp; 在装载阶段，虚拟机需要完成以下3件事情</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(1)&nbsp;通过一个类的全限定名来获取定义此类的二进制字节流</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(2)&nbsp;将这个字节流所代表的静态存储结构转化为方法区的运行时数据结构</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(3)&nbsp;在Java堆中生成一个代表这个类的java.lang.Class对象，作为方法区这些数据的访问入口。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;虚拟机规范中并没有准确说明二进制字节流应该从哪里获取以及怎样获取,这里可以通过定义自己的类加载器去控制字节流的获取方式。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<span style="background-color: #ff0000;">【验证】</span></span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;虚拟机如果不检查输入的字节流，对其完全信任的话，很可能会因为载入了有害的字节流而导致系统奔溃。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<span style="background-color: #ff0000;">【准备】</span></span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp; &nbsp; 准备阶段是正式为类变量分配并设置类变量初始值的阶段，这些内存都将在方法区中进行分配,需要说明的是：</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">这时候进行内存分配的仅包括类变量(被static修饰的变量),而不包括实例变量,实例变量将会在对象实例化时随着对象一起分配在Java堆中;这里所说的初始值&ldquo;通常情况&rdquo;是数据类型的零值，假如:</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">public&nbsp;static&nbsp;int&nbsp;value&nbsp;=&nbsp;123;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">value在准备阶段过后的初始值为0而不是123,而把value赋值的putstatic指令将在初始化阶段才会被执行</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;</span>&nbsp;</p><br><div id="tony_body"><br><h2>二、类加载器与双亲委派模型</h2><br></div><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="background-color: #c0c0c0;">类加载器</span></span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(1)&nbsp;Bootstrap&nbsp;ClassLoader&nbsp;:&nbsp;将存放于&lt;JAVA_HOME&gt;\lib目录中的，或者被-Xbootclasspath参数所指定的路径中的，并且是虚拟机识别的（仅按照文件名识别，如&nbsp;rt.jar&nbsp;名字不符合的类库即使放在lib目录中也不会被加载）类库加载到虚拟机内存中。启动类加载器无法被Java程序直接引用</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(2)&nbsp;Extension&nbsp;ClassLoader&nbsp;:&nbsp;将&lt;JAVA_HOME&gt;\lib\ext目录下的，或者被java.ext.dirs系统变量所指定的路径中的所有类库加载。开发者可以直接使用扩展类加载器。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(3)&nbsp;Application&nbsp;ClassLoader&nbsp;:&nbsp;负责加载用户类路径(ClassPath)上所指定的类库,开发者可直接使用。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></p><br><p class="p0" style="text-align: center;"><span style="font-family: 'courier new', courier; font-size: 16px;">双亲委派模型</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;"><img style="display: block; margin-left: auto; margin-right: auto;" src="http://images.cnitblog.com/blog/400827/201409/172124489257909.png" alt=""></span></p><br><p class="p0">&nbsp;</p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">工作过程：如果一个类加载器接收到了类加载的请求，它首先把这个请求委托给他的父类加载器去完成，每个层次的类加载器都是如此，因此所有的加载请求都应该传送到顶层的启动类加载器中，只有当父加载器反馈自己无法完成这个加载请求（它在搜索范围中没有找到所需的类）时，子加载器才会尝试自己去加载。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;好处：java类随着它的类加载器一起具备了一种带有优先级的层次关系。例如类java.lang.Object，它存放在rt.jar中，无论哪个类加载器要加载这个类，最终都会委派给启动类加载器进行加载，因此Object类在程序的各种类加载器环境中都是同一个类。相反，如果用户自己写了一个名为java.lang.Object的类，并放在程序的Classpath中，那系统中将会出现多个不同的Object类，java类型体系中最基础的行为也无法保证，应用程序也会变得一片混乱。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;java.lang.ClassLoader中几个最重要的方法:</span></p><br><div class="cnblogs_code"><br><pre><span style="font-family: 'courier new', courier; font-size: 16px;"><span style="color: #008000;">//</span><span style="color: #008000;">加载指定名称（包括包名）的二进制类型，供用户调用的接口</span><br><span style="color: #0000ff;">public</span> Class&lt;?&gt;<span style="color: #000000;"> loadClass(String name);<br></span><span style="color: #008000;">//</span><span style="color: #008000;">加载指定名称（包括包名）的二进制类型，同时指定是否解析（但是，这里的resolve参数不一定真正能达到解析的效果），供继承用</span><br><span style="color: #0000ff;">protected</span> synchronized Class&lt;?&gt;<span style="color: #000000;"> loadClass(String name, boolean resolve);<br></span><span style="color: #0000ff;">protected</span> Class&lt;?&gt;<span style="color: #000000;"> findClass(String name)<br></span><span style="color: #008000;">//</span><span style="color: #008000;">定义类型，一般在findClass方法中读取到对应字节码后调用，可以看出不可继承（说明：JVM已经实现了对应的具体功能，解析对应的字节码，产生对应的内部数据结构放置到方法区，所以无需覆写，直接调用就可以了）</span><br><span style="color: #0000ff;">protected</span> final Class&lt;?&gt; defineClass(String name, <span style="color: #0000ff;">byte</span>[] b, <span style="color: #0000ff;">int</span> off, <span style="color: #0000ff;">int</span> len) throws ClassFormatError{}</span></pre><br></div><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">如下是实现双亲委派模型的主要代码：</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;"><img style="float: left;" src="http://images.cnitblog.com/blog/400827/201409/172127007684697.png" alt=""></span></p><br><p>&nbsp;</p><br><div id="tony_body"><br><p>&nbsp;</p><br><p>&nbsp;</p><br><p>&nbsp;</p><br><p>&nbsp;</p><br><p>&nbsp;</p><br><p>&nbsp;</p><br><p>&nbsp;</p><br><p>&nbsp;</p><br><p>&nbsp;</p><br><p>&nbsp;</p><br><h2>三、反射</h2><br></div><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Reflection机制允许程序在正在执行的过程中，利用Reflection&nbsp;APIs取得任何已知名称的类的内部信息，包括：package、&nbsp;type&nbsp;parameters、&nbsp;superclass、&nbsp;implemented&nbsp;interfaces、&nbsp;inner&nbsp;classes、&nbsp;outer&nbsp;classes、&nbsp;fields、&nbsp;constructors、&nbsp;methods、&nbsp;modifiers等，并可以在执行的过程中，动态生成instances、变更fields内容或唤起methods。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1、获取构造方法</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">Class类提供了四个public方法，用于获取某个类的构造方法。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">Constructor&nbsp;getConstructor(Class[]&nbsp;params) &nbsp; &nbsp;&nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">根据构造函数的参数，返回一个具体的具有public属性的构造函数</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">　　　　Constructor&nbsp;getConstructors() &nbsp; &nbsp;&nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">返回所有具有public属性的构造函数数组</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">　　　　Constructor&nbsp;getDeclaredConstructor(Class[]&nbsp;params) &nbsp; &nbsp;&nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">根据构造函数的参数，返回一个具体的构造函数（不分public和非public属性）</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">　　　　Constructor&nbsp;getDeclaredConstructors() &nbsp; &nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">返回该类中所有的构造函数数组（不分public和非public属性）</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;"><img style="float: left;" src="http://images.cnitblog.com/blog/400827/201409/172128068463077.png" alt=""></span></p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">2、获取类的成员方法</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">与获取构造方法的方式相同，存在四种获取成员方法的方式。</span><span style="font-family: 'courier new', courier; font-size: 16px;">　</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">Method&nbsp;getMethod(String&nbsp;name,&nbsp;Class[]&nbsp;params) &nbsp; &nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">根据方法名和参数，返回一个具体的具有public属性的方法</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">　　　　Method[]&nbsp;getMethods() &nbsp; &nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">返回所有具有public属性的方法数组</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">　　　　Method&nbsp;getDeclaredMethod(String&nbsp;name,&nbsp;Class[]&nbsp;params)&nbsp;&nbsp;&nbsp;&nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">根据方法名和参数，返回一个具体的方法（不分public和非public属性）</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">　　　　Method[]&nbsp;getDeclaredMethods() &nbsp; &nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">返回该类中的所有的方法数组（不分public和非public属性）</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">　　</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;"><img style="float: left;" src="http://images.cnitblog.com/blog/400827/201409/172128597681209.png" alt=""></span></p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">3、获取类的成员变量（成员属性）</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">存在四种获取成员属性的方法</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">　　　　Field&nbsp;getField(String&nbsp;name) &nbsp; &nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">根据变量名，返回一个具体的具有public属性的成员变量</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">　　　　Field[]&nbsp;getFields() &nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">返回具有public属性的成员变量的数组</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">　　　　Field&nbsp;getDeclaredField(String&nbsp;name) &nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">根据变量名，返回一个成员变量（不分public和非public属性）</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">　　　　Field[]&nbsp;getDelcaredFields() &nbsp; &nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">返回所有成员变量组成的数组（不分public和非public属性）</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;</span></p><br><p><span style="font-size: 16px;">&nbsp;参考：</span></p><br><p><span style="font-size: 16px;">《深入理解JVM虚拟机》</span></p><br><p><span style="font-size: 16px;"><span style="font-family: 'courier new', courier;"><a href="http://unmi.cc/java-reflectasm-bytecode-usage/" target="_blank">Java 下高效的反射工具包 ReflectASM 使用例解</a></span></span>&nbsp;</p><br><p><span style="font-size: 16px;"><a id="cb_post_title_url" href="http://www.cnblogs.com/mengdd/p/3725472.html" target="_blank" rel="external">ReflectUitls类的编写和对反射机制的解析</a></span></p><br><p>&nbsp;<a href="https://github.com/cglib/cglib" target="_blank">Cglib源码</a></p><div id="MySignature"></div><br><div class="clear"></div><br><div id="blog_post_info_block"><br><div id="BlogPostCategory"></div><br><div id="EntryTag"></div><br><div id="blog_post_info"><br></div>
+
+</div>
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/05/11/restful-02/" rel="next" title="转载:JAX-RS规范基础">
+                <i class="fa fa-chevron-left"></i> 转载:JAX-RS规范基础
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2099/09/09/img-01/" rel="prev" title="欢迎来到薛成的博客">
+                欢迎来到薛成的博客 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://bloodorange2017.github.io/images/img_head_001.jpg"
+               alt="XueCheng" />
+          <p class="site-author-name" itemprop="name">XueCheng</p>
+           
+              <p class="site-description motion-element" itemprop="description">Do one thing at a time, and do well.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text">一、Java类加载机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#undefined"><span class="nav-number">2.</span> <span class="nav-text">二、类加载器与双亲委派模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#undefined"><span class="nav-number">3.</span> <span class="nav-text">三、反射</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">XueCheng</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
