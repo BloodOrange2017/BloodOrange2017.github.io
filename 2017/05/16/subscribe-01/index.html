@@ -1,0 +1,640 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; 订阅发布模式定义了一种一对多的依赖关系，让多个订阅者对象同时监听某一个主题对象。这个主题对象在自身状态变化时，会通知所有订阅者对象，使它们能够自动更新自己的状态。    &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; 将一个系统分割成一系列相互协作的类有一个很不好的副作用，那就是需要维护相应对象间的一致">
+<meta property="og:type" content="article">
+<meta property="og:title" content="转载:订阅发布模式(Subscribe&#x2F;Publish)">
+<meta property="og:url" content="https://bloodorange2017.github.io/archives/2017/05/16/subscribe-01/index.html">
+<meta property="og:site_name" content="XueCheng Notes">
+<meta property="og:description" content="&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; 订阅发布模式定义了一种一对多的依赖关系，让多个订阅者对象同时监听某一个主题对象。这个主题对象在自身状态变化时，会通知所有订阅者对象，使它们能够自动更新自己的状态。    &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; 将一个系统分割成一系列相互协作的类有一个很不好的副作用，那就是需要维护相应对象间的一致">
+<meta property="og:image" content="http://hi.csdn.net/attachment/201001/22/32139_1264124155jcyK.png">
+<meta property="og:image" content="http://hi.csdn.net/attachment/201001/22/32139_12641241575302.png">
+<meta property="og:image" content="http://hi.csdn.net/attachment/201001/22/32139_12641261136vbM.png">
+<meta property="og:updated_time" content="2017-05-16T03:24:22.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="转载:订阅发布模式(Subscribe&#x2F;Publish)">
+<meta name="twitter:description" content="&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; 订阅发布模式定义了一种一对多的依赖关系，让多个订阅者对象同时监听某一个主题对象。这个主题对象在自身状态变化时，会通知所有订阅者对象，使它们能够自动更新自己的状态。    &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; 将一个系统分割成一系列相互协作的类有一个很不好的副作用，那就是需要维护相应对象间的一致">
+<meta name="twitter:image" content="http://hi.csdn.net/attachment/201001/22/32139_1264124155jcyK.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://bloodorange2017.github.io/archives/2017/05/16/subscribe-01/"/>
+
+
+
+
+
+  <title>转载:订阅发布模式(Subscribe/Publish) | XueCheng Notes</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">XueCheng Notes</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Where there is a will, there is a way.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Startseite
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archiv
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/05/16/subscribe-01/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="XueCheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XueCheng Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">转载:订阅发布模式(Subscribe/Publish)</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-16T11:19:45+08:00">
+                2017-05-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <div id="article_content" class="article_content"><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 订阅发布模式定义了一种一对多的依赖关系，让多个订阅者对象同时监听某一个主题对象。这个主题对象在自身状态变化时，会通知所有订阅者对象，使它们能够自动更新自己的状态。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 将一个系统分割成一系列相互协作的类有一个很不好的副作用，那就是需要维护相应对象间的一致性，这样会给维护、扩展和重用都带来不便。当一个对象的改变需要同时改变其他对象，而且它不知道具体有多少对象需要改变时，就可以使用订阅发布模式了。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 一个抽象模型有两个方面，其中一方面依赖于另一方面，这时订阅发布模式可以将这两者封装在独立的对象中，使它们各自独立地改变和复用。订阅发布模式所做的工作其实就是在解耦合。让耦合的双方都依赖于抽象，而不是依赖于具体，从而使得各自的变化都不会影响另一边的变化。</p><br>    <p>在我们日常写程序时，经常遇到下面这种情况：</p><br>    <blockquote><br>    <p>public void 有告警信息产生() <br>{ <br>&nbsp;&nbsp;&nbsp; 刷新界面(); <br>&nbsp;&nbsp;&nbsp; 更新数据库(); <br>&nbsp;&nbsp;&nbsp; 给管理员发Mail(); <br>&nbsp;&nbsp;&nbsp; &hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip;&hellip; <br>}</p><br>    </blockquote><br>    <p>当有告警信息产生时，依次要去执行：刷新界面()、更新数据库()、给管理员发Mail()等操作。表面上看代码写得很工整，其实这里面问题多多：</p><br>    <ul><br>    <li>首先，这完全是面向过程开发，根本不适合大型项目。 </li><br>    <li>第二，代码维护量太大。设想一下，如果产生告警后要执行10多个操作，那这将是个多么大，多少复杂的类呀，时间一长，可能连开发者自己都不知道如何去维护了。 </li><br>    <li>第三，扩展性差。如果产生告警后，要增加一个声音提示()功能，怎么办呢？没错，只能加在有告警信息产生()这个函数中，这样一来，就违反了&ldquo;开放-关闭原则&rdquo;。而且修改了原有的函数，那么在测试时，除了要测新增功能外，还要做原功能的回归测试；在一个大型项目中，做一次回归测试可能要花费大约两周左右的时间，而且前提是新增功能没有影响原来功能及产生新的bug。 </li><br>    </ul><br>    <p>那么如何把有告警信息产生()函数同其他函数进行解耦合呢？别着急，下面就介绍今天的主角—-订阅发布模式。见下图：</p><br>    <p><img style="display: inline; border: 0px;" src="http://hi.csdn.net/attachment/201001/22/32139_1264124155jcyK.png" alt="订阅发布模式1" width="313" height="243"> </p><br>    <p>上面的流程就是对有告警信息产生()这个函数的描述。我们要做的，就是把产生告警和它需要通知的事件进行解耦，让它们之间没有相互依赖的关系，解耦合图如下：</p><br>    <p><img style="display: inline; border: 0px;" src="http://hi.csdn.net/attachment/201001/22/32139_12641241575302.png" alt="订阅发布模式2" width="521" height="207"> </p><br>    <p>事件触发者被抽象出来，称为消息发布者，即图中的P。事件接受都被抽象出来，称为消息订阅者，即图中的S。P与S之间通过S.P（即订阅器）连接。这样就实现了P与S的解耦。首先，P就把消息发送到指定的订阅器上，从始至终，它并不知道也不关心要把消息发向哪个S。S如果想接收消息，就要向订阅器进行订阅，订阅成功后，S就可以接收来自S.P的消息了，从始至终，S并不知道也不关心消息来源于哪个具体的P。同理，S还可以向S.P进行退订操作，成功退订后，S就无法接收到来自指定S.P的消息了。这样就完美的解决了P与S之间的解耦。</p><br>    <p>等等，好像还有一个问题。从图上看，虽然P与S之间完成了解耦，但是P与S.P，S与S.P之间不就又耦合上了吗？其实这个问题好解决，想想我们上篇的<a href="http://blog.csdn.net/tjvictor/archive/2010/01/20/5218401.aspx" target="_blank"><span style="color: #006bad;">装饰模式</span></a>是怎么解耦的？对，就接口。这里我们同样使用接口来解决P与S.P和S与S.P之间的解耦，同时，使用delegate来解决多订阅多发布的机制。</p><br>    <p>下面给出实现代码。由于订阅发布模式涉及P, S.P和S三部份内容，所以代码比较多，也比较长。请大家耐心阅读。</p><br>    <p>首先，为了实现P与S.P, S与S.P之间的解耦，我们需要定义两个接口文件</p><br>    <blockquote><br>    <p>ISubscribe.cs<br>namespace TJVictor.DesignPattern.SubscribePublish<br>{<br>&nbsp;&nbsp;&nbsp; //定义订阅事件<br>&nbsp;&nbsp;&nbsp; public delegate void SubscribeHandle(string str);<br>&nbsp;&nbsp;&nbsp; //定义订阅接口<br>&nbsp;&nbsp;&nbsp; public interface ISubscribe<br>&nbsp;&nbsp;&nbsp; {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; event SubscribeHandle SubscribeEvent;<br>&nbsp;&nbsp;&nbsp; }<br>}</p><br>    </blockquote><br>    <blockquote><br>    <p>IPublish<br>namespace TJVictor.DesignPattern.SubscribePublish<br>{<br>&nbsp;&nbsp;&nbsp; //定义发布事件<br>&nbsp;&nbsp;&nbsp; public delegate void PublishHandle(string str);<br>&nbsp;&nbsp;&nbsp; //定义发布接口<br>&nbsp;&nbsp;&nbsp; public interface IPublish<br>&nbsp;&nbsp;&nbsp; {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; event PublishHandle PublishEvent; </p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; void Notify(string str);<br>&nbsp;&nbsp;&nbsp; }<br>}</p><br>    </blockquote><br>    <p>然后我们来设计订阅器。显然订阅器要实现双向解耦，就一定要继承上面两个接口，这也是我为什么用接口不用抽象类的原因(类是单继承)。</p><br>    <code><br>    <blockquote><br>    <p>namespace TJVictor.DesignPattern.SubscribePublish<br>{<br>&nbsp;&nbsp;&nbsp; public class SubPubComponet : ISubscribe, IPublish<br>&nbsp;&nbsp;&nbsp; {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; private string _subName;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public SubPubComponet(string subName)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; this._subName = subName;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PublishEvent += new PublishHandle(Notify);<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } </p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; #region ISubscribe Members<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; event SubscribeHandle subscribeEvent;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; event SubscribeHandle ISubscribe.SubscribeEvent<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; add { subscribeEvent += value; }<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; remove { subscribeEvent -= value; }<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; #endregion </p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; #region IPublish Members<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public PublishHandle PublishEvent; </p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; event PublishHandle IPublish.PublishEvent<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; add { PublishEvent += value; }<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; remove { PublishEvent -= value; }<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; #endregion </p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public void Notify(string str)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (subscribeEvent != null)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; subscribeEvent.Invoke(string.Format(“消息来源{0}:消息内容:{1}”, _subName, str));<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>&nbsp;&nbsp;&nbsp; }<br>}</p><br>    </blockquote><br>    </code><br>    <p>接下来是设计订阅者S。S类中使用了ISubscribe来与S.P进行解耦。代码如下： </p><br>    <code><br>    <blockquote><br>    <p>namespace TJVictor.DesignPattern.SubscribePublish<br>{<br>&nbsp;&nbsp;&nbsp; public class Subscriber<br>&nbsp;&nbsp;&nbsp; {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; private string _subscriberName; </p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public Subscriber(string subscriberName)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; this._subscriberName = subscriberName;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } </p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public ISubscribe AddSubscribe { set { value.SubscribeEvent += Show; } }<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public ISubscribe RemoveSubscribe { set { value.SubscribeEvent -= Show; } } </p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; private void Show(string str)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Console.WriteLine(string.Format(“我是{0}，我收到订阅的消息是:{1}”, _subscriberName, str));<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>&nbsp;&nbsp;&nbsp; }<br>}</p><br>    </blockquote><br>    </code><br>    <p>最后是发布者P，继承IPublish来对S.P发布消息通知。 </p><br>    <code><br>    <blockquote><br>    <p>namespace TJVictor.DesignPattern.SubscribePublish<br>{<br>&nbsp;&nbsp;&nbsp; public class Publisher:IPublish<br>&nbsp;&nbsp;&nbsp; {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; private string _publisherName; </p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public Publisher(string publisherName)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; this._publisherName = publisherName;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } </p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; private event PublishHandle PublishEvent;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; event PublishHandle IPublish.PublishEvent<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; add { PublishEvent += value; }<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; remove { PublishEvent -= value; }<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; } </p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; public void Notify(string str)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (PublishEvent != null)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PublishEvent.Invoke(string.Format(“我是{0},我发布{1}消息”, _publisherName, str));<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>&nbsp;&nbsp;&nbsp; }<br>}</p><br>    </blockquote><br>    </code><br>    <p>至此，一个简单的订阅发布模式已经完成了。下面是调用代码及运行结果。调用代码模拟了图2中的订阅发布关系，大家可以从代码，运行结果和示例图三方面对照着看。</p><br>    <code><br>    <blockquote><br>    <p>#region TJVictor.DesignPattern.SubscribePublish<br>//新建两个订阅器<br>SubPubComponet subPubComponet1 = new SubPubComponet(“订阅器1”);<br>SubPubComponet subPubComponet2 = new SubPubComponet(“订阅器2”);<br>//新建两个发布者<br>IPublish publisher1 = new Publisher(“TJVictor1”);<br>IPublish publisher2 = new Publisher(“TJVictor2”);<br>//与订阅器关联<br>publisher1.PublishEvent += subPubComponet1.PublishEvent;<br>publisher1.PublishEvent += subPubComponet2.PublishEvent;<br>publisher2.PublishEvent += subPubComponet2.PublishEvent;<br>//新建两个订阅者<br>Subscriber s1 = new Subscriber(“订阅人1”);<br>Subscriber s2 = new Subscriber(“订阅人2”);<br>//进行订阅<br>s1.AddSubscribe = subPubComponet1;<br>s1.AddSubscribe = subPubComponet2;<br>s2.AddSubscribe = subPubComponet2;<br>//发布者发布消息<br>publisher1.Notify(“博客1”);<br>publisher2.Notify(“博客2”);<br>//发送结束符号<br>Console.WriteLine(“”.PadRight(50,’-‘));<br>//s1取消对订阅器2的订阅<br>s1.RemoveSubscribe = subPubComponet2;<br>//发布者发布消息<br>publisher1.Notify(“博客1”);<br>publisher2.Notify(“博客2”);<br>//发送结束符号<br>Console.WriteLine(“”.PadRight(50, ‘-‘));<br>#endregion </p><br>    <p>#region Console.ReadLine();<br>Console.ReadLine();<br>#endregion</p><br>    </blockquote><br>    </code><br>    <p>&nbsp;运行结果图：</p><br>    <p><img src="http://hi.csdn.net/attachment/201001/22/32139_12641261136vbM.png" alt="订阅发布模式3" width="740" height="210"></p><br>    <p>&nbsp;</p><br>    <p>&nbsp;</p><br>    <p>如需转载，请注明本文原创自CSDN TJVictor专栏：<a href="http://blog.csdn.net/tjvictor" target="_blank" rel="external"><span style="color: #006bad;">http://blog.csdn.net/tjvictor</span></a></p><br>    </div> 
+
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/05/16/aop-01/" rel="next" title="转载:Java动态代理的两种实现方法">
+                <i class="fa fa-chevron-left"></i> 转载:Java动态代理的两种实现方法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2099/09/09/img-01/" rel="prev" title="欢迎来到薛成的博客">
+                欢迎来到薛成的博客 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://bloodorange2017.github.io/images/img_head_001.jpg"
+               alt="XueCheng" />
+          <p class="site-author-name" itemprop="name">XueCheng</p>
+           
+              <p class="site-description motion-element" itemprop="description">Do one thing at a time, and do well.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">25</span>
+                <span class="site-state-item-name">Artikel</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">XueCheng</span>
+</div>
+
+
+<div class="powered-by">
+  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
