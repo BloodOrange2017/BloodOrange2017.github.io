@@ -253,6 +253,119 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/05/07/Mysql-db-01/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="XueCheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XueCheng Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/05/07/Mysql-db-01/" itemprop="url">转载:MySQL中的存储引擎讲解（InnoDB,MyISAM,Memory等各存储引擎对比）</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-07T17:17:06+08:00">
+                2017-05-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <div id="article_content" class="article_content"><br><br><p><span style="font-size:18px; color:#009900"><strong>MySQL中的存储引擎：</strong></span></p><br><p><span style="color:rgb(0,153,0)"><span style="font-size:14px">1、存储引擎的概念</span></span></p><br><p><span style="color:rgb(0,153,0)"><span style="font-size:14px">2、查看MySQL所支持的存储引擎</span></span></p><br><p><span style="color:rgb(0,153,0)"><span style="font-size:14px">3、MySQL中几种常用存储引擎的特点</span></span></p><br><p><span style="color:rgb(0,153,0)"><span style="font-size:14px">4、存储引擎之间的相互转化</span></span></p><br><p><span style="font-size:18px"><strong><span style="color:#ff6600">一、存储引擎</span></strong></span></p><br><p><span style="font-size:14px; color:#009900">1、存储引擎其实就是如何实现存储数据，如何为存储的数据建立索引以及如何更新，查询数据等技术实现的方法。</span></p><br><p><span style="font-size:14px; color:#009900">2、MySQL中的数据用各种不同的技术存储在文件（或内存）中，这些技术中的每一种技术都使用不同的存储机制，索引技巧，锁定水平并且最终提供广泛的不同功能和能力。在MySQL中将这些不同的技术及配套的相关功能称为存储引擎。</span></p><br><p><span style="font-size:18px"><span style="color:#ff6600"><strong>二、MySQL 中查看引擎</strong></span></span></p><br><p><span style="color:rgb(0,153,0)"><span style="font-size:14px">1、show&nbsp; engines;&nbsp;&nbsp; // 查看mysql所支持的存储引擎，以及从中得到mysql默认的存储引擎。</span></span></p><br><p><span style="color:rgb(0,153,0)"><span style="font-size:14px">2、show&nbsp; variables&nbsp; like ‘% storage_engine’;&nbsp;&nbsp;&nbsp; //&nbsp;&nbsp;&nbsp;&nbsp;查看mysql&nbsp;默认的存储引擎</span></span></p><br><p><img src="http://img.blog.csdn.net/20150106223151155?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvUUhfSkFWQQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="" height="135" width="570"><br><br></p><br><p><span style="font-size:18px; color:#009900">3、show&nbsp;&nbsp;create&nbsp;&nbsp; table&nbsp; tablename ;&nbsp;&nbsp; //&nbsp;&nbsp;&nbsp;&nbsp;查看具体某一个表所使用的存储引擎，这个默认存储引擎<span style="font-size:18px; color:#009900">被修改了！</span><br><br></span></p><br><p><span style="font-size:18px; color:#009900"><img src="http://img.blog.csdn.net/20150106222921332?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvUUhfSkFWQQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="" height="291" width="646"></span></p><br><p><br><br></p><br><p><span style="font-size:18px; color:#009900">4、show&nbsp; table&nbsp;&nbsp; status&nbsp; from&nbsp; database&nbsp; where&nbsp; name=&quot;tablename&quot;</span></p><br><p><span style="font-size:18px; color:#009900">//准确查看某个数据库中的某一表所使用的存储引擎</span></p><br><p><span style="font-size:18px; color:#009900"><img src="http://img.blog.csdn.net/20150106224114456?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvUUhfSkFWQQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="" height="198" width="907"><br><br></span></p><br><p><span style="font-size:18px"><span style="color:#ff6600"><strong>三、MySQL中常用的几种存储引擎：innoDB、myisam、memory、<span style="font-size:18px">BlackHole</span>以及这几个引擎的讲解</strong></span></span></p><br><p><span style="font-size:18px">innoDB存储引擎<br><br></span></p><br><p><span style="font-size:18px; color:#009900">（1） innodb存储引擎的mysql表提供了事务，回滚以及系统崩溃修复能力和多版本迸发控制的事务的安全。</span></p><br><p><span style="font-size:18px; color:#009900">（2）innodb支持自增长列（auto_increment）,自增长列的&#20540;不能为空，如果在使用的时候为空的话怎会进行自动存现有的&#20540;开始增&#20540;，如果有但是比现在的还大，则就保存这个&#20540;。</span></p><br><p><span style="font-size:18px; color:#009900">（3）innodb存储引擎支持外键（foreign key） ,外键所在的表称为子表而所依赖的表称为父表。</span></p><br><p><span style="font-size:18px; color:#009900">（4）innodb存储引擎最重要的是支持事务，以及事务相关联功能。</span></p><br><p><span style="font-size:18px; color:#009900">（5）innodb存储引擎支持mvcc的行级锁。</span></p><br><p><span style="color:#009900"><span style="font-size:18px">（6）innodb存储引擎索引使用的是B&#43;Tree</span></span></p><br><p><span style="font-size:18px; color:#009900">&nbsp; &nbsp;mvcc类&#20284;于java中的读锁具体介绍可以看这篇文章：<a href="http://blog.csdn.net/chosen0ne/article/details/18093187" target="_blank" rel="external">http://blog.csdn.net/chosen0ne/article/details/18093187</a></span></p><br><p><span style="font-size:18px">MyISAM存储引擎</span></p><br><p><span style="font-size:18px; color:#009900">1、MyISAM&nbsp;&nbsp; 这种存储引擎不支持事务，不支持行级锁，</span><span style="font-size:18px"><span style="color:#cc0000">只支持并发插入的表锁</span></span><span style="font-size:18px; color:#009900">，主要用于高负载的select。</span></p><br><p><span style="font-size:18px; color:#009900">2、<span style="color:rgb(0,153,0); font-size:18px">MyISAM&nbsp;&nbsp;&nbsp;</span>类型的表支持三种不同的存储结构：静态型、动态型、压缩型。</span></p><br><p><span style="font-size:18px; color:#009900">（1）静态型：就是定义的表列的大小是固定（即不含有：xblob、xtext、varchar等长度可变的数据类型），这样mysql就会自动使用静态myisam&#26684;式。</span></p><br><p><span style="font-size:18px; color:#009900">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 使用静态&#26684;式的表的性能比较高，因为在维护和访问的时候以预定&#26684;式存储数据时需要的开销很低。但是这高性能是有空间换来的，因为在定义的时候是固定的，所以不管列中的&#20540;有多大，都会以最大&#20540;为准，占据了整个空间。</span></p><br><p><span style="font-size:18px; color:#009900">（2）动态型：如果列（即使只有一列）定义为动态的（xblob, xtext, varchar等数据类型），这时myisam就自动使用动态型，虽然动态型的表占用了比静态型表较少的空间，但带来了性能的降低，因为如果某个字段的内容发生改变则其位置很可能需要移动，这样就会导致碎片的产生。随着数据变化的怎多，碎片就会增加，数据访问性能就会相应的降低。</span></p><br><p><span style="font-size:18px; color:#009900">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 对于因为碎片的原因而降低数据访问性，有两种解决办法：</span></p><br><p><span style="font-size:18px; color:#009900">&nbsp;&nbsp;&nbsp;&nbsp; @1、尽可能使用静态数据类型</span></p><br><p><span style="font-size:18px; color:#009900">&nbsp;&nbsp;&nbsp;&nbsp; @2、经常使用optimize&nbsp;&nbsp; table语句，他会整理表的碎片，恢复由于表的更新和删除导致的空间丢失。</span></p><br><p><span style="font-size:18px; color:#009900">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (如果存储引擎不支持&nbsp;optimize&nbsp; table&nbsp;&nbsp;&nbsp; 则可以转储并重新加载数据，这样也可以减少碎片)</span></p><br><p><span style="font-size:18px; color:#009900">（3）压缩型：如果在这个数据库中创建的是在整个生命周期内只读的表，则这种情况就是用myisam的压缩型表来减少空间的占用。</span></p><br><p><span style="font-size:18px; color:#009900">3、<span style="color:rgb(0,153,0); font-size:18px">MyISAM也是使用B&#43;tree索引但是和Innodb的在具体实现上有些不同。</span></span></p><br><p><span style="font-size:18px">MEMORY存储引擎</span></p><br><p><span style="font-size:18px; color:#009900">（1）memory存储引擎相比前面的一些存储引擎，有点不一样，其使用存储在内从中的数据来创建表，而且所有的数据也都存储在内存中。</span></p><br><p><span style="font-size:18px; color:#009900">（2）每个基于memory存储引擎的表实际对应一个磁盘文件，该文件的文件名和表名是相同的，类型为.frm。该文件只存储表的结构，而其数据文件，都是存储在内存中，这样有利于对数据的快速处理，提高整个表的处理能力。</span></p><br><p><span style="font-size:18px; color:#009900">（3）memory存储引擎默认使用哈希（HASH）索引，其速度比使用B-&#43;Tree型要快，如果读者希望使用B树型，则在创建的时候可以引用。</span></p><br><p><span style="font-size:18px; color:#009900">（4）memory存储引擎文件数据都存储在内存中，如果mysqld进程发生异常，重启或关闭机器这些数据都会消失。所以memory存储引擎中的表的生命周期很短，一般只使用一次。</span></p><br><p><span style="font-size:18px">BlackHole存储引擎（黑洞引擎）</span></p><br><p><span style="font-size:18px; color:#009900">（1）支持事务，而且支持mvcc的行级锁，主要用于日志记录或同步归档，这个存储引擎除非有特别目的，否则不适合使用！</span></p><br><p><span style="font-size:18px"><span style="color:#ff6600"><strong>四、各存储引擎相互转化</strong></span></span></p><br><p><span style="font-size:18px; color:#009900">1、alter&nbsp; table&nbsp; tablename&nbsp; engine = INnodb /MyISAM/Memory&nbsp;&nbsp;&nbsp; //&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 修改了这个表的存储引擎<br><br></span></p><br><p><span style="font-size:18px; color:#009900">优点：简单，而且适合所有的引擎。</span></p><br><p><span style="font-size:18px; color:#009900">缺点：（1）、这种转化方式需要大量的时间&nbsp;和I/O，mysql要执行从旧表&nbsp;到新表的一行一行的复制所以效率比较低</span></p><br><p><span style="font-size:18px; color:#009900">（2）、在转化这期间源表加了读锁</span></p><br><p><span style="font-size:18px; color:#009900">（3）、从一种引擎到另一种引擎做表转化，所有属于原始引擎的专用特性都会丢失，比如从innodb到&nbsp;myisam&nbsp;则&nbsp;innodb的索引会丢失！</span></p><br><p><span style="font-size:18px; color:#009900">2、使用dump（转储）&nbsp;import（导入）</span></p><br><p><span style="font-size:18px; color:#009900">优点：使用mysqldump这个工具将修改的数据导出后会以 .sql&nbsp;的文件保存，你可以对这个文件进行操作，所以你有更多更好的控制，&nbsp;如修改表名，修改存储引擎等！</span></p><br><p><span style="font-size:18px; color:#009900">看看导出的一个表：</span></p><br><p><span style="font-size:18px; color:#009900"><img src="http://img.blog.csdn.net/20150106232647565?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvUUhfSkFWQQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="" height="90" width="600"></span></p><br><p><span style="font-size:18px; color:#009900"><img src="http://img.blog.csdn.net/20150106232849355?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvUUhfSkFWQQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""></span></p><br><p><span style="font-size:18px; color:#009900"><img src="http://img.blog.csdn.net/20150106232845781?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvUUhfSkFWQQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""></span></p><br><p><span style="font-size:18px; color:#009900">以上就是使用mysqldump&nbsp;导出来的表&nbsp;即&nbsp;一个 .sql&nbsp;文件&nbsp;你可以按照需求编写这个文件，在将这个文件导入就ok!</span></p><br><p><span style="font-size:18px; color:#009900">3、第一种方式简便，第二种方式安全，这第三种方式就算是前两种方式的折中吧，&nbsp;create&nbsp; select:</span></p><br><p><span style="font-size:18px; color:#009900">(1)、&nbsp;create&nbsp;&nbsp;table&nbsp;&nbsp; newtable&nbsp; like&nbsp; oldtable;</span></p><br><p><span style="font-size:18px; color:#009900">(2)、alter&nbsp; table&nbsp; newtable engine= innodb/ myisam / memory<br><br></span></p><br><p><span style="font-size:18px; color:#009900">(3)、insert&nbsp; into&nbsp; newtable&nbsp; select <em> from&nbsp; oldtable;</em></span></p><br><p><span style="font-size:18px; color:#009900">如果数据量不大的话这种方式还是挺好的！</span></p><br><p><span style="font-size:18px; color:#009900">还有更高效的办法就是&nbsp;增量填充，在填充完每个增量数据块之后提交一次事务，这样就不会导致撤销日志文件过大；</span></p><br><p><span style="font-size:18px; color:#009900">（1）start&nbsp; transaction</span></p><br><p><span style="font-size:18px; color:#009900">（2）insert&nbsp;into&nbsp;newtable&nbsp;&nbsp;select &nbsp;&nbsp;from&nbsp;oldtable&nbsp; where&nbsp; id(主键)&nbsp;between x and y;</span></p><br><p><span style="font-size:18px; color:#009900">（3）&nbsp;commit</span></p><br><p><span style="font-size:18px; color:#009900">这样等数据填充之后有了需要的新表，旧表也存在，不需要的haunt可以删除，很方便！<br><br></span></p><br><p><br><br></p><br><br></div>
+
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/05/05/sysgc_01/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -744,7 +857,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">25</span>
+                <span class="site-state-item-count">26</span>
                 <span class="site-state-item-name">Artikel</span>
               </a>
             </div>
