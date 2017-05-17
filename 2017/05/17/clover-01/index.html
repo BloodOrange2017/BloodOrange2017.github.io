@@ -1,0 +1,662 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="1、clover分布式调度介绍clover分布式任务调度是完全使用Java技术自主开发特点如下:1、防单点故障2、job可部署多台，但任务调度时，只有一台参执行。如果一台下线，clover选择其他已在zookeeper注册job来执行。3、可管理监控程序 ，相关负责人的job不可用会发送邮件通知4、提供管理后台，可手动停止任务，设置任务执行频率、恢复策略。人工干预指定哪些job来工作，可查看任务执">
+<meta property="og:type" content="article">
+<meta property="og:title" content="转载:clover分布式任务调度系统">
+<meta property="og:url" content="https://bloodorange2017.github.io/archives/2017/05/17/clover-01/index.html">
+<meta property="og:site_name" content="XueCheng Notes">
+<meta property="og:description" content="1、clover分布式调度介绍clover分布式任务调度是完全使用Java技术自主开发特点如下:1、防单点故障2、job可部署多台，但任务调度时，只有一台参执行。如果一台下线，clover选择其他已在zookeeper注册job来执行。3、可管理监控程序 ，相关负责人的job不可用会发送邮件通知4、提供管理后台，可手动停止任务，设置任务执行频率、恢复策略。人工干预指定哪些job来工作，可查看任务执">
+<meta property="og:image" content="http://img.blog.csdn.net/20150203135721930?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="http://img.blog.csdn.net/20150203135740926?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="http://img.blog.csdn.net/20150203135912753?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="http://img.blog.csdn.net/20150203135929128?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="http://img.blog.csdn.net/20150203140331474?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="http://img.blog.csdn.net/20150203140708147?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="http://img.blog.csdn.net/20150203141102023?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="http://img.blog.csdn.net/20150203141252253?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="http://img.blog.csdn.net/20150203141331545?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="http://img.blog.csdn.net/20150203141429733?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="http://img.blog.csdn.net/20150203141515971?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="http://img.blog.csdn.net/20150203141826952?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="http://img.blog.csdn.net/20150203142007224?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="http://img.blog.csdn.net/20150203142101704?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="http://img.blog.csdn.net/20150203142212560?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="http://img.blog.csdn.net/20150203142358000?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="http://img.blog.csdn.net/20150203142635482?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="http://img.blog.csdn.net/20150203142908456?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="http://img.blog.csdn.net/20150203143040590?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="http://img.blog.csdn.net/20150203143138321?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="http://img.blog.csdn.net/20150203143230055?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="http://img.blog.csdn.net/20150203143333563?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="http://img.blog.csdn.net/20150203143542539?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="http://img.blog.csdn.net/20150203143631465?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="http://img.blog.csdn.net/20150203143700529?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:updated_time" content="2017-05-17T09:39:32.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="转载:clover分布式任务调度系统">
+<meta name="twitter:description" content="1、clover分布式调度介绍clover分布式任务调度是完全使用Java技术自主开发特点如下:1、防单点故障2、job可部署多台，但任务调度时，只有一台参执行。如果一台下线，clover选择其他已在zookeeper注册job来执行。3、可管理监控程序 ，相关负责人的job不可用会发送邮件通知4、提供管理后台，可手动停止任务，设置任务执行频率、恢复策略。人工干预指定哪些job来工作，可查看任务执">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20150203135721930?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://bloodorange2017.github.io/archives/2017/05/17/clover-01/"/>
+
+
+
+
+
+  <title>转载:clover分布式任务调度系统 | XueCheng Notes</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">XueCheng Notes</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Where there is a will, there is a way.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/05/17/clover-01/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="XueCheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XueCheng Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">转载:clover分布式任务调度系统</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-17T17:36:39+08:00">
+                2017-05-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <div id="article_content" class="article_content"><br><br><p><span style="color:#ff0000"><span style="font-size:20pt; font-family:微软雅黑"><strong>1、clover</strong></span><span style="font-size:20pt; font-family:微软雅黑"><strong>分布式调度介绍</strong></span></span></p><br><p><span style="font-size:20pt; font-family:微软雅黑"><strong></strong></span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:Arial">c</span><span style="font-family:Arial">lover</span><span style="font-family:宋体">分布式任务调度是完全使用</span><span style="font-family:Arial">Java</span><span style="font-family:宋体">技术自主开发</span><span style="font-family:Arial"></span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:宋体">特点如下</span><span style="font-family:Arial">:</span><span style="font-family:Arial"></span><span style="font-family:Arial"></span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:Arial">1</span><span style="font-family:宋体">、防</span><span style="font-family:宋体">单点故障</span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:Arial">2</span><span style="font-family:宋体">、</span><span style="font-family:Arial">job</span><span style="font-family:宋体">可部署多台</span><span style="font-family:宋体">，但任务调度</span><span style="font-family:宋体">时，只有一台</span><span style="font-family:宋体">参执行</span><span style="font-family:宋体">。如果一台下线，</span><span style="font-family:Arial"></span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:Arial">clover</span><span style="font-family:宋体">选择其他已在</span><span style="font-family:Arial">zookeeper</span><span style="font-family:宋体">注册</span><span style="font-family:Arial">job</span><span style="font-family:宋体">来执行。</span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:Arial">3</span><span style="font-family:宋体">、可</span><span style="font-family:宋体">管理</span><span style="font-family:宋体">监控程序 ，相关负责人的</span><span style="font-family:Arial">job</span><span style="font-family:宋体">不可用会发送邮件通知</span><span style="font-family:Arial"></span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:Arial">4</span><span style="font-family:宋体">、提供</span><span style="font-family:宋体">管理后台，</span><span style="font-family:宋体">可手动停止任务，设置任务执行</span><span style="font-family:宋体">频率、恢复策</span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:宋体">略。人工干预指定</span><span style="font-family:宋体">哪些</span><span style="font-family:Arial">job</span><span style="font-family:宋体">来</span><span style="font-family:宋体">工作，可</span><span style="font-family:宋体">查看任务执行进度、任务执行</span><span style="font-family:宋体">失败时会收到</span><span style="font-family:宋体">报警并记录日志。</span><span style="font-family:Arial"></span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:Arial">5</span><span style="font-family:宋体">、执行中的任务，但未执行完成，不会再次调度任务</span><span style="font-family:Arial"></span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:Arial">6</span><span style="font-family:宋体">、支持灾难重现，</span><span style="font-family:Arial">server</span><span style="font-family:宋体">端不可用，但</span><span style="font-family:Arial">client</span><span style="font-family:宋体">端注册</span><span style="font-family:Arial">job</span><span style="font-family:宋体">信息会存储到临时</span><span style="font-family:Arial">DB</span><span style="font-family:宋体">中，当</span><span style="font-family:Arial">server</span><span style="font-family:宋体">重启后立即去读临时</span><span style="font-family:Arial">DB</span><span style="font-family:宋体">并执行相应</span><span style="font-family:Arial">job</span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:Arial">7</span><span style="font-family:宋体">、</span><span style="font-family:Arial">job</span><span style="font-family:宋体">支持</span><span style="font-family:Arial">LOCAL</span><span style="font-family:宋体">、</span><span style="font-family:Arial">REMOTE</span><span style="font-family:宋体">模式以及</span><span style="font-family:Arial">ADD</span><span style="font-family:宋体">、</span><span style="font-family:Arial">UPDATE</span><span style="font-family:宋体">、</span><span style="font-family:Arial">DELETE</span><span style="font-family:宋体">操作</span><span style="font-family:Arial"></span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:Arial">8</span><span style="font-family:宋体">、支持动态创建</span><span style="font-family:Arial">job</span><span style="font-family:宋体">、</span><span style="font-family:Arial">spring</span><span style="font-family:宋体">配置文件和注解方式注册</span><span style="font-family:Arial">job</span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:Arial">9</span><span style="font-family:宋体">、可以查询所有运行报错日志查询</span><span style="font-family:Arial"></span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:Arial">10</span><span style="font-family:宋体">、管理后台可以创建、修改、删除</span><span style="font-family:Arial">job</span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:Arial"><br><br></span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:Arial"></span></p><br><p style="line-height:150%; margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="color:#ff0000"><span style="font-size:24px"><span style="font-family:微软雅黑"><strong>2、&nbsp;</strong></span><span style="font-family:微软雅黑"><strong>总体</strong></span><span style="font-family:微软雅黑"><strong>框架分析</strong></span></span></span><span style="font-family:微软雅黑"><strong></strong></span></p><br><p style="line-height:150%; margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="color:#ff0000"><span style="font-size:24px"><span style="font-family:微软雅黑"><strong><br><br></strong></span></span></span></p><br><p style="line-height:150%; margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:微软雅黑"><strong><img src="http://img.blog.csdn.net/20150203135721930?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br><br></strong></span></p><br><p style="line-height:150%; margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:微软雅黑"><strong><img src="http://img.blog.csdn.net/20150203135740926?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br><br></strong></span></p><br><p style="line-height:150%; margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:微软雅黑"><strong><br><br></strong></span></p><br><p style="line-height:150%; margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:微软雅黑"><strong></strong></span></p><br><p style="line-height:150%; margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="color:#ff0000"><span style="font-size:24px"><span style="font-family:微软雅黑"><strong>3、&nbsp;</strong></span><span style="font-family:微软雅黑"><strong>总体框架分析</strong></span><span style="font-family:微软雅黑"><strong>-</strong></span><span style="font-family:微软雅黑"><strong>系统流程图</strong></span></span></span><span style="font-family:微软雅黑"><strong></strong></span></p><br><p style="line-height:150%; margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="color:#ff0000"><span style="font-size:24px"><span style="font-family:微软雅黑"><strong><br><br></strong></span></span></span></p><br><img src="http://img.blog.csdn.net/20150203135912753?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br><br><p style="line-height:150%; margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:微软雅黑"><strong>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<img src="http://img.blog.csdn.net/20150203135929128?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br><br></strong></span></p><br><p style="line-height:150%; margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:微软雅黑"><strong><br><br></strong></span></p><br><p style="line-height:150%; margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:微软雅黑"><strong><span style="color:#ff0000"><span style="font-size:20pt; font-family:微软雅黑"><strong>4、&nbsp;</strong></span><span style="font-size:20pt; font-family:微软雅黑"><strong>技术</strong></span><span style="font-size:20pt; font-family:微软雅黑"><strong>-</strong></span><span style="font-size:20pt; font-family:微软雅黑"><strong>项目结构</strong></span></span><br><br></strong></span></p><br><p style="line-height:150%; margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:微软雅黑"><strong><span style="color:#ff0000"><span style="font-size:20pt; font-family:微软雅黑"><strong><br><br></strong></span></span></strong></span></p><br><p style="line-height:150%; margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:微软雅黑"><strong><span style="font-size:20pt; font-family:微软雅黑"><strong><img src="http://img.blog.csdn.net/20150203140331474?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br><br></strong></span></strong></span></p><br><p style="line-height:150%; margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:微软雅黑"><strong><span style="font-size:20pt; font-family:微软雅黑"><strong><br><br></strong></span></strong></span></p><br><p style="line-height:150%; margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:微软雅黑"><strong></strong></span></p><br><p style="line-height:150%; margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="color:#ff0000"><span style="font-size:20pt; font-family:微软雅黑"><strong><br><br></strong></span></span></p><br><p style="line-height:150%; margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="color:#ff0000"><span style="font-size:20pt; font-family:微软雅黑"><strong>5、&nbsp;</strong></span><span style="font-size:20pt; font-family:微软雅黑"><strong>涉及技术</strong></span></span><span style="font-size:20pt; font-family:微软雅黑"><strong></strong></span></p><br><p style="line-height:150%; margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="color:#ff0000"><span style="font-size:20pt; font-family:微软雅黑"><strong><br><br></strong></span></span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:Arial">MongoDB</span><span style="font-family:宋体">集群</span><span style="font-family:Arial">:</span><span style="font-family:宋体">负责存储</span><span style="font-family:Arial">clover</span><span style="font-family:宋体">所有数据信息，当初想考虑使用</span><span style="font-family:Arial">LevelDB</span><span style="font-family:宋体">，但不方便管理，</span><span style="font-family:Arial">Redis</span><span style="font-family:宋体">完全放弃了，理由是对于频繁写操作性能下降、总有连接超时</span><span style="font-family:Arial"></span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:Arial">ZK</span><span style="font-family:宋体">集群</span><span style="font-family:Arial">:</span><span style="font-family:宋体">负责</span><span style="font-family:Arial">server</span><span style="font-family:宋体">和</span><span style="font-family:Arial">client</span><span style="font-family:宋体">启动注册信息，所有</span><span style="font-family:Arial">server</span><span style="font-family:宋体">、</span><span style="font-family:Arial">client</span><span style="font-family:宋体">信息都是有读写操作权限，目的防止被他人或程序修改</span><span style="font-family:Arial"></span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:Arial">ZeroMQ</span><span style="font-family:Arial">:</span><span style="font-family:宋体">负责</span><span style="font-family:Arial">server</span><span style="font-family:宋体">和</span><span style="font-family:Arial">client</span><span style="font-family:宋体">消息通信</span><span style="font-family:Arial">&amp;</span><span style="font-family:宋体">后台管理页面创建、修改、删除</span><span style="font-family:Arial">job</span><span style="font-family:宋体">通信</span><span style="font-family:Arial"></span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:宋体">使用</span><span style="font-family:Arial">ZeroMQ</span><span style="font-family:宋体">的理由</span><span style="font-family:Arial">:</span><span style="font-family:宋体">就是快，就是那么任性，流式技术框架</span><span style="font-family:Arial">storm</span><span style="font-family:宋体">使用，未来会考虑使用</span><span style="font-family:Arial">Spark</span><span style="font-family:宋体">的</span><span style="font-family:Arial">akka</span><span style="font-family:宋体">消息通信框架</span><span style="font-family:Arial"></span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:Arial">Monitor:</span><span style="font-family:宋体">负责死亡心跳检测，监控</span><span style="font-family:Arial">server</span><span style="font-family:宋体">、</span><span style="font-family:Arial">client</span><span style="font-family:宋体">端，使用</span><span style="font-family:Arial">Java<br> Timer</span><span style="font-family:宋体">实现</span><span style="font-family:Arial"></span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:宋体">后台管理页面</span><span style="font-family:Arial">:bootstrap &#43;</span><span style="font-family:Arial">jsp&#43;highcharts</span><span style="font-family:Arial"></span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:Arial">Spring:</span><span style="font-family:宋体">重新定义</span><span style="font-family:Arial">spring</span><span style="font-family:宋体">的</span><span style="font-family:Arial">xsd</span><span style="font-family:宋体">标签以及</span><span style="font-family:Arial">Annotation</span><span style="font-family:宋体">注解方式，注册</span><span style="font-family:Arial">job</span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:Arial">Snappy:</span><span style="font-family:宋体">通信消息压缩方式，减少网络数据传输带宽</span><span style="font-family:Arial"></span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:Arial">Curator</span><span style="font-family:宋体">：监听</span><span style="font-family:Arial">ZK</span><span style="font-family:宋体">数据包变更，并保持到内存中，方便程序快速获取</span><span style="font-family:Arial">server</span><span style="font-family:宋体">和</span><span style="font-family:Arial">client</span><span style="font-family:宋体">端信息</span><span style="font-family:Arial"></span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:Arial">Quartz</span><span style="font-family:宋体">：基于</span><span style="font-family:Arial">quartz</span><span style="font-family:宋体">重写底层定时任务调度，考虑处理各种任务执行规则问题，而选择</span><span style="font-family:Arial">quartz</span><span style="font-family:宋体">来调度任务</span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:宋体"><br><br></span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:宋体"><span style="font-size:20pt; font-family:微软雅黑"><strong><span style="color:#ff0000">6、clover使用</span></strong></span><br><br></span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:宋体"><span style="font-size:20pt; font-family:微软雅黑"><strong><img src="http://img.blog.csdn.net/20150203140708147?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br><br></strong></span></span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:宋体"><span style="font-size:20pt; font-family:微软雅黑"><strong><br><br></strong></span></span></p><br><span style="font-size:24px"><span style="font-family:微软雅黑"><strong>6.3、&nbsp;</strong></span><span style="font-family:微软雅黑"><strong>项目中定义</strong></span><span style="font-family:微软雅黑"><strong>Client</strong></span><span style="font-family:微软雅黑"><strong>JobClass</strong></span></span><br><br><p style="line-height:150%; margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:微软雅黑"><strong><img src="http://img.blog.csdn.net/20150203141102023?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br><br></strong></span></p><br><p style="line-height:150%; margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:微软雅黑"><strong><br><br></strong></span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:微软雅黑"><span style="font-weight:bold"><span style="font-size:24px"><span style="font-family:微软雅黑"><strong><span style="line-height:40px">6.4</span><span style="line-height:150%">、&nbsp;</span></strong></span><span style="line-height:150%; font-family:微软雅黑"><strong>非</strong></span><span style="line-height:150%; font-family:微软雅黑"><strong>spring</strong></span><span style="line-height:150%; font-family:微软雅黑"><strong>项目使用</strong></span><span style="line-height:150%; font-family:微软雅黑"><strong>-</strong></span><span style="line-height:150%; font-family:微软雅黑"><strong>启动</strong></span><span style="line-height:150%; font-family:微软雅黑"><strong>clover-client</strong></span></span><br><br></span></span></p><br><p style="line-height:150%; margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:微软雅黑"><strong><img src="http://img.blog.csdn.net/20150203141252253?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br><br></strong></span></p><br><p style="line-height:150%; margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:微软雅黑"><strong><img src="http://img.blog.csdn.net/20150203141331545?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br><br></strong></span></p><br><img src="http://img.blog.csdn.net/20150203141429733?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br><br><p><span style="font-size:20pt; font-family:微软雅黑"><strong><img src="http://img.blog.csdn.net/20150203141515971?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br><br></strong></span></p><br><p><span style="font-size:20pt; font-family:微软雅黑"><strong><span style="font-family:微软雅黑"><strong><span style="font-family:微软雅黑; font-size:27px; line-height:40px"><strong>6.</strong></span>5、&nbsp;</strong></span><span style="font-family:微软雅黑"><strong>非</strong></span><span style="font-family:微软雅黑"><strong>spring</strong></span><span style="font-family:微软雅黑"><strong>项目</strong></span><span style="font-family:微软雅黑"><strong>使用</strong></span><span style="font-family:微软雅黑"><strong>-</strong></span><span style="font-family:微软雅黑"><strong>启动</strong></span><span style="font-family:微软雅黑"><strong>job</strong></span><br><br></strong></span></p><br><p><span style="font-size:20pt; font-family:微软雅黑"><strong><span style="font-family:微软雅黑"><strong><img src="http://img.blog.csdn.net/20150203141826952?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br><br></strong></span></strong></span></p><br><p><span style="font-size:20pt; font-family:微软雅黑"><strong><span style="font-family:微软雅黑"><strong><br><br></strong></span></strong></span></p><br><p><span style="font-size:20pt; font-family:微软雅黑"><strong><span style="font-family:微软雅黑"><strong></strong></span></strong></span></p><br><p style="line-height:150%; margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-size:20pt; font-family:微软雅黑"><strong><span style="font-family:微软雅黑; font-size:27px; line-height:40px"><strong>6.</strong></span>6、 spring</strong></span><span style="font-size:20pt; font-family:微软雅黑"><strong>项目</strong></span><span style="font-size:20pt; font-family:微软雅黑"><strong>使用</strong></span><span style="font-size:20pt; font-family:微软雅黑"><strong>-</strong></span><span style="font-size:20pt; font-family:微软雅黑"><strong>启动</strong></span><span style="font-size:20pt; font-family:微软雅黑"><strong>clover-client</strong></span><span style="font-size:20pt; font-family:微软雅黑"><strong></strong></span></p><br><p style="line-height:150%; margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-size:20pt; font-family:微软雅黑"><strong><img src="http://img.blog.csdn.net/20150203142007224?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br><br></strong></span></p><br><p><img src="http://img.blog.csdn.net/20150203142101704?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""></p><br><p><br><br></p><br><p><span style="font-size:20pt; font-family:微软雅黑"><strong><span style="font-family:微软雅黑"><strong></strong></span></strong></span></p><br><p style="line-height:150%; margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-size:24px"><span style="font-family:微软雅黑"><strong><span style="font-family:微软雅黑; line-height:40px"><strong>6.</strong></span>7、spring</strong></span><span style="font-family:微软雅黑"><strong>项目使用</strong></span><span style="font-family:微软雅黑"><strong>-</strong></span><span style="font-family:微软雅黑"><strong>启动</strong></span><span style="font-family:微软雅黑"><strong>clover-client</strong></span></span></p><br><p><span style="font-size:20pt; font-family:微软雅黑"><strong><span style="font-family:微软雅黑"><strong><img src="http://img.blog.csdn.net/20150203142212560?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br><br></strong></span></strong></span></p><br><p><span style="font-size:20pt; font-family:微软雅黑"><strong><span style="font-family:微软雅黑"><strong><img src="http://img.blog.csdn.net/20150203142358000?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="" style="font-family:微软雅黑; font-size:27px; font-weight:bold"><br><br></strong></span></strong></span></p><br><p><span style="font-size:20pt; font-family:微软雅黑"><strong><span style="font-family:微软雅黑"><strong><img src="http://img.blog.csdn.net/20150203142635482?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br><br></strong></span></strong></span></p><br><p><span style="font-size:20pt; font-family:微软雅黑"><strong><span style="font-family:微软雅黑"><strong><span style="color:#ff0000">7、后台管理页面</span></strong></span></strong></span></p><br><p><span style="font-size:20pt; font-family:微软雅黑"><strong><span style="font-family:微软雅黑"><strong><span style="color:#ff0000"><br><br></span></strong></span></strong></span></p><br><p><span style="font-family:微软雅黑; color:#ff9900"><span style="font-size:27px"><strong>7.1、主页面</strong></span></span></p><br><p><span style="font-family:微软雅黑"><span style="font-size:27px"><strong><img src="http://img.blog.csdn.net/20150203142908456?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br><br></strong></span></span></p><br><p><span style="font-family:微软雅黑"><span style="font-size:27px"><strong><br><br></strong></span></span></p><br><p><span style="font-size:20pt; font-family:微软雅黑"><strong><span style="font-family:微软雅黑"><strong><span style="color:#ffcc66">7.2、zk管理页面</span></strong></span></strong></span></p><br><p><span style="font-size:20pt; font-family:微软雅黑"><strong><span style="font-family:微软雅黑"><strong><img src="http://img.blog.csdn.net/20150203143040590?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br><br></strong></span></strong></span></p><br><p><span style="font-size:20pt; font-family:微软雅黑"><strong><span style="font-family:微软雅黑"><strong><br><br></strong></span></strong></span></p><br><p><span style="font-size:20pt; font-family:微软雅黑"><strong><span style="font-family:微软雅黑"><strong><span style="color:#ff9900">7.3、job管理页面</span></strong></span></strong></span></p><br><p><span style="font-size:20pt; font-family:微软雅黑"><strong><span style="font-family:微软雅黑"><strong><img src="http://img.blog.csdn.net/20150203143138321?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br><br></strong></span></strong></span></p><br><p><span style="font-size:20pt; font-family:微软雅黑"><strong><span style="font-family:微软雅黑"><strong><br><br></strong></span></strong></span></p><br><p><span style="font-size:20pt; font-family:微软雅黑"><strong><span style="color:#ffcc66">7.4、联系人管理页面</span></strong></span></p><br><p><span style="font-size:20pt; font-family:微软雅黑"><strong><img src="http://img.blog.csdn.net/20150203143230055?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br><br></strong></span></p><br><p><span style="font-size:20pt; font-family:微软雅黑"><strong><br><br></strong></span></p><br><p><span style="font-size:20pt; font-family:微软雅黑"><strong><span style="color:#ffcc33">7.5、日志管理页面</span></strong></span></p><br><p><span style="font-size:20pt; font-family:微软雅黑"><strong><img src="http://img.blog.csdn.net/20150203143333563?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br><br></strong></span></p><br><p><span style="font-size:20pt; font-family:微软雅黑"><strong><span style="color:#ff0000">8、性能分析</span></strong></span></p><br><p><span style="font-size:20pt; font-family:微软雅黑"><strong><span style="color:#ff0000"><br><br></span></strong></span></p><br><p><span style="color:#3333ff"><span style="font-size:20pt; font-family:微软雅黑"><strong>8.1、</strong></span><span style="line-height:150%; font-family:微软雅黑; font-size:20pt"><strong>clover server</strong></span><span style="line-height:150%; font-family:微软雅黑; font-size:20pt"><strong>压力</strong></span></span></p><br><p><span style="line-height:150%; font-family:微软雅黑; font-size:20pt"><strong></strong></span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:Arial">Server</span><span style="font-family:宋体">端只负责任务定时执行和分发到指定</span><span style="font-family:Arial">client</span><span style="font-family:宋体">端，由于使用了</span><span style="font-family:Arial">quartz</span><span style="font-family:宋体">，</span><span style="font-family:Arial">server</span><span style="font-family:宋体">端在定时轮训执行任务以及解析定时任务时间方面，对性能压力减少了很多</span><span style="font-family:Arial"></span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:Arial">Server</span><span style="font-family:宋体">端分发消息，使用</span><span style="font-family:Arial">zeromq</span><span style="font-family:Arial"></span><span style="font-family:宋体">非阻塞方式发送消息给指定</span><span style="font-family:Arial">client</span><span style="font-family:宋体">端，目前部署两台服务器完全胜任所有性能压力</span><span style="font-family:Arial"></span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:Arial">Server</span><span style="font-family:宋体">端支持集群部署，每次</span><span style="font-family:Arial">client</span><span style="font-family:宋体">发送消息随机</span><span style="font-family:Arial">Hash</span><span style="font-family:宋体">到某一台</span><span style="font-family:Arial">server</span><span style="font-family:宋体">服务器</span><span style="font-family:Arial"></span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:宋体">当所有的</span><span style="font-family:Arial">server</span><span style="font-family:宋体">都不可用，为了不影响</span><span style="font-family:Arial">client</span><span style="font-family:宋体">的使用，将会把</span><span style="font-family:Arial">clientjob</span><span style="font-family:宋体">信息存储到临时</span><span style="font-family:Arial">DB</span><span style="font-family:宋体">中，此刻还会发送邮件报警给相关</span><span style="font-family:Arial">server</span><span style="font-family:宋体">负责人，</span><span style="font-family:Arial">server</span><span style="font-family:宋体">立即重启后，会把所有临时</span><span style="font-family:Arial">DB</span><span style="font-family:宋体">中数据读取并执行，此刻</span><span style="font-family:Arial">client</span><span style="font-family:宋体">可以继续收到消息并执行业务逻辑</span><span style="font-family:Arial"></span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:Arial">Server</span><span style="font-family:宋体">端监听所有</span><span style="font-family:Arial">client</span><span style="font-family:宋体">端</span><span style="font-family:Arial">ZK</span><span style="font-family:宋体">消息后放入内存中，当</span><span style="font-family:Arial">client</span><span style="font-family:宋体">端</span><span style="font-family:Arial">zk</span><span style="font-family:宋体">数据信息发送变化后，才修改内存数据，这样可以提供</span><span style="font-family:Arial">server</span><span style="font-family:宋体">端获取</span><span style="font-family:Arial">client</span><span style="font-family:宋体">端</span><span style="font-family:Arial">zk</span><span style="font-family:宋体">信息速度，也减轻了</span><span style="font-family:Arial">zk</span><span style="font-family:宋体">不断被访问的压力</span><span style="font-family:Arial"></span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:宋体"><br><br></span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:宋体"></span></p><br><p style="line-height:150%; margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="color:#3333ff"><span style="font-size:20pt; font-family:微软雅黑"><strong>8.</strong></span><span style="font-size:20pt; font-family:微软雅黑"><strong>2</strong></span><span style="font-size:20pt; font-family:微软雅黑"><strong>zk</strong></span><span style="font-size:20pt; font-family:微软雅黑"><strong>压力</strong></span></span><span style="font-size:20pt; font-family:微软雅黑"><strong></strong></span></p><br><p style="line-height:150%; margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="color:#3333ff"><span style="font-size:20pt; font-family:微软雅黑"><strong><br><br></strong></span></span></p><br><p style="line-height:150%; margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-size:20pt; font-family:微软雅黑"><strong></strong></span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-size:24pt; font-family:宋体">俺真心没啥压力，俺是一个大集群，你们这些大爷和土豪就每次启动容器时候将初始化信息放到我这边，而当你们数据信息发生变化（修改节点数据、节点数据不可用），监听者才会访问俺，其实想想你们没事 肯定不会经常变更数据滴，</span><span style="font-size:24pt; font-family:Arial">(<em>^__^</em>)</span><span style="font-size:24pt; font-family:宋体">，不过<br> 当你们挂了 或者关闭应用程序时候，我会把你们全部删除滴，这就会浪费伦家点时间和力气吧</span><span style="font-size:24pt; font-family:Arial"></span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-size:24pt; font-family:宋体"><br><br></span></p><br><img src="" alt=""><br><br><p style="line-height:150%; margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-size:20pt; font-family:微软雅黑"><strong></strong></span></p><br><p style="line-height:150%; margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="color:#3333ff"><span style="font-size:20pt; font-family:微软雅黑"><strong>8.</strong></span><span style="font-size:20pt; font-family:微软雅黑"><strong>3</strong></span><span style="font-size:20pt; font-family:微软雅黑"><strong>MongoDB</strong></span></span><span style="font-size:20pt; font-family:微软雅黑"><strong></strong></span></p><br><p style="line-height:150%; margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="color:#3333ff"><span style="font-size:20pt; font-family:微软雅黑"><strong><br><br></strong></span></span></p><br><p style="line-height:150%; margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-size:20pt; font-family:微软雅黑"><strong><img src="http://img.blog.csdn.net/20150203143542539?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br><br></strong></span></p><br><p style="line-height:150%; margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-size:20pt; font-family:微软雅黑"><strong><br><br></strong></span></p><br><p style="line-height:150%; margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="color:#3333ff"><span style="font-size:20pt; font-family:微软雅黑"><strong>8.</strong></span><span style="font-size:20pt; font-family:微软雅黑"><strong>4</strong></span><span style="font-size:20pt; font-family:微软雅黑"><strong>zeromq</strong></span></span></p><br><p style="line-height:150%; margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="color:#3333ff"><span style="font-size:20pt; font-family:微软雅黑"><strong><br><br></strong></span></span></p><br><p style="line-height:150%; margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-size:20pt; font-family:微软雅黑"><strong><img src="http://img.blog.csdn.net/20150203143631465?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br><br></strong></span></p><br><p style="line-height:150%; margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-size:20pt; font-family:微软雅黑"><strong><br><br></strong></span></p><br><p style="margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="font-family:宋体"></span></p><br><p style="line-height:150%; margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="color:#3333ff"><span style="font-size:20pt; font-family:微软雅黑"><strong>8.</strong></span><span style="font-size:20pt; font-family:微软雅黑"><strong>5</strong></span><span style="font-size:20pt; font-family:微软雅黑"><strong>zeromq</strong></span><span style="font-size:20pt; font-family:微软雅黑"><strong><br> push/pull</strong></span><span style="font-size:20pt; font-family:微软雅黑"><strong>模式</strong></span></span></p><br><p style="line-height:150%; margin-top:0pt; margin-bottom:0pt; direction:ltr; unicode-bidi:embed; vertical-align:baseline"><br><span style="color:#3333ff"><span style="font-size:20pt; font-family:微软雅黑"><strong><br><br></strong></span></span></p><br><img src="http://img.blog.csdn.net/20150203143700529?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3Rhcmtfc3VtbWVy/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br><br><p><span style="font-size:20pt; font-family:微软雅黑"><strong><br><br></strong></span></p><br><br></div>
+
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/05/16/subscribe-02/" rel="next" title="转载:简述观察者(订阅/发布)模式">
+                <i class="fa fa-chevron-left"></i> 转载:简述观察者(订阅/发布)模式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2099/09/09/img-01/" rel="prev" title="欢迎来到薛成的博客">
+                欢迎来到薛成的博客 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://bloodorange2017.github.io/images/img_head_001.jpg"
+               alt="XueCheng" />
+          <p class="site-author-name" itemprop="name">XueCheng</p>
+           
+              <p class="site-description motion-element" itemprop="description">Do one thing at a time, and do well.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">27</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">XueCheng</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
