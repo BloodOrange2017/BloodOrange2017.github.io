@@ -253,6 +253,119 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/05/11/lock-02/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="XueCheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XueCheng Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/05/11/lock-02/" itemprop="url">转载:synchronized和lock的实现原理</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-11T10:18:33+08:00">
+                2017-05-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <div id="article_content" class="article_content"><br><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>本文转载自<a href="http://wenku.baidu.com/view/41480552f01dc281e53af090.html?re=view" target="_blank" rel="external">http://wenku.baidu.com/view/41480552f01dc281e53af090.html?re=view</a></p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br><span style="line-height:28.8px">目前在Java中存在两种锁机制：synchronized和Lock，Lock接口及其实现类是JDK5增加的内容，其作者是大名鼎鼎的并发专家Doug Lea。本文并不比较synchronized与Lock孰优孰劣，只是介绍二者的实现原理。</span></p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>数据同步需要依赖锁，那锁的同步又依赖谁？synchronized给出的答案是在软件层面依赖JVM，而Lock给出的方案是在硬件层面依赖特殊的CPU指令，大家可能会进一步追问：JVM底层又是如何实现synchronized的？</p><br><h1 style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>一、synchronized的实现：</h1><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>synrhronized关键字简洁、清晰、语义明确，因此即使有了Lock接口，使用的还是非常广泛。其应用层的语义是可以把任何一个非null对象 作为&quot;锁&quot;，当synchronized作用在方法上时，锁住的便是对象实例（this）；当作用在静态方法时锁住的便是对象对应的Class实例，因为 Class数据存在于永久带，因此静态方法锁相当于该类的一个全局锁；当synchronized作用于某一个对象实例时，锁住的便是对应的代码块。在 HotSpot JVM实现中，锁有个专门的名字：对象监视器。&nbsp;</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br><span style="font-size:14px; font-family:Helvetica,Tahoma,Arial,sans-serif; line-height:25px; background-color:rgb(250,250,250)">在java虚拟机中，每个对象和类在逻辑上都是和一个监视器相关联的。&nbsp;</span><br style="font-size:14px; font-family:Helvetica,Tahoma,Arial,sans-serif; line-height:25px; background-color:rgb(250,250,250)"><br><span style="font-size:14px; font-family:Helvetica,Tahoma,Arial,sans-serif; line-height:25px; background-color:rgb(250,250,250)">对于对象来说，相关联的监视器保护对象的实例变量。&nbsp;</span><br style="font-size:14px; font-family:Helvetica,Tahoma,Arial,sans-serif; line-height:25px; background-color:rgb(250,250,250)"><br><span style="font-size:14px; font-family:Helvetica,Tahoma,Arial,sans-serif; line-height:25px; background-color:rgb(250,250,250)">对于类来说，监视器保护类的类变量。</span><br><br></p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br><span style="font-weight:700">1.&nbsp;</span><span style="font-weight:700">线程状态及状态转换</span></p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>当多个线程同时请求某个对象监视器时，对象监视器会设置几种状态用来区分请求的线程：</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>Contention List：所有请求锁的线程将被首先放置到该竞争队列</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>Entry List：Contention List中那些有资&#26684;成为候选人的线程被移到Entry List</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>Wait Set：那些调用wait方法被阻塞的线程被放置到Wait Set</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>OnDeck：任何时刻最多只能有一个线程正在竞争锁，该线程称为OnDeck</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>Owner：获得锁的线程称为Owner</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>!Owner：释放锁的线程</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>下图反映了个状态转换关系：</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br><img alt="JVM底层又是如何实现synchronized的" src="http://static.open-open.com/lib/uploadImg/20121109/20121109112521_220.jpg" width="656" height="288" style="border:0px; vertical-align:middle; max-width:100%"></p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>新请求锁的线程将首先被加入到ConetentionList中，当某个拥有锁的线程（Owner状态）调用unlock之后，如果发现 EntryList为空则从ContentionList中移动线程到EntryList，下面说明下ContentionList和EntryList 的实现方式：</p><br><span style="font-weight:700; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px; line-height:28.8px">1.1 ContentionList</span><span style="color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px; line-height:28.8px">&nbsp;</span><span style="font-weight:700; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px; line-height:28.8px">虚拟队列</span><span style="color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px; line-height:28.8px"></span><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>ContentionList并不是一个真正的Queue，而只是一个虚拟队列，原因在于ContentionList是由Node及其next指 针逻辑构成，并不存在一个Queue的数据结构。ContentionList是一个后进先出（LIFO）的队列，每次新加入Node时都会在队头进行， 通过CAS改变第一个节点的的指针为新增节点，同时设置新增节点的next指向后续节点，而取得操作则发生在队尾。显然，该结构其实是个Lock- Free的队列。</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>因为只有Owner线程才能从队尾取元素，也即线程出列操作无争用，当然也就避免了CAS的ABA问题。</p><br><img alt="JVM底层又是如何实现synchronized的" src="http://static.open-open.com/lib/uploadImg/20121109/20121109112521_981.jpg" width="597" height="217" style="border:0px; vertical-align:middle; max-width:100%; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px; line-height:28.8px"><span style="color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px; line-height:28.8px"></span><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br><span style="font-weight:700">1.2 EntryList</span></p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>EntryList与ContentionList逻辑上同属等待队列，ContentionList会被线程并发访问，为了降低对 ContentionList队尾的争用，而建立EntryList。Owner线程在unlock时会从ContentionList中迁移线程到 EntryList，并会指定EntryList中的某个线程（一般为Head）为Ready（OnDeck）线程。Owner线程并不是把锁传递给 OnDeck线程，只是把竞争锁的权利交给OnDeck，OnDeck线程需要重新竞争锁。这样做虽然牺牲了一定的公平性，但极大的提高了整体吞吐量，在<br> Hotspot中把OnDeck的选择行为称之为“竞争切换”。</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>OnDeck线程获得锁后即变为owner线程，无法获得锁则会依然留在EntryList中，考虑到公平性，在EntryList中的位置不 发生变化（依然在队头）。如果Owner线程被wait方法阻塞，则转移到WaitSet队列；如果在某个时刻被notify/notifyAll唤醒， 则再次转移到EntryList。</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br><span style="font-weight:700">2.&nbsp;</span><span style="font-weight:700">自旋锁</span></p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>那些处于ContetionList、EntryList、WaitSet中的线程均处于阻塞状态，阻塞操作由操作系统完成（在Linxu下通 过pthread_mutex_lock函数）。线程被阻塞后便进入内核（Linux）调度状态，这个会导致系统在用户态与内核态之间来回切换，严重影响 锁的性能</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>缓解上述问题的办法便是自旋，其原理是：当发生争用时，若Owner线程能在很短的时间内释放锁，则那些正在争用线程可以稍微等一等（自旋）， 在Owner线程释放锁后，争用线程可能会立即得到锁，从而避免了系统阻塞。但Owner运行的时间可能会超出了临界&#20540;，争用线程自旋一段时间后还是无法 获得锁，这时争用线程则会停止自旋进入阻塞状态（后退）。基本思路就是自旋，不成功再阻塞，尽量降低阻塞的可能性，这对那些执行时间很短的代码块来说有非 常重要的性能提高。自旋锁有个更贴切的名字：自旋-指数后退锁，也即复合锁。很显然，自旋在多处理器上才有意义。</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>还有个问题是，线程自旋时做些啥？其实啥都不做，可以执行几次for循环，可以执行几条空的汇编指令，目的是占着CPU不放，等待获取锁的机 会。所以说，自旋是把双刃剑，如果旋的时间过长会影响整体性能，时间过短又达不到延迟阻塞的目的。显然，自旋的周期选择显得非常重要，但这与操作系统、硬 件体系、系统的负载等诸多场景相关，很难选择，如果选择不当，不但性能得不到提高，可能还会下降，因此大家普遍认为自旋锁不具有扩展性。</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>自旋优化策略</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>对自旋锁周期的选择上，HotSpot认为最佳时间应是一个线程上下文切换的时间，但目前并没有做到。经过调查，目前只是通过汇编暂停了几个CPU周期，除了自旋周期选择，HotSpot还进行许多其他的自旋优化策略，具体如下：</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>如果平均负载小于CPUs则一直自旋</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>如果有超过(CPUs/2)个线程正在自旋，则后来线程直接阻塞</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>如果正在自旋的线程发现Owner发生了变化则延迟自旋时间（自旋计数）或进入阻塞</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>如果CPU处于节电模式则停止自旋</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>自旋时间的最坏情况是CPU的存储延迟（CPU A存储了一个数据，到CPU B得知这个数据直接的时间差）</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>自旋时会适当放弃线程优先级之间的差异</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>那synchronized实现何时使用了自旋锁？答案是在线程进入ContentionList时，也即第一步操作前。线程在进入等待队列时 首先进行自旋尝试获得锁，如果不成功再进入等待队列。这对那些已经在等待队列中的线程来说，稍微显得不公平。还有一个不公平的地方是自旋线程可能会抢占了 Ready线程的锁。自旋锁由每个监视对象维护，每个监视对象一个。</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br><span style="font-weight:700">3. JVM1.6</span><span style="font-weight:700">偏向锁</span></p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>在JVM1.6中引入了偏向锁，偏向锁主要解决无竞争下的锁性能问题，首先我们看下无竞争下锁存在什么问题：</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>现在几乎所有的锁都是可重入的，也即已经获得锁的线程可以多次锁住/解锁监视对象，按照之前的HotSpot设计，每次加锁/解锁都会涉及到一些CAS操 作（比如对等待队列的CAS操作），CAS操作会延迟本地调用，因此偏向锁的想法是一旦线程第一次获得了监视对象，之后让监视对象“偏向”这个 线程，之后的多次调用则可以避免CAS操作，说白了就是置个变量，如果发现为true则无需再走各种加锁/解锁流程。但还有很多概念需要解释、很多引入的 问题需要解决：</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br><span style="font-weight:700">3.1 CAS</span><span style="font-weight:700">及</span><span style="font-weight:700">SMP</span><span style="font-weight:700">架构</span></p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>CAS为什么会引入本地延迟？这要从SMP（对称多处理器）架构说起，下图大概表明了SMP的结构：</p><br><img alt="JVM底层又是如何实现synchronized的" src="http://static.open-open.com/lib/uploadImg/20121109/20121109112521_777.jpg" width="544" height="220" style="border:0px; vertical-align:middle; max-width:100%; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px; line-height:28.8px"><span style="color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px; line-height:28.8px"></span><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>其意思是所有的CPU会共享一条系统总线（BUS），靠此总线连接主存。每个核都有自己的一级缓存，各核相对于BUS对称分布，因此这种结构称为“对称多处理器”。</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>而CAS的全称为Compare-And-Swap，是一条CPU的原子指令，其作用是让CPU比较后原子地更新某个位置的&#20540;，经过调查发现， 其实现方式是基于硬件平台的汇编指令，就是说CAS是靠硬件实现的，JVM只是封装了汇编调用，那些AtomicInteger类便是使用了这些封装后的 接口。</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>Core1和Core2可能会同时把主存中某个位置的&#20540;Load到自己的L1 Cache中，当Core1在自己的L1 Cache中修改这个位置的&#20540;时，会通过总线，使Core2中L1 Cache对应的&#20540;“失效”，而Core2一旦发现自己L1 Cache中的&#20540;失效（称为Cache命中缺失）则会通过总线从内存中加载该地址最新的&#20540;，大家通过总线的来回通信称为“Cache一致性流量”，因为总 线被设计为固定的“通信能力”，如果Cache一致性流量过大，总线将成为瓶颈。而当Core1和Core2中的&#20540;再次一致时，称为“Cache一致<br> 性”，从这个层面来说，锁设计的终极目标便是减少Cache一致性流量。</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>而CAS恰好会导致Cache一致性流量，如果有很多线程都共享同一个对象，当某个Core CAS成功时必然会引起总线风暴，这就是所谓的本地延迟，本质上偏向锁就是为了消除CAS，降低Cache一致性流量。</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br><span style="font-weight:700">Cache</span><span style="font-weight:700">一致性：</span></p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>上面提到Cache一致性，其实是有协议支持的，现在通用的协议是MESI（最早由Intel开始支持），具体参考：<a target="_blank" href="http://en.wikipedia.org/wiki/MESI_protocol" rel="nofollow" style="color:rgb(0,95,169); text-decoration:none; background-color:transparent">http://en.wikipedia.org/wiki/MESI_protocol</a>，以后会仔细讲解这部分。</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br><span style="font-weight:700">Cache</span><span style="font-weight:700">一致性流量的例外情况：</span></p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>其实也不是所有的CAS都会导致总线风暴，这跟Cache一致性协议有关，具体参考：<a target="_blank" href="http://blogs.oracle.com/dave/entry/biased_locking_in_hotspot" rel="nofollow" style="color:rgb(0,95,169); text-decoration:none; background-color:transparent">http://blogs.oracle.com/dave/entry/biased_locking_in_hotspot</a></p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>NUMA(Non Uniform Memory Access Achitecture）架构：</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>与SMP对应还有非对称多处理器架构，现在主要应用在一些高端处理器上，主要特点是没有总线，没有公用主存，每个Core有自己的内存，针对这种结构此处不做讨论。</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br><span style="font-weight:700">3.2&nbsp;</span><span style="font-weight:700">偏向解除</span></p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>偏向锁引入的一个重要问题是，在多争用的场景下，如果另外一个线程争用偏向对象，拥有者需要释放偏向锁，而释放的过程会带来一些性能开销，但总体说来偏向锁带来的好处还是大于CAS代价的。</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br><span style="font-weight:700">4.&nbsp;</span><span style="font-weight:700">总结</span></p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>关于锁，JVM中还引入了一些其他技术比如锁膨胀等，这些与自旋锁、偏向锁相比影响不是很大，这里就不做介绍。</p><br><p style="margin-top:0px; margin-bottom:25px; line-height:28.8px; color:rgb(64,64,64); font-family:&quot;Microsoft YaHei&quot;,Verdana,sans-serif,SimSun; font-size:16px"><br>通过上面的介绍可以看出，synchronized的底层实现主要依靠Lock-Free的队列，基本思路是自旋后阻塞，竞争切换后继续竞争锁，稍微牺牲了公平性，但获得了高吞吐量。</p><br><h1>二、lock的实现</h1><br><div>前文（深入JVM锁机制-synchronized）分析了JVM中的synchronized实现，本文继续分析JVM中的另一种锁Lock的实现。与synchronized不同的是，Lock完全用Java写成，在java这个层面是无关JVM实现的。&nbsp;<br><br>在 java.util.concurrent.locks包中有很多Lock的实现类，常用的有ReentrantLock、 ReadWriteLock（实现类ReentrantReadWriteLock），其实现都依赖 java.util.concurrent.AbstractQueuedSynchronizer类，实现思路都大同小异，因此我们以 ReentrantLock作为讲解切入点。<br><br></div><br><div><br><br></div><br><div>1、ReentrantLock的调用过程</div><br><div>经过观察ReentrantLock把所有Lock接口的操作都委派到一个Sync类上，该类继承了AbstractQueuedSynchronizer：&nbsp;<br><br>static abstract class Sync extends AbstractQueuedSynchronizer&nbsp;</div><br><div>Sync又有两个子类：<br><br>final static class NonfairSync extends Sync &nbsp; view plain&nbsp;<br><br>final static class FairSync extends Sync &nbsp;&nbsp;<br><br>显然是为了支持公平锁和非公平锁而定义，默认情况下为非公平锁。<br><br></div><br><p><img src="http://img.blog.csdn.net/20160816130147073?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br><br></p><br><p>其实通过上面调用过程及AbstractQueuedSynchronizer的注释可以发现，AbstractQueuedSynchronizer中抽象了绝大多数Lock的功能，而只把tryAcquire方法延迟到子类中实现。 tryAcquire方法的语义在于用具体子类判断请求线程是否可以获得锁，无论成功与否AbstractQueuedSynchronizer都将处理后面的流程。<br><br></p><br><p>2、锁实现</p><br><p>简单说来，AbstractQueuedSynchronizer会把所有的请求线程构成一个CLH队列，当一个线程执行完毕（lock.unlock()）时会激活自己的后继节点，但正在执行的线程并不在队列中，而那些等待执行的线程全 部处于阻塞状态，经过调查线程的显式阻塞是通过调用LockSupport.park()完成，而LockSupport.park()则调用 sun.misc.Unsafe.park()本地方法，再进一步，HotSpot在Linux中中通过调用pthread_mutex_lock函数把<br> 线程交给系统内核进行阻塞。<br><br></p><br><p><img src="http://img.blog.csdn.net/20160816130836911?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""><br><br></p><br><p>与synchronized相同的是，这也是一个虚拟队列，不存在队列实例，仅存在节点之间的前后关系。令人疑惑的是为什么采用CLH队列呢？原生的CLH队列是用于自旋锁，但Doug Lea把其改造为阻塞锁。&nbsp;<br><br>当有线程竞争锁时，该线程会首先尝试获得锁，这对于那些已经在队列中排队的线程来说显得不公平，这也是非公平锁的由来，与synchronized实现类&#20284;，这样会极大提高吞吐量。&nbsp;如果已经存在Running线程，则新的竞争线程会被追加到队尾，具体是采用基于CAS的Lock-Free算法，因为线程并发对Tail调用CAS可能会 导致其他线程CAS失败，解决办法是循环CAS直至成功。<br><br></p><br><p><br><br></p><br><p>AbstractQueuedSynchronizer通过构造一个基于阻塞的CLH队列容纳所有的阻塞线程，而对该队列的操作均通过Lock-Free（CAS）操作，但对已经获得锁的线程而言，ReentrantLock实现了偏向锁的功能。&nbsp;<br><br>synchronized 的底层也是一个基于CAS操作的等待队列，但JVM实现的更精细，把等待队列分为ContentionList和EntryList，目的是为了降低线程的出列速度；当然也实现了偏向锁，从数据结构来说二者设计没有本质区别。但synchronized还实现了自旋锁，并针对不同的系统和硬件体系进行了优 化，而Lock则完全依靠系统阻塞挂起等待线程。&nbsp;<br><br>当然Lock比synchronized更适合在应用层扩展，可以继承 AbstractQueuedSynchronizer定义各种实现，比如实现读写锁（ReadWriteLock），公平或不公平锁；同时，Lock对 应的Condition也比wait/notify要方便的多、灵活的多。<br><br></p><br><br></div>
+
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/05/10/lock-01/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -971,119 +1084,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/05/09/jsf-02/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="XueCheng">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="XueCheng Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/05/09/jsf-02/" itemprop="url">转载：服务化框架技术选型与京东JSF解密</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Veröffentlicht am</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-09T09:59:31+08:00">
-                2017-05-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <div class="text clear" itemprop="articleBody"><br>        <p>　　作者：章耿，原京东资深架构师，曾负责京东服务框架，配置中心等基础平台。近十年工作经验，专注于基础中间件等底层技术架构，对分布式系统/服务化/DevOps建设有一定经验。</p><br><p>　　<span style="font-size: 16px;"><strong>|前言</strong></span></p><br><p>　　首先本文不讨论为什么要服务化，包括服务化的优点缺点。</p><br><p>　　其次本文也不讨论什么是微服务，也不讨论微服务和SOA的区别。</p><br><p>　　最后本文也不讨论哪个技术最优。</p><br><p>　　<span style="font-size: 16px;"><strong>|服务化框架构成</strong></span><span style="font-size: 16px;"><strong>最基本的服务框架</strong></span></p><br><p>　　基本的服务化框架包括如下模块：统一的RPC框架，服务注册中心，管理平台。</p><br><p>　　有了这三个模块，就能实现基本的服务化。下面对三个模块进行具体分析。</p><br><p>　　<span style="font-size: 16px;"><strong>RPC框架选型</strong></span></p><br><p>　　为什么一定要是统一的RPC框架，而不是随便啥框架，这里主要是为了技术对齐，减少开发人员的学习成本，减少团队间沟通成本。</p><br><p>　　好，那么选择一个RPC框架，我们都需要考量什么东西呢？</p><br><p>　　这里我总结下：</p><br><ul><br> <li><p>代码规范：例如是对已有代码透明，还是代码生成；</p></li><br> <li><p>通讯协议：例如是TCP还是HTTP；</p></li><br> <li><p>序列化协议：例如是二进制还是文本，是否需要跨语言，性能；</p></li><br> <li><p>IO模型：异步/同步，阻塞/非阻塞；</p></li><br> <li><p>负载均衡：客户端软负载，代理模式，服务端负载。</p></li><br></ul><br><p>　　另外如果是从开源里面选择，那么我们还需要考量：</p><br><ul><br> <li><p>成熟度：包括学习成本，社区热度，文档数，是否有团队维护，稳定性（盲目追求的不一定是最适合）；</p></li><br> <li><p>可扩展性：是否有SPI支持扩展，是否支持上下兼容；</p></li><br> <li><p>跨语言：是否支持跨语言；</p></li><br> <li><p>性能：要想作为RPC框架，性能一般都不会太差 [滑稽脸]。</p></li><br></ul><br><p>　　下面是常见的一些开源框架的比较，大家可以看一下。</p><br><table><br> <tbody><br>  <tr><br>   <th></th><br>   <th><p>　　<span style="font-size: 16px;">thrift</span></p></th><br>   <th><p>　　<span style="font-size: 16px;">RESTful</span></p></th><br>   <th><p>　　<span style="font-size: 16px;">dubbo</span></p></th><br>   <th><p>　　<span style="font-size: 16px;">gRPC</span></p></th><br>  </tr><br>  <tr><br>   <td><p>　　<span style="font-size: 16px;">代码规范</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">基于Thrift的IDL生成代码</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">基于JAX-RS规范</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">无代码入侵</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">基于.Proto生成代码</span></p></td><br>  </tr><br>  <tr><br>   <td><p>　　<span style="font-size: 16px;">通讯协议</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">TCP</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">HTTP</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">TCP</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">HTTP/2</span></p></td><br>  </tr><br>  <tr><br>   <td><p>　　<span style="font-size: 16px;">序列化协议</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">thrift</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">JSON</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">多协议支持，默认hessian</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">protobuf</span></p></td><br>  </tr><br>  <tr><br>   <td><p>　　<span style="font-size: 16px;">IO框架</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">Thrift自带</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">Servlet容器</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">Netty3</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">Netty4</span></p></td><br>  </tr><br>  <tr><br>   <td><p>　　<span style="font-size: 16px;">负载均衡</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">无</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">无</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">客户端软负载</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">无</span></p></td><br>  </tr><br>  <tr><br>   <td><p>　　<span style="font-size: 16px;">跨语言</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">多种语言</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">多种语言</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">Java</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">多种语言</span></p></td><br>  </tr><br>  <tr><br>   <td><p>　　<span style="font-size: 16px;">可扩展性</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">一般</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">好</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">好</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">差</span></p></td><br>  </tr><br> </tbody><br></table><br><p>　　<span style="font-size: 16px;">Ps：SOAP，RMI，Hessian，ICE就不列举了。</span></p><br><p>　　选型小结：</p><br><ul><br> <li><p>如果需要与前端交互的，适合短链接、跨语言的RPC框架，例如RESTful、gRPC等；</p></li><br> <li><p>如果纯粹后台交互的，适合长链接、序列化为二进制的RPC框架，例如thrift、dubbo等更高效；</p></li><br> <li><p>如果是小公司，新公司从头开始推广服务化框架的，可以选择规范化的RPC框架，例如thrift、RESTful、gRPC；</p></li><br> <li><p>如果是已有大量业务代码的再推广服务框架的，那么最好选择无代码入侵的RPC框架，例如dubbo、RESTful。</p></li><br></ul><br><p>　　<span style="font-size: 16px;"><strong>注册中心选型</strong></span></p><br><p>　　注册中心相当于是服务提供者和服务调用者之间的引路人，在服务治理中的作用极为重要。</p><br><p>　　选择注册中心基本要考量：</p><br><ul><br> <li><p>服务注册：接收注册信息的方式；</p></li><br> <li><p>服务订阅：返回订阅信息的方式，推还是拉；</p></li><br> <li><p>状态检测：检测服务端存活状态。</p></li><br></ul><br><p>　　重点提一下这个状态检测，因为这个要是检测不准确会误判，导致严重后果，例如Zookeeper根据服务端注册的临时节点进行状态检测，如果服务端和Zookeeper之间的网络闪断，导致Zookeeper认为服务端已经死了，从而摘掉这个节点；但是其实客户端和服务端直接的网络是好的，这样就有可能把节点全部摘掉，导致无可用节点。</p><br><p>　　如果是从开源里面选择，那么还需要考量：</p><br><ul><br> <li><p>成熟度：包括学习成本，社区热度，文档数（盲目追求的不一定是最适合）；</p></li><br> <li><p>维护成本：注册中心维护；</p></li><br> <li><p>数据解构：是否能快速定位结果，是否能遍历；</p></li><br> <li><p>性能和稳定性；</p></li><br> <li><p>CAP原则：CP（关注一致性）还是AP（关注可用性）。</p></li><br></ul><br><p>　　下面是常见的一些使用开源项目做注册中心的比较，大家可以看一下。</p><br><table><br> <tbody><br>  <tr><br>   <th><span style="font-size: 16px;"></span></th><br>   <th><p>　　<span style="font-size: 16px;">ZooKeeper</span></p></th><br>   <th><p>　　<span style="font-size: 16px;">etcd</span></p></th><br>   <th><p>　　<span style="font-size: 16px;">Consul</span></p></th><br>   <th><p>　　<span style="font-size: 16px;">Eureka</span></p></th><br>  </tr><br>  <tr><br>   <td><p>　　<span style="font-size: 16px;">一致性</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">强一致性paxos</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">强一致性Raft</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">强一致性Raft</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">弱一致性</span></p></td><br>  </tr><br>  <tr><br>   <td><p>　　<span style="font-size: 16px;">数据结构</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">Tree</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">K/V</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">K/V</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">K/V</span></p></td><br>  </tr><br>  <tr><br>   <td><p>　　<span style="font-size: 16px;">通讯协议</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">TCP</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">HTTP、gRPC</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">HTTP、DNS</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">HTTP</span></p></td><br>  </tr><br>  <tr><br>   <td><p>　　<span style="font-size: 16px;">客户端</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">ZKClient</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">/</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">/</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">Eureka-client</span></p></td><br>  </tr><br>  <tr><br>   <td><p>　　<span style="font-size: 16px;">CAP原则</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">CP</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">CP</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">CP</span></p></td><br>   <td><p>　　<span style="font-size: 16px;">AP</span></p></td><br>  </tr><br> </tbody><br></table><br><p>　　Ps：Redis和MySQL没有列举。</p><br><p>　　选型小结：</p><br><ul><br> <li><p>规模小选择CP，RPC框架可以直接接入数据源；</p></li><br> <li><p>规模大选择AP， RPC框架不可以直接接入数据源；</p></li><br> <li><p>存在跨机房，跨地域的尽量不要选有强一致性协议的注册中心；</p></li><br> <li><p>RPC框架必须要有注册中心不可用的容灾策略；</p></li><br> <li><p>服务状态检测十分重要。</p></li><br></ul><br><p>　　<span style="font-size: 16px;"><strong>简易管理端</strong></span></p><br><p>　　管理端没啥特殊要求，最起码能看到服务提供者和调用者即可。</p><br><p>　　<span style="font-size: 16px;"><strong>|完善的服务化框架</strong></span></p><br><p>　　如果需要一个完善的服务化框架，那么必须增加外部模块，常见的模块如下图：</p><br><p>　　<img src="http://img.mp.itc.cn/upload/20161222/eb690025fb4445269b170788c52c70ff_th.png"></p><br><p>　　<span style="font-size: 16px;"><strong>接口文档管理</strong></span></p><br><p>　　提供一个接口文档管理以及接口查询的入口，可以是一个公共的WIKI，也可以是独立的系统，等等。</p><br><p>　　这里可以定义接口的文档，包括接口描述，方法定义，字段定义。可以定义接口的SLA，包括支持的并发数，tp99多少，建议配置是什么。还有就是接口的负责人等一些查询的入口。</p><br><p>　　<span style="font-size: 16px;"><strong>配置中心</strong></span></p><br><p>　　提供一个配置管理的地方，这里说的配置主要指的是服务相关的一些配置。</p><br><p>　　配置包括分组配置、路由策略、黑白名单、降级开关、限流信息、超时时间、重试次数等等，任何可以动态变更的所有数据。</p><br><p>　　这样服务提供者和服务调用者可以不需要重启自己的应用，直接进行配置的变更。</p><br><p>　　配置中心可以独立于注册中心，也可以和注册中心合并。</p><br><p>　　<span style="font-size: 16px;"><strong>监控中心</strong></span></p><br><p>　　监控服务关注接口维度，实例（例如所在JVM实例）维度的数据。RPC框架可以定时上报调用次数，耗时，异常等信息。监控中心可以统计出服务质量信息，也可以进行监控报警。</p><br><p>　　<span style="font-size: 16px;"><strong>分布式跟踪</strong></span></p><br><p>　　区别于监控中心，以调用链的模式对服务进行。RPC框架作为分布式跟踪系统的一个天然埋点，可以很好的进行一个数据输出。</p><br><p>　　<span style="font-size: 16px;"><strong>服务治理（重点）</strong></span></p><br><p>　　我这边列了常见的服务治理功能，例如：</p><br><ul><br> <li><p>服务路由：</p></li><br> <ol><br>  <li><p>权重：例如机器配置高的权重高，机器配置低的权重低；</p></li><br>  <li><p>IP路由：例如某几台机器只能调某几台机器；</p></li><br>  <li><p>分组路由：例如自动根据配置调某个分组；</p></li><br>  <li><p>参数路由：例如根据方法名进行读写分类，或者根据参数走不同的节点；</p></li><br>  <li><p>机房路由：例如只走同机房，或者同机房优先。</p></li><br> </ol><br> <li><p>调用授权：</p></li><br> <ul><br>  <li><p>应用授权：只有授权后的应用才能调这组服务</p></li><br>  <li><p>token：只有token对的调这组服务</p></li><br>  <li><p>黑白名单：只有名单允许的才能调这组服务</p></li><br> </ul><br> <li><p>动态分组：</p></li><br> <ol><br>  <li><p>服务端切分组：可以根据分组的情况，对服务提供者进行一个动态的分组调度；</p></li><br>  <li><p>客户端切分组：可以对调用者进行一个分组调度。</p></li><br> </ol><br> <li><p>调用限流：</p></li><br> <ol><br>  <li><p>服务端限流：服务端基于令牌桶或者漏桶模型进行限流；</p></li><br>  <li><p>客户端限流：根据客户端的标识，进行调用次数限流。</p></li><br> </ol><br> <li><p>灰度部署：</p></li><br> <ol><br>  <li><p>灰度上线：先启动，验证后在提供服务；</p></li><br>  <li><p>预发标识：表示该服务为预发布服务；</p></li><br>  <li><p>接口测试：方便的提供接口自动化功能测试功能。</p></li><br> </ol><br> <li><p>配置下发：</p></li><br> <ol><br>  <li><p>服务配置；</p></li><br>  <li><p>全局配置。</p></li><br> </ol><br> <li><p>服务降级：</p></li><br> <ol><br>  <li><p>Mock：出现异常或者测试情况下，返回Mock数据；</p></li><br>  <li><p>熔断：客户端超时或者服务端超时；</p></li><br>  <li><p>拒绝服务：服务端压力大时，自动拒绝服务，保护自己。</p></li><br> </ol><br></ul><br><span style="font-size: 16px;"><strong>网关</strong></span><br><p>　　RPC框架大部分场景都是自己调用的，什么时候会需要一个网关呢？</p><br><p>　　网关可以提供如下功能：</p><br><ul><br> <li><p>统一的鉴权服务；</p></li><br> <li><p>限流服务；</p></li><br> <li><p>协议转换：外部协议转统一内部协议；</p></li><br> <li><p>Mock：服务测试，降级等；</p></li><br> <li><p>其它一些统一处理逻辑（例如请求解析，响应包装）。</p></li><br></ul><br><p>　　<span style="font-size: 16px;"><strong>服务注册中心Plus</strong></span></p><br><p>　　需要逻辑处理能力，例如对数据进行筛选过滤整合，计算服务路由等功能</p><br><p>　　同时还需要有与RPC框架交互的功能。</p><br><p>　　<span style="font-size: 16px;"><strong>管理端Plus</strong></span></p><br><p>　　管理端除了之前的简单服务管理功能外，还需要提供配置信息展示，监控信息展示，各种维度的数据展示。也就是下面提到的服务治理功能，都可以在管理端进行管理。另外，常见的服务治理功能，我们都可以作为开放服务供开发人员进行一个调用。</p><br><p>　　<span style="font-size: 16px;"><strong>|京东实践</strong></span><span style="font-size: 16px;"><strong>第一代SAF背景</strong></span></p><br><p>　　2012年初，京东从.NET转Java。各个部门，各个业务线都没有一个统一的服务化框架，有的是dubbo，有的是WebService，有的是Hessian等等。</p><br><p>　　同时各个业务系统自己有非常多的业务代码。通过统计接口规模在1K左右，服务节点在50K左右，机器规模在8K左右，机房比较少拓扑简单。</p><br><p>　　所以当时的愿景和目标比较明确：</p><br><ul><br> <li><p>京东系统服务化、API化的从无到有；</p></li><br> <li><p>统一京东的RPC调用框架；</p></li><br> <li><p>稳定可靠；</p></li><br> <li><p>提供简单的服务治理功能。</p></li><br></ul><br><p>　　<span style="font-size: 16px;"><strong>第一代SAF选择</strong></span></p><br><p>　　OK，结合我们的情况和上面的一些选型小结，我们当时的选择如下：</p><br><ul><br> <li><p>RPC框架：基于dubbo2.3.2做配置扩展，以及功能扩展包括：rest（resteasy）、webservice（cxf）、kryo/thrift序列化、调用压缩等；</p></li><br> <li><p>注册中心：Zookeeper，RPC框架直接接入数据源；</p></li><br> <li><p>监控中心：监控服务+HBase；</p></li><br> <li><p>管理平台：读取Zookeeper做管理平台，提供基本的上下线、黑白名单等功能。</p></li><br></ul><br><p>　　于2012年4月上线，最大规模时，接口数3K，接入最大IP数20K。</p><br><p>　　<span style="font-size: 16px;"><strong>第二代JSF背景</strong></span></p><br><p>　　随着京东业务的不断快速增长，接口、机器数也呈数量级增长。同时京东成立子公司，在全国各地新建机房，部署结构也变得比较复杂。</p><br><p>　　加上SAF遗留的一些问题，大概面临如下几点：</p><br><ul><br> <li><p>RPC框架较重，性能有提高的空间；</p></li><br> <li><p>注册中心无业务逻辑，直接对外暴露；</p></li><br> <li><p>京东复杂的部署架构需要更强大灵活的服务治理功能；</p></li><br> <li><p>监控数据不完整，维度不够；</p></li><br> <li><p>无应用依赖关系；</p></li><br> <li><p>跨语言调用需求。</p></li><br></ul><br><p>　　<span style="font-size: 16px;"><strong>第二代JSF选择</strong></span></p><br><p>　　所以在2014年初，我们进行了第二代JSF的一个全部自研过程。</p><br><p>　　我们主要做了如下技术选型：（全部自研）</p><br><ul><br> <li><p>RPC框架：轻量级，更佳的性能，兼容旧版本协议；</p></li><br> <li><p>注册中心：基于DB作为数据源，前置Index服务；支持十倍接入量；部分逻辑放在注册中心减少客户端负担；</p></li><br> <li><p>监控中心：监控Proxy服务+InfluxDB（2015后改为ElasticSearch）；</p></li><br> <li><p>管理端：基于DB，功能更强大，提供完善的服务治理管理功能；打通京东应用管理平台，提供应用依赖关系梳理；</p></li><br> <li><p>HTTP网关：基于Netty，支持跨语言调用。</p></li><br></ul><br><p>　　开发周期：7人/年(2014.1-2015.1)。包括开发、测试、预发、上线、推广。</p><br><p>　　<strong><span style="font-size: 16px;">JSF架构简图</span></strong></p><br><p>　　<img src="http://img.mp.itc.cn/upload/20161222/410a9194179745d58436dd3212cf33f2_th.jpeg"></p><br><p>　　<span style="font-size: 16px;"><strong>JSF注册中心</strong></span></p><br><p>　　京东的注册中心是自研的，基于DB做的数据最终一致，也就是上面说的AP系统。注册中心主要实现的就是服务列表的注册订阅推送，服务配置的获取下发，服务状态的实时查看等功能。注册中心节点是无状态的，可水平扩展的。整个注册中心集群下的所有注册中心几点都是等价的。</p><br><p>　　每个机房部署多个注册中心节点。同机房的RPC框架会优先连本机房的注册中心节点。</p><br><p>　　主要亮点如下：</p><br><ul><br> <li><p>引入Index服务概念：该服务就是一个最简单HTTP的服务，用于找注册中心节点（同机房或者压力最小或者其它特定场景），可以认为是不会挂的服务，RPC框架会优先连该服务拿注册中心地址，这样子的好处是注册中心地址变化后，RPC框架不用修改任何设置；</p></li><br> <li><p>注册中心内存有服务列表全量缓存，连不上数据库也保证可读；</p></li><br> <li><p>数据库的数据结构更适合各种维度展示、过滤、分析等，例如根据分组/IP/应用/机房等不同维度；</p></li><br> <li><p>注册中心就是个JSF服务，监控到压力大即可进行动态水平扩展，dogfooding，注册中心其实是第一个JSF接口；</p></li><br> <li><p>服务列表推送逻辑改进：例如原来100个Provider，现在加1个节点，之前的SAF是需要下发101个节点，自己判断加了哪个节点，进行长链接建立；现在的改进是：修改为下发一个add事件，告知RPC框架加了1个节点，RPC框架进行长链接建立；这样做大大减少了推送的数据量；</p></li><br> <li><p>注册中心与RPC框架可各种交互：注册中心和RPC框架是长链接，而且JSF是支持Callback的，注册中心可以调用RPC框架进行服务列表变化之外的操作；例如查看状态，查看配置，配置下发等。</p></li><br></ul><br><p>　　<span style="font-size: 16px;"><strong>JSF RPC框架</strong></span></p><br><p>　　<img src="http://img.mp.itc.cn/upload/20161222/359c3e5bc12c4480baf8fc7a6e39c1d3_th.jpeg"></p><br><p>　　RPC框架作为服务化里面的最基本的组件，其实都大同小异，因为RPC调用都绕不开代理、网络、序列化这些操作。</p><br><p>　　JSF的RPC框架也类似，主要分为图中的几个模块，下面大概列下一些功能特性：</p><br><ul><br> <li><p>Config：Spring/API/Annotation</p></li><br> <li><p>Proxy: Javassist/JDK</p></li><br> <li><p>Invoker/Filter：内置+自定义，Filter可扩展</p></li><br> <li><p>Client：Failover（默认）/FailFast/TransportPinpoint/MultiClientProxy</p></li><br> <li><p>调用方式：同步（默认）/异步并行/异步回调/Callback/泛化</p></li><br> <li><p>Loadbalance：Random（默认）/Roundrobin/ConsistentHash/ LocalPreference/LeastActiveCall</p></li><br> <li><p>路由：参数路由，分组路由，（IP级别路由逻辑在注册中心做）</p></li><br> <li><p>长连接维护：可用/死亡/亚健康</p></li><br> <li><p>协议：JSF（默认）/SAF(dubbo)/HTTP/Telnet/HTTP2</p></li><br> <li><p>第三方：REST/Webservice</p></li><br> <li><p>序列化：MsgPack（默认）/Hessian/Json/Java/protobuf(c++)</p></li><br> <li><p>压缩：Snappy/LZMA</p></li><br> <li><p>网络：基于Netty4.0，长连接复用</p></li><br> <li><p>线程模型：BOSS+WORKER+BIZ</p></li><br> <li><p>容灾：本地文件</p></li><br> <li><p>请求上下文：IP，参数，隐式传参</p></li><br> <li><p>事件监听：响应事件，连接事件，状态事件</p></li><br> <li><p>分布式跟踪支持：进行数据埋点</p></li><br></ul><br><p>　　<span style="font-size: 16px;"><strong>JSF管理平台</strong></span></p><br><p>　　提供强大管理功能，包括服务管理，监控管理，注册中心管理等功能。</p><br><p>　　<img src="http://img.mp.itc.cn/upload/20161222/bf77964deaa64684b21d5cdb9cb6b05d_th.jpeg"></p><br><p>　　<img src="http://img.mp.itc.cn/upload/20161222/a60cb287c4894d62a23e96914c77f3dc_th.jpeg"></p><br><p>　　<img src="http://img.mp.itc.cn/upload/20161222/9701d21a69c24bc4ab8aa391b6489225_th.jpeg"></p><br><p>　　我们针对服务治理的功能，提供了很多API，可以授权给开发人员或者外部系统使用。例如单元测试调用，限流配置/开关，动态分组，上下线等都提供了开放API。</p><br><p>　　<span style="font-size: 16px;"><strong>JSF HTTP网关</strong></span></p><br><p>　　网关是为了方便跨语言通过HTTP+JSON调用JSF服务，而不需要使用JSF的RPC框架。</p><br><p>　　特性如下：</p><br><ul><br> <li><p>基于Netty4.0实现HTTP网关，没有使用Servlet容器，轻量高效；</p></li><br> <li><p>支持服务自动发现：一般的HTTP服务，外面为了解决单点问题，都会用域名+VIP等实现高可用，故障转移等；现在网关同时原生接入了JSF的注册中心，知道了服务的提供者信息（JSF协议支持HTTP调用）；服务提供者也不用关系扩容缩容导致服务的IP端口发生变化，网关会自动维护服务列表；</p></li><br> <li><p>服务限流：针对方法级+应用进行授权，固定时间只能调用指定次数；同一个方法也只能占用网关内的部分线程；</p></li><br> <li><p>结果统一包装：对异常等响应进行包装。</p></li><br></ul><br><p>　　<span style="font-size: 16px;"><strong>JSF遇到京东弹性云</strong></span></p><br><p>　　京东的JSF服务开发在京东弹性云的研发推广之前完成，自从京东弹性云落地以来，也遇到不少问题。例如：</p><br><ul><br> <li><p>硬件指标：例如使用JDK获取的Docker的指标有些是物理机的，我们需要特殊处理；</p></li><br> <li><p>网络：结合京东的“胖”容器，每个容器其实有实际IP，对外提供服务；</p></li><br> <li><p>轻量：提高启动速度；</p></li><br> <li><p>开放服务：在容器销毁或者非优雅停机的情况下，提供API进行服务治理。</p></li><br></ul><br><p>　　<strong><span style="font-size: 16px;">JSF规模</span></strong></p><br><ul><br> <li><p><span style="font-size: 16px;">接口数：万级</span></p></li><br> <li><p><span style="font-size: 16px;">服务节点数：百万级</span></p></li><br> <li><p><span style="font-size: 16px;">接入实例数：十万级</span></p></li><br> <li><p><span style="font-size: 16px;">框架调用量：每天千亿级别</span></p></li><br> <li><p><span style="font-size: 16px;">监控数据：每天120亿条数据， 1.2T数据量</span></p></li><br> <li><p><span style="font-size: 16px;">HTTP网关：每天百亿级别</span></p></li><br></ul><br><p>　　<strong><span style="font-size: 16px;">|总结</span></strong></p><br><p>　　没有最好，只有最适合！意思就是不要人云亦云，盲目看大公司用什么，现在什么最新，或者什么性能最好。</p><br><p>　　因为架构不是让你一下子设计出来使用一辈子，好的架构都是慢慢演化而来的。不同的架构会做出不同的技术选型。所以无论什么时候都要结合自己的现状以及未来几年的规划，来进行技术选型。</p><br><p>　　It’s just the beginning！</p><br><p>　　服务化框架的选择只是开始，真正的变革是选择后，公司整体业务和开发的变革。这个大家有空可以看看康威定律。</p><br><p>　　======公众号推荐======</p><br><p>　　<span>IPD-Chat</span><span>为京东商城基础平台部门官方公众号。</span></p><br><p>　　<span><span>基础平台部门包括数据库、容器集群、中间件、图片存储、应用架构、机器学习、系统保障等技术方向。</span>运营多个数据中心数万台服务器，支撑京东无数在线任务。</span><span>IPD-Chat</span><span>公众号会对基础平台目前的技术实践方案、最新项目动态等进行分享，纯技术干货，共同寻求突破~欢迎大家多多关注、共同交流！</span></p><br><p>　　『中生代技术』：连接技术大咖的桥梁，促进科技技术的交流。 </p><br><p>　　<img src="http://img.mp.itc.cn/upload/20161222/3fdd1341c9404664be194c89bb1cf0da_th.png"></p><br>        </div>
-
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -1133,7 +1133,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">29</span>
+                <span class="site-state-item-count">30</span>
                 <span class="site-state-item-name">Artikel</span>
               </a>
             </div>
