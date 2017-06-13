@@ -1,0 +1,668 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="翻译自Disruptor git库教程   英文地址获得Disruptor可以通过Maven或者下载jar来安装Disruptor。只要把对应的jar放在Java classpath就可以了。基本的事件生产和消费我们从一个简单的例子开始学习Disruptor：生产者传递一个long类型的值给消费者，而消费者消费这个数据的方式仅仅是把它打印出来。首先声明一个Event来包含需要传递的数据">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Disruptor入门">
+<meta property="og:url" content="https://bloodorange2017.github.io/archives/2017/06/13/disruptor-01/index.html">
+<meta property="og:site_name" content="XueCheng Notes">
+<meta property="og:description" content="翻译自Disruptor git库教程   英文地址获得Disruptor可以通过Maven或者下载jar来安装Disruptor。只要把对应的jar放在Java classpath就可以了。基本的事件生产和消费我们从一个简单的例子开始学习Disruptor：生产者传递一个long类型的值给消费者，而消费者消费这个数据的方式仅仅是把它打印出来。首先声明一个Event来包含需要传递的数据">
+<meta property="og:updated_time" content="2017-06-13T08:25:08.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Disruptor入门">
+<meta name="twitter:description" content="翻译自Disruptor git库教程   英文地址获得Disruptor可以通过Maven或者下载jar来安装Disruptor。只要把对应的jar放在Java classpath就可以了。基本的事件生产和消费我们从一个简单的例子开始学习Disruptor：生产者传递一个long类型的值给消费者，而消费者消费这个数据的方式仅仅是把它打印出来。首先声明一个Event来包含需要传递的数据">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://bloodorange2017.github.io/archives/2017/06/13/disruptor-01/"/>
+
+
+
+
+
+  <title>Disruptor入门 | XueCheng Notes</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">XueCheng Notes</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Where there is a will, there is a way.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Startseite
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archiv
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/06/13/disruptor-01/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="XueCheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XueCheng Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Disruptor入门</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-06-13T16:23:09+08:00">
+                2017-06-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <div class="post_content"><br>      <p>翻译自Disruptor git库教程   <a href="https://github.com/LMAX-Exchange/disruptor/wiki/Getting-Started" target="_blank">英文地址</a></p><br><h2>获得Disruptor</h2><br><p>可以通过<a href="http://mvnrepository.com/artifact/com.lmax/disruptor" target="_blank" rel="external">Maven</a>或者下载<a href="https://github.com/LMAX-Exchange/disruptor/wiki/Downloads" target="_blank" rel="external">jar</a>来安装Disruptor。只要把对应的jar放在Java classpath就可以了。</p><br><h2>基本的事件生产和消费</h2><br><p>我们从一个简单的例子开始学习Disruptor：生产者传递一个long类型的值给消费者，而消费者消费这个数据的方式仅仅是把它打印出来。首先声明一个Event来包含需要传递的数据：</p><br><pre style="color: #000000;"><span class="s2" style="color: #cc7832;">public class </span><span class="s1" style="color: #a9b7c6;">LongEvent {<br>    </span><span class="s2" style="color: #cc7832;">private long </span><span class="s1" style="color: #a9b7c6;">value</span><span class="s2" style="color: #cc7832;">;<br></span><span class="s2" style="color: #cc7832;">    public long </span><span class="s1" style="color: #a9b7c6;">getValue() {<br>        </span><span class="s2" style="color: #cc7832;">return </span><span class="s1" style="color: #a9b7c6;">value</span><span class="s2" style="color: #cc7832;">;</span><span class="s1" style="color: #a9b7c6;"><br>    }<br><br>    </span><span class="s2" style="color: #cc7832;">public void </span><span class="s1" style="color: #a9b7c6;">setValue(</span><span class="s2" style="color: #cc7832;">long </span><span class="s1" style="color: #a9b7c6;">value) {<br>        </span><span class="s2" style="color: #cc7832;">this</span><span class="s1" style="color: #a9b7c6;">.value = value</span><span class="s2" style="color: #cc7832;">;</span><span class="s1" style="color: #a9b7c6;"><br>    }<br>} </span></pre><br><p><span id="more-13560"></span></p><br><p>由于需要让Disruptor为我们创建事件，我们同时还声明了一个EventFactory来实例化Event对象。</p><br><pre><span class="s0" style="color: #cc7832;">public class </span><span class="s1" style="color: #a9b7c6;">LongEventFactory </span><span class="s0" style="color: #cc7832;">implements </span><span class="s1" style="color: #a9b7c6;">EventFactory { </span></pre><br><pre style="color: #000000;"><span class="s1" style="color: #a9b7c6;">    @Override<br>    </span><span class="s0" style="color: #cc7832;">public </span><span class="s1" style="color: #a9b7c6;">Object newInstance() {<br>        </span><span class="s0" style="color: #cc7832;">return new </span><span class="s1" style="color: #a9b7c6;">LongEvent()</span><span class="s0" style="color: #cc7832;">;</span><span class="s1" style="color: #a9b7c6;"><br>    }<br>} </span></pre><br><p>我们还需要一个事件消费者，也就是一个事件处理器。这个事件处理器简单地把事件中存储的数据打印到终端：</p><br><pre style="color: #000000;"><span class="s2" style="color: #629755;">/<strong><br> */</strong></span><span class="s0" style="color: #cc7832;">public class </span><span class="s1" style="color: #a9b7c6;">LongEventHandler </span><span class="s0" style="color: #cc7832;">implements </span><span class="s1" style="color: #a9b7c6;">EventHandler&lt;LongEvent&gt; {<br>    @Override<br>    </span><span class="s0" style="color: #cc7832;">public void </span><span class="s1" style="color: #a9b7c6;">onEvent(LongEvent longEvent</span><span class="s0" style="color: #cc7832;">, long </span><span class="s1" style="color: #a9b7c6;">l</span><span class="s0" style="color: #cc7832;">, boolean </span><span class="s1" style="color: #a9b7c6;">b) </span><span class="s0" style="color: #cc7832;">throws </span><span class="s1" style="color: #a9b7c6;">Exception {<br>        System.out.println(longEvent.getValue())</span><span class="s0" style="color: #cc7832;">;</span><span class="s1" style="color: #a9b7c6;"><br>    }<br>} </span></pre><br><p>事件都会有一个生成事件的源，这个例子中假设事件是由于磁盘IO或者network读取数据的时候触发的，事件源使用一个ByteBuffer来模拟它接受到的数据，也就是说，事件源会在IO读取到一部分数据的时候触发事件（触发事件不是自动的，程序员需要在读取到数据的时候自己触发事件并发布）：</p><br><p>&nbsp;</p><br><pre style="color: #000000;"><span class="s0" style="color: #cc7832;">public class </span><span class="s1" style="color: #a9b7c6;">LongEventProducer {<br>    </span><span class="s0" style="color: #cc7832;">private final </span><span class="s1" style="color: #a9b7c6;">RingBuffer&lt;LongEvent&gt; ringBuffer</span><span class="s0" style="color: #cc7832;">;<br></span><span class="s0" style="color: #cc7832;">    public </span><span class="s1" style="color: #a9b7c6;">LongEventProducer(RingBuffer&lt;LongEvent&gt; ringBuffer) {<br>        </span><span class="s0" style="color: #cc7832;">this</span><span class="s1" style="color: #a9b7c6;">.ringBuffer = ringBuffer</span><span class="s0" style="color: #cc7832;">;</span><span class="s1" style="color: #a9b7c6;"><br>    }<br><br>    </span><span class="s2" style="color: #629755;">/<br>     <em> onData用来发布事件，每调用一次就发布一次事件事件 
+     </em> 它的参数会通过事件传递给消费者<br>     <em> 
+     </em> @param bb<br>     <em>/</em></span><span class="s0" style="color: #cc7832;">public void </span><span class="s1" style="color: #a9b7c6;">onData(ByteBuffer bb) {<br>            </span><span class="s3" style="color: #808080;">//可以把ringBuffer看做一个事件队列，那么next就是得到下面一个事件槽<br></span><span class="s0" style="color: #cc7832;">            long </span><span class="s1" style="color: #a9b7c6;">sequence = ringBuffer.next()</span><span class="s0" style="color: #cc7832;">;</span><span class="s0" style="color: #cc7832;">try </span><span class="s1" style="color: #a9b7c6;">{<br>            </span><span class="s3" style="color: #808080;">//用上面的索引取出一个空的事件用于填充</span><span class="s1" style="color: #a9b7c6;"><br>            LongEvent event = ringBuffer.get(sequence)</span><span class="s0" style="color: #cc7832;">;</span><span class="s3" style="color: #808080;">// for the sequence</span><span class="s1" style="color: #a9b7c6;"><br>            event.setValue(bb.getLong(</span><span class="s4" style="color: #6897bb;">0</span><span class="s1" style="color: #a9b7c6;">))</span><span class="s0" style="color: #cc7832;">;</span><span class="s1" style="color: #a9b7c6;"><br>        } </span><span class="s0" style="color: #cc7832;">finally </span><span class="s1" style="color: #a9b7c6;">{<br>            </span><span class="s3" style="color: #808080;">//发布事件</span><span class="s1" style="color: #a9b7c6;"><br>            ringBuffer.publish(sequence)</span><span class="s0" style="color: #cc7832;">;</span><span class="s1" style="color: #a9b7c6;"><br>        }<br>    }<br>} </span></pre><br><p>很明显的是：当用一个简单队列来发布事件的时候会牵涉更多的细节，这是因为事件对象还需要预先创建。发布事件最少需要两步：获取下一个事件槽并发布事件（发布事件的时候要使用try/finnally保证事件一定会被发布）。如果我们使用RingBuffer.next()获取一个事件槽，那么一定要发布对应的事件。如果不能发布事件，那么就会引起Disruptor状态的混乱。尤其是在多个事件生产者的情况下会导致事件消费者失速，从而不得不重启应用才能会恢复。</p><br><p>Disruptor 3.0提供了lambda式的API。这样可以把一些复杂的操作放在Ring Buffer，所以在Disruptor3.0以后的版本最好使用Event Publisher或者Event Translator来发布事件。</p><br><p>&nbsp;</p><br><pre style="color: #000000;"><span class="s0" style="color: #cc7832;">public class </span><span class="s1" style="color: #a9b7c6;">LongEventProducerWithTranslator {<br>    </span><span class="s3" style="color: #808080;">//一个translator可以看做一个事件初始化器，publicEvent方法会调用它<br></span><span class="s3" style="color: #808080;">    //填充Event<br></span><span class="s0" style="color: #cc7832;">    private static final </span><span class="s1" style="color: #a9b7c6;">EventTranslatorOneArg&lt;LongEvent</span><span class="s0" style="color: #cc7832;">, </span><span class="s1" style="color: #a9b7c6;">ByteBuffer&gt; TRANSLATOR =<br>            </span><span class="s0" style="color: #cc7832;">new </span><span class="s1" style="color: #a9b7c6;">EventTranslatorOneArg&lt;LongEvent</span><span class="s0" style="color: #cc7832;">, </span><span class="s1" style="color: #a9b7c6;">ByteBuffer&gt;() {<br>                </span><span class="s0" style="color: #cc7832;">public void </span><span class="s1" style="color: #a9b7c6;">translateTo(LongEvent event</span><span class="s0" style="color: #cc7832;">, long </span><span class="s1" style="color: #a9b7c6;">sequence</span><span class="s0" style="color: #cc7832;">, </span><span class="s1" style="color: #a9b7c6;">ByteBuffer bb) {<br>                    event.setValue(bb.getLong(</span><span class="s4" style="color: #6897bb;">0</span><span class="s1" style="color: #a9b7c6;">))</span><span class="s0" style="color: #cc7832;">;</span><span class="s1" style="color: #a9b7c6;"><br>                }<br>            }</span><span class="s0" style="color: #cc7832;">;<br></span><span class="s0" style="color: #cc7832;">    private final </span><span class="s1" style="color: #a9b7c6;">RingBuffer&lt;LongEvent&gt; ringBuffer</span><span class="s0" style="color: #cc7832;">;<br></span><span class="s0" style="color: #cc7832;">    public </span><span class="s1" style="color: #a9b7c6;">LongEventProducerWithTranslator(RingBuffer&lt;LongEvent&gt; ringBuffer) {<br>        </span><span class="s0" style="color: #cc7832;">this</span><span class="s1" style="color: #a9b7c6;">.ringBuffer = ringBuffer</span><span class="s0" style="color: #cc7832;">;</span><span class="s1" style="color: #a9b7c6;"><br>    }<br><br>    </span><span class="s0" style="color: #cc7832;">public void </span><span class="s1" style="color: #a9b7c6;">onData(ByteBuffer bb) {<br>        ringBuffer.publishEvent(TRANSLATOR</span><span class="s0" style="color: #cc7832;">, </span><span class="s1" style="color: #a9b7c6;">bb)</span><span class="s0" style="color: #cc7832;">;</span><span class="s1" style="color: #a9b7c6;"><br>    }<br>} </span></pre><br><p>上面写法的另一个好处是，Translator可以分离出来并且更加容易单元测试。Disruptor提供了不同的接口(EventTranslator, EventTranslatorOneArg, EventTranslatorTwoArg, 等等)去产生一个Translator对象。很明显，Translator中方法的参数是通过RingBuffer来传递的。</p><br><p>&nbsp;</p><br><p>最后一步就是把所有的代码组合起来完成一个完整的事件处理系统。Disruptor在这方面做了简化，使用了DSL风格的代码（其实就是按照直观的写法，不太能算得上真正的DSL）。虽然DSL的写法比较简单，但是并没有提供所有的选项。如果依靠DSL已经可以处理大部分情况了。</p><br><p>&nbsp;</p><br><pre style="color: #000000;"><span class="s0" style="color: #cc7832;">public class </span><span class="s1" style="color: #a9b7c6;">LongEventMain {<br>    </span><span class="s0" style="color: #cc7832;">public static void </span><span class="s1" style="color: #a9b7c6;">main(String[] args) </span><span class="s0" style="color: #cc7832;">throws </span><span class="s1" style="color: #a9b7c6;">InterruptedException {<br>        </span><span class="s3" style="color: #808080;">// Executor that will be used to construct new threads for consumers</span><span class="s1" style="color: #a9b7c6;"><br>        Executor executor = Executors.newCachedThreadPool()</span><span class="s0" style="color: #cc7832;">;<br></span><span class="s3" style="color: #808080;">        // The factory for the event</span><span class="s1" style="color: #a9b7c6;"><br>        LongEventFactory factory = </span><span class="s0" style="color: #cc7832;">new </span><span class="s1" style="color: #a9b7c6;">LongEventFactory()</span><span class="s0" style="color: #cc7832;">;<br></span><span class="s3" style="color: #808080;">        // Specify the size of the ring buffer, must be power of 2.<br></span><span class="s0" style="color: #cc7832;">        int </span><span class="s1" style="color: #a9b7c6;">bufferSize = </span><span class="s4" style="color: #6897bb;">1024</span><span class="s0" style="color: #cc7832;">;<br></span><span class="s3" style="color: #808080;">        // Construct the Disruptor</span><span class="s1" style="color: #a9b7c6;"><br>        Disruptor&lt;LongEvent&gt; disruptor = </span><span class="s0" style="color: #cc7832;">new </span><span class="s1" style="color: #a9b7c6;">Disruptor&lt;LongEvent&gt;(factory</span><span class="s0" style="color: #cc7832;">, </span><span class="s1" style="color: #a9b7c6;">bufferSize</span><span class="s0" style="color: #cc7832;">, </span><span class="s1" style="color: #a9b7c6;">executor)</span><span class="s0" style="color: #cc7832;">;<br></span><span class="s3" style="color: #808080;">        // Connect the handler</span><span class="s1" style="color: #a9b7c6;"><br>        disruptor.handleEventsWith(</span><span class="s0" style="color: #cc7832;">new </span><span class="s1" style="color: #a9b7c6;">LongEventHandler())</span><span class="s0" style="color: #cc7832;">;<br></span><span class="s3" style="color: #808080;">        // Start the Disruptor, starts all threads running</span><span class="s1" style="color: #a9b7c6;"><br>        disruptor.start()</span><span class="s0" style="color: #cc7832;">;<br></span><span class="s3" style="color: #808080;">        // Get the ring buffer from the Disruptor to be used for publishing.</span><span class="s1" style="color: #a9b7c6;"><br>        RingBuffer&lt;LongEvent&gt; ringBuffer = disruptor.getRingBuffer()</span><span class="s0" style="color: #cc7832;">;</span><span class="s1" style="color: #a9b7c6;"><br><br>        LongEventProducer producer = </span><span class="s0" style="color: #cc7832;">new </span><span class="s1" style="color: #a9b7c6;">LongEventProducer(ringBuffer)</span><span class="s0" style="color: #cc7832;">;</span><span class="s1" style="color: #a9b7c6;"><br><br>        ByteBuffer bb = ByteBuffer.allocate(</span><span class="s4" style="color: #6897bb;">8</span><span class="s1" style="color: #a9b7c6;">)</span><span class="s0" style="color: #cc7832;">;<br></span><span class="s0" style="color: #cc7832;">        for </span><span class="s1" style="color: #a9b7c6;">(</span><span class="s0" style="color: #cc7832;">long </span><span class="s1" style="color: #a9b7c6;">l = </span><span class="s4" style="color: #6897bb;">0</span><span class="s0" style="color: #cc7832;">; true; </span><span class="s1" style="color: #a9b7c6;">l++) {<br>            bb.putLong(</span><span class="s4" style="color: #6897bb;">0</span><span class="s0" style="color: #cc7832;">, </span><span class="s1" style="color: #a9b7c6;">l)</span><span class="s0" style="color: #cc7832;">;</span><span class="s1" style="color: #a9b7c6;"><br>            producer.onData(bb)</span><span class="s0" style="color: #cc7832;">;</span><span class="s1" style="color: #a9b7c6;"><br>            Thread.sleep(</span><span class="s4" style="color: #6897bb;">1000</span><span class="s1" style="color: #a9b7c6;">)</span><span class="s0" style="color: #cc7832;">;</span><span class="s1" style="color: #a9b7c6;"><br>        }<br>    }<br>} </span></pre><br><h2>使用Java 8</h2><br><p>Disruptor在自己的接口里面添加了对于Java 8 Lambda的支持。大部分Disruptor中的接口都符合Functional Interface的要求（也就是在接口中仅仅有一个方法）。所以在Disruptor中，可以广泛使用Lambda来代替自定义类。</p><br><pre style="color: #000000;"><span class="s0" style="color: #cc7832;">public class </span><span class="s1" style="color: #a9b7c6;">LongEventMainJava8 {<br>    </span><span class="s2" style="color: #629755;">/** 
+      用lambda表达式来注册EventHandler和EventProductor<br>     <em> @param args 
+     </em> @throws InterruptedException<br>     */</span><span class="s0" style="color: #cc7832;">public static void </span><span class="s1" style="color: #a9b7c6;">main(String[] args) </span><span class="s0" style="color: #cc7832;">throws </span><span class="s1" style="color: #a9b7c6;">InterruptedException {<br>        </span><span class="s3" style="color: #808080;">// Executor that will be used to construct new threads for consumers</span><span class="s1" style="color: #a9b7c6;"><br>        Executor executor = Executors.newCachedThreadPool()</span><span class="s0" style="color: #cc7832;">;<br></span><span class="s3" style="color: #808080;">        // Specify the size of the ring buffer, must be power of 2.<br></span><span class="s0" style="color: #cc7832;">        int </span><span class="s1" style="color: #a9b7c6;">bufferSize = </span><span class="s4" style="color: #6897bb;">1024</span><span class="s0" style="color: #cc7832;">;</span><span class="s3" style="color: #808080;">// Construct the Disruptor</span><span class="s1" style="color: #a9b7c6;"><br>        Disruptor&lt;LongEvent&gt; disruptor = </span><span class="s0" style="color: #cc7832;">new </span><span class="s1" style="color: #a9b7c6;">Disruptor&lt;&gt;(LongEvent::</span><span class="s0" style="color: #cc7832;">new, </span><span class="s1" style="color: #a9b7c6;">bufferSize</span><span class="s0" style="color: #cc7832;">, </span><span class="s1" style="color: #a9b7c6;">executor)</span><span class="s0" style="color: #cc7832;">;<br></span><span class="s3" style="color: #808080;">        // 可以使用lambda来注册一个EventHandler</span><span class="s1" style="color: #a9b7c6;"><br>        disruptor.handleEventsWith((event</span><span class="s0" style="color: #cc7832;">, </span><span class="s1" style="color: #a9b7c6;">sequence</span><span class="s0" style="color: #cc7832;">, </span><span class="s1" style="color: #a9b7c6;">endOfBatch) -&gt; System.out.println(</span><span class="s5" style="color: #6a8759;">“Event: “ </span><span class="s1" style="color: #a9b7c6;">+ event.getValue()))</span><span class="s0" style="color: #cc7832;">;<br></span><span class="s3" style="color: #808080;">        // Start the Disruptor, starts all threads running</span><span class="s1" style="color: #a9b7c6;"><br>        disruptor.start()</span><span class="s0" style="color: #cc7832;">;<br></span><span class="s3" style="color: #808080;">        // Get the ring buffer from the Disruptor to be used for publishing.</span><span class="s1" style="color: #a9b7c6;"><br>        RingBuffer&lt;LongEvent&gt; ringBuffer = disruptor.getRingBuffer()</span><span class="s0" style="color: #cc7832;">;</span><span class="s1" style="color: #a9b7c6;"><br><br>        LongEventProducer producer = </span><span class="s0" style="color: #cc7832;">new </span><span class="s1" style="color: #a9b7c6;">LongEventProducer(ringBuffer)</span><span class="s0" style="color: #cc7832;">;</span><span class="s1" style="color: #a9b7c6;"><br><br>        ByteBuffer bb = ByteBuffer.allocate(</span><span class="s4" style="color: #6897bb;">8</span><span class="s1" style="color: #a9b7c6;">)</span><span class="s0" style="color: #cc7832;">;</span><span class="s0" style="color: #cc7832;">for </span><span class="s1" style="color: #a9b7c6;">(</span><span class="s0" style="color: #cc7832;">long </span><span class="s1" style="color: #a9b7c6;">l = </span><span class="s4" style="color: #6897bb;">0</span><span class="s0" style="color: #cc7832;">; true; </span><span class="s1" style="color: #a9b7c6;">l++) {<br>            bb.putLong(</span><span class="s4" style="color: #6897bb;">0</span><span class="s0" style="color: #cc7832;">, </span><span class="s1" style="color: #a9b7c6;">l)</span><span class="s0" style="color: #cc7832;">;</span><span class="s1" style="color: #a9b7c6;"><br>            ringBuffer.publishEvent((event</span><span class="s0" style="color: #cc7832;">, </span><span class="s1" style="color: #a9b7c6;">sequence</span><span class="s0" style="color: #cc7832;">, </span><span class="s1" style="color: #a9b7c6;">buffer) -&gt; event.setValue(buffer.getLong(</span><span class="s4" style="color: #6897bb;">0</span><span class="s1" style="color: #a9b7c6;">))</span><span class="s0" style="color: #cc7832;">, </span><span class="s1" style="color: #a9b7c6;">bb)</span><span class="s0" style="color: #cc7832;">;</span><span class="s1" style="color: #a9b7c6;"><br>            Thread.sleep(</span><span class="s4" style="color: #6897bb;">1000</span><span class="s1" style="color: #a9b7c6;">)</span><span class="s0" style="color: #cc7832;">;</span><span class="s1" style="color: #a9b7c6;"><br>        }<br>    }<br>} </span></pre><br><p>在上面的代码中，有很多自定义类型可以被省略了。还有注意的是：publishEvent方法中仅调用传递给它的参数，并不是直接调用对应的对象。如果把这段代码换成下面的代码：</p><br><p>&nbsp;</p><br><pre><span class="n">ByteBuffer</span> <span class="n">bb</span> <span class="o" style="font-weight: bold;">=</span> <span class="n">ByteBuffer</span><span class="o" style="font-weight: bold;">.</span><span class="na" style="color: teal;">allocate</span><span class="o" style="font-weight: bold;">(</span><span class="mi" style="color: #009999;">8</span><span class="o" style="font-weight: bold;">);</span><br><span class="k" style="font-weight: bold;">for</span> <span class="o" style="font-weight: bold;">(</span><span class="kt" style="font-weight: bold; color: #445588;">long</span> <span class="n">l</span> <span class="o" style="font-weight: bold;">=</span> <span class="mi" style="color: #009999;">0</span><span class="o" style="font-weight: bold;">;</span> <span class="kc" style="font-weight: bold;">true</span><span class="o" style="font-weight: bold;">;</span> <span class="n">l</span><span class="o" style="font-weight: bold;">++)</span><br><span class="o" style="font-weight: bold;">{</span><br>    <span class="n">bb</span><span class="o" style="font-weight: bold;">.</span><span class="na" style="color: teal;">putLong</span><span class="o" style="font-weight: bold;">(</span><span class="mi" style="color: #009999;">0</span><span class="o" style="font-weight: bold;">,</span> <span class="n">l</span><span class="o" style="font-weight: bold;">);</span><br>    <span class="n">ringBuffer</span><span class="o" style="font-weight: bold;">.</span><span class="na" style="color: teal;">publishEvent</span><span class="o" style="font-weight: bold;">((</span><span class="n">event</span><span class="o" style="font-weight: bold;">,</span> <span class="n">sequence</span><span class="o" style="font-weight: bold;">)</span> <span class="o" style="font-weight: bold;">-&gt;</span> <span class="n">event</span><span class="o" style="font-weight: bold;">.</span><span class="na" style="color: teal;">set</span><span class="o" style="font-weight: bold;">(</span><span class="n">bb</span><span class="o" style="font-weight: bold;">.</span><span class="na" style="color: teal;">getLong</span><span class="o" style="font-weight: bold;">(</span><span class="mi" style="color: #009999;">0</span><span class="o" style="font-weight: bold;">)));</span><br>    <span class="n">Thread</span><span class="o" style="font-weight: bold;">.</span><span class="na" style="color: teal;">sleep</span><span class="o" style="font-weight: bold;">(</span><span class="mi" style="color: #009999;">1000</span><span class="o" style="font-weight: bold;">);</span><br><span class="o" style="font-weight: bold;">}</span></pre><br><p>这段代码中有一个捕获参数的lambda，意味着在lambda表达式生成的内部类中会生成一个对象来存储这个捕获的bb对象。这会增加不必要的GC。所以在需要较低GC水平的情况下最好把所有的参数都通过publishEvent传递。</p><br><p>&nbsp;</p><br><p>由于在Java 8中方法引用也是一个lambda，因此还可以把上面的代码改成下面的代码：</p><br><pre style="color: #000000;"><span class="s0" style="color: #cc7832;">public class </span><span class="s1" style="color: #a9b7c6;">LongEventWithMethodRef {<br>    </span><span class="s0" style="color: #cc7832;">public static void </span><span class="s1" style="color: #a9b7c6;">handleEvent(LongEvent event</span><span class="s0" style="color: #cc7832;">, long </span><span class="s1" style="color: #a9b7c6;">sequence</span><span class="s0" style="color: #cc7832;">, boolean </span><span class="s1" style="color: #a9b7c6;">endOfBatch)<br>    {<br>        System.out.println(event.getValue())</span><span class="s0" style="color: #cc7832;">;</span><span class="s1" style="color: #a9b7c6;"><br>    }<br><br>    </span><span class="s0" style="color: #cc7832;">public static void </span><span class="s1" style="color: #a9b7c6;">translate(LongEvent event</span><span class="s0" style="color: #cc7832;">, long </span><span class="s1" style="color: #a9b7c6;">sequence</span><span class="s0" style="color: #cc7832;">, </span><span class="s1" style="color: #a9b7c6;">ByteBuffer buffer)<br>    {<br>        event.setValue(buffer.getLong(</span><span class="s3" style="color: #6897bb;">0</span><span class="s1" style="color: #a9b7c6;">))</span><span class="s0" style="color: #cc7832;">;</span><span class="s1" style="color: #a9b7c6;"><br>    }<br><br>    </span><span class="s0" style="color: #cc7832;">public static void </span><span class="s1" style="color: #a9b7c6;">main(String[] args) </span><span class="s0" style="color: #cc7832;">throws </span><span class="s1" style="color: #a9b7c6;">Exception<br>    {<br>        </span><span class="s4" style="color: #808080;">// Executor that will be used to construct new threads for consumers</span><span class="s1" style="color: #a9b7c6;"><br>        Executor executor = Executors.newCachedThreadPool()</span><span class="s0" style="color: #cc7832;">;<br></span><span class="s4" style="color: #808080;">        // Specify the size of the ring buffer, must be power of 2.<br></span><span class="s0" style="color: #cc7832;">        int </span><span class="s1" style="color: #a9b7c6;">bufferSize = </span><span class="s3" style="color: #6897bb;">1024</span><span class="s0" style="color: #cc7832;">;<br></span><span class="s4" style="color: #808080;">        // Construct the Disruptor</span><span class="s1" style="color: #a9b7c6;"><br>        Disruptor&lt;LongEvent&gt; disruptor = </span><span class="s0" style="color: #cc7832;">new </span><span class="s1" style="color: #a9b7c6;">Disruptor&lt;&gt;(LongEvent::</span><span class="s0" style="color: #cc7832;">new, </span><span class="s1" style="color: #a9b7c6;">bufferSize</span><span class="s0" style="color: #cc7832;">, </span><span class="s1" style="color: #a9b7c6;">executor)</span><span class="s0" style="color: #cc7832;">;<br></span><span class="s4" style="color: #808080;">        // Connect the handler</span><span class="s1" style="color: #a9b7c6;"><br>        disruptor.handleEventsWith(LongEventWithMethodRef::handleEvent)</span><span class="s0" style="color: #cc7832;">;<br></span><span class="s4" style="color: #808080;">        // Start the Disruptor, starts all threads running</span><span class="s1" style="color: #a9b7c6;"><br>        disruptor.start()</span><span class="s0" style="color: #cc7832;">;<br></span><span class="s4" style="color: #808080;">        // Get the ring buffer from the Disruptor to be used for publishing.</span><span class="s1" style="color: #a9b7c6;"><br>        RingBuffer&lt;LongEvent&gt; ringBuffer = disruptor.getRingBuffer()</span><span class="s0" style="color: #cc7832;">;</span><span class="s1" style="color: #a9b7c6;"><br><br>        LongEventProducer producer = </span><span class="s0" style="color: #cc7832;">new </span><span class="s1" style="color: #a9b7c6;">LongEventProducer(ringBuffer)</span><span class="s0" style="color: #cc7832;">;</span><span class="s1" style="color: #a9b7c6;"><br><br>        ByteBuffer bb = ByteBuffer.allocate(</span><span class="s3" style="color: #6897bb;">8</span><span class="s1" style="color: #a9b7c6;">)</span><span class="s0" style="color: #cc7832;">;<br></span><span class="s0" style="color: #cc7832;">        for </span><span class="s1" style="color: #a9b7c6;">(</span><span class="s0" style="color: #cc7832;">long </span><span class="s1" style="color: #a9b7c6;">l = </span><span class="s3" style="color: #6897bb;">0</span><span class="s0" style="color: #cc7832;">; true; </span><span class="s1" style="color: #a9b7c6;">l++)<br>        {<br>            bb.putLong(</span><span class="s3" style="color: #6897bb;">0</span><span class="s0" style="color: #cc7832;">, </span><span class="s1" style="color: #a9b7c6;">l)</span><span class="s0" style="color: #cc7832;">;</span><span class="s1" style="color: #a9b7c6;"><br>            ringBuffer.publishEvent(LongEventWithMethodRef::translate</span><span class="s0" style="color: #cc7832;">, </span><span class="s1" style="color: #a9b7c6;">bb)</span><span class="s0" style="color: #cc7832;">;</span><span class="s1" style="color: #a9b7c6;"><br>            Thread.sleep(</span><span class="s3" style="color: #6897bb;">1000</span><span class="s1" style="color: #a9b7c6;">)</span><span class="s0" style="color: #cc7832;">;</span><span class="s1" style="color: #a9b7c6;"><br>        }<br>    }<br>} </span></pre><br><p>&nbsp;</p><br><h2 style="color: #000000;">基本调整选项</h2><br><p style="color: #000000;">上面的代码已经可以处理大多数的情况了，但是在有的时候还是会需要根据不同的软件或者硬件来调整选项以获得更高的性能。基本的选项有两个：单或者多生产者模式和可选的等待策略。</p><br><h3>单或多 事件生产者</h3><br><p>在并发系统中提高性能最好的方式之一就是<a href="http://mechanical-sympathy.blogspot.co.nz/2011/09/single-writer-principle.html" target="_blank" rel="external">单一写者原则</a>，对Disruptor也是适用的。如果在你的代码中仅仅有一个事件生产者，那么可以设置为单一生产者模式来提高系统的性能。</p><br><p>&nbsp;</p><br><pre style="color: #000000;"><span class="s0" style="color: #cc7832;">public class </span><span class="s1" style="color: #a9b7c6;">singleProductorLongEventMain {<br>    </span><span class="s0" style="color: #cc7832;">public static void </span><span class="s1" style="color: #a9b7c6;">main(String[] args) </span><span class="s0" style="color: #cc7832;">throws </span><span class="s1" style="color: #a9b7c6;">Exception {<br>        </span><span class="s3" style="color: #808080;">//…..</span><span class="s3" style="color: #808080;">// Construct the Disruptor with a SingleProducerSequencer</span><span class="s1" style="color: #a9b7c6;"><br><br>        Disruptor&lt;LongEvent&gt; disruptor = </span><span class="s0" style="color: #cc7832;">new </span><span class="s1" style="color: #a9b7c6;">Disruptor(factory</span><span class="s0" style="color: #cc7832;">,</span><span class="s1" style="color: #a9b7c6;"><br>                bufferSize</span><span class="s0" style="color: #cc7832;">,</span><span class="s1" style="color: #a9b7c6;"><br>                ProducerType.SINGLE</span><span class="s0" style="color: #cc7832;">, </span><span class="s3" style="color: #808080;">// Single producer</span><span class="s0" style="color: #cc7832;">new </span><span class="s1" style="color: #a9b7c6;">BlockingWaitStrategy()</span><span class="s0" style="color: #cc7832;">,</span><span class="s1" style="color: #a9b7c6;"><br>                executor)</span><span class="s0" style="color: #cc7832;">;</span><span class="s3" style="color: #808080;">//…..</span><span class="s1" style="color: #a9b7c6;"><br>    }<br>}<br></span></pre><br><p>为了证明，下面的数据是从Mac Air i7上面测试的结果：</p><br><h3>多生产者：</h3><br><p>&nbsp;</p><br><pre><code>Run 0, Disruptor=26,553,372 ops/sec<br>Run 1, Disruptor=28,727,377 ops/sec<br>Run 2, Disruptor=29,806,259 ops/sec<br>Run 3, Disruptor=29,717,682 ops/sec<br>Run 4, Disruptor=28,818,443 ops/sec<br>Run 5, Disruptor=29,103,608 ops/sec<br>Run 6, Disruptor=29,239,766 ops/sec</code></pre><br><h3>单生产者：</h3><br><pre><code>Run 0, Disruptor=89,365,504 ops/sec<br>Run 1, Disruptor=77,579,519 ops/sec<br>Run 2, Disruptor=78,678,206 ops/sec<br>Run 3, Disruptor=80,840,743 ops/sec<br>Run 4, Disruptor=81,037,277 ops/sec<br>Run 5, Disruptor=81,168,831 ops/sec<br>Run 6, Disruptor=81,699,346 ops/sec</code></pre><br><p>&nbsp;</p><br><h2><strong> 可选的等待策略</strong></h2><br><p>Disruptor默认的等待策略是BlockingWaitStrategy。这个策略的内部适用一个锁和条件变量来控制线程的执行和等待（Java基本的同步方法）。BlockingWaitStrategy是最慢的等待策略，但也是CPU使用率最低和最稳定的选项。然而，可以根据不同的部署环境调整选项以提高性能。</p><br><h3>SleepingWaitStrategy</h3><br><p>和BlockingWaitStrategy一样，SpleepingWaitStrategy的CPU使用率也比较低。它的方式是循环等待并且在循环中间调用LockSupport.parkNanos(1)来睡眠，（在Linux系统上面睡眠时间60µs）.然而，它的优点在于生产线程只需要计数，而不执行任何指令。并且没有条件变量的消耗。但是，事件对象从生产者到消费者传递的延迟变大了。SleepingWaitStrategy最好用在不需要低延迟，而且事件发布对于生产者的影响比较小的情况下。比如异步日志功能。</p><br><h3>YieldingWaitStrategy</h3><br><p>YieldingWaitStrategy是可以被用在低延迟系统中的两个策略之一，这种策略在减低系统延迟的同时也会增加CPU运算量。YieldingWaitStrategy策略会循环等待sequence增加到合适的值。循环中调用Thread.yield()允许其他准备好的线程执行。如果需要高性能而且事件消费者线程比逻辑内核少的时候，推荐使用YieldingWaitStrategy策略。例如：在开启超线程的时候。</p><br><h3>BusySpinWaitStrategy</h3><br><p>BusySpinWaitStrategy是性能最高的等待策略，同时也是对部署环境要求最高的策略。这个性能最好用在事件处理线程比物理内核数目还要小的时候。例如：在禁用超线程技术的时候。</p><br><h3></h3><br><p>&nbsp;</p><br><div style="margin-top: 15px; font-style: italic"><br><p><strong>原创文章，转载请注明：</strong> 转载自<a href="http://ifeve.com/" target="_blank" rel="external">并发编程网 &#8211; ifeve.com</a><strong>本文链接地址:</strong> <a href="http://ifeve.com/disruptor-getting-started/" target="_blank" rel="external">Disruptor入门</a></p><br></div>
+</div>
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/06/08/jvm-API/" rel="next" title="JVM Management API">
+                <i class="fa fa-chevron-left"></i> JVM Management API
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2099/09/09/img-01/" rel="prev" title="欢迎来到薛成的博客">
+                欢迎来到薛成的博客 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Inhaltsverzeichnis
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Übersicht
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://bloodorange2017.github.io/images/img_head_001.jpg"
+               alt="XueCheng" />
+          <p class="site-author-name" itemprop="name">XueCheng</p>
+           
+              <p class="site-description motion-element" itemprop="description">Do one thing at a time, and do well.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">33</span>
+                <span class="site-state-item-name">Artikel</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text">获得Disruptor</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#undefined"><span class="nav-number">2.</span> <span class="nav-text">基本的事件生产和消费</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#undefined"><span class="nav-number">3.</span> <span class="nav-text">使用Java 8</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#undefined"><span class="nav-number">4.</span> <span class="nav-text">基本调整选项</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">4.1.</span> <span class="nav-text">单或多 事件生产者</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">4.2.</span> <span class="nav-text">多生产者：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">4.3.</span> <span class="nav-text">单生产者：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#undefined"><span class="nav-number">5.</span> <span class="nav-text"> 可选的等待策略</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">5.1.</span> <span class="nav-text">SleepingWaitStrategy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">5.2.</span> <span class="nav-text">YieldingWaitStrategy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">5.3.</span> <span class="nav-text">BusySpinWaitStrategy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">5.4.</span> <span class="nav-text"></span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">XueCheng</span>
+</div>
+
+
+<div class="powered-by">
+  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  <% if (theme.canvas_nest) { %>
+<script type="text/javascript"
+color="160,160,233" opacity='0.4' zIndex="-2" count="66" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+<% } %>
+</body>
+</html>
