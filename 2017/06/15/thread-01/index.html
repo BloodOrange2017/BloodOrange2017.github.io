@@ -90,18 +90,19 @@
 
 
 
-<meta name="description" content="博客中文章仅本人学习使用，如有侵权请尽快通知博主删除">
+<meta name="description" content="多线程的基础知识进行一下总结：    线程生命周期  Java中的多线程有三种完结办法：  1.完结Runnable接口，并完结该接口的run()办法.创立一个Thread目标，用完结的Runnable接口的目标作为参数实例化Thread目标，调用此目标的start办法。  2.承继Thread类，重写run办法。Thread本质上也是一个完结了Runnable的实例，他代表一个线程的实例，而且发">
 <meta property="og:type" content="article">
-<meta property="og:title" content="欢迎来到薛成的博客">
-<meta property="og:url" content="https://bloodorange2017.github.io/archives/2099/09/09/img-01/index.html">
+<meta property="og:title" content="JAVA多线程实现的三种方式">
+<meta property="og:url" content="https://bloodorange2017.github.io/archives/2017/06/15/thread-01/index.html">
 <meta property="og:site_name" content="XueCheng Notes">
-<meta property="og:description" content="博客中文章仅本人学习使用，如有侵权请尽快通知博主删除">
-<meta property="og:image" content="http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/05/05/asong.jpg">
-<meta property="og:updated_time" content="2017-05-09T11:59:43.000Z">
+<meta property="og:description" content="多线程的基础知识进行一下总结：    线程生命周期  Java中的多线程有三种完结办法：  1.完结Runnable接口，并完结该接口的run()办法.创立一个Thread目标，用完结的Runnable接口的目标作为参数实例化Thread目标，调用此目标的start办法。  2.承继Thread类，重写run办法。Thread本质上也是一个完结了Runnable的实例，他代表一个线程的实例，而且发">
+<meta property="og:image" content="https://static.oschina.net/uploads/img/201706/13190436_vVnS.jpg">
+<meta property="og:image" content="https://static.oschina.net/uploads/img/201706/13190436_AeYw.jpg">
+<meta property="og:updated_time" content="2017-06-15T06:10:35.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="欢迎来到薛成的博客">
-<meta name="twitter:description" content="博客中文章仅本人学习使用，如有侵权请尽快通知博主删除">
-<meta name="twitter:image" content="http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/05/05/asong.jpg">
+<meta name="twitter:title" content="JAVA多线程实现的三种方式">
+<meta name="twitter:description" content="多线程的基础知识进行一下总结：    线程生命周期  Java中的多线程有三种完结办法：  1.完结Runnable接口，并完结该接口的run()办法.创立一个Thread目标，用完结的Runnable接口的目标作为参数实例化Thread目标，调用此目标的start办法。  2.承继Thread类，重写run办法。Thread本质上也是一个完结了Runnable的实例，他代表一个线程的实例，而且发">
+<meta name="twitter:image" content="https://static.oschina.net/uploads/img/201706/13190436_vVnS.jpg">
 
 
 
@@ -129,13 +130,13 @@
 
 
 
-  <link rel="canonical" href="https://bloodorange2017.github.io/archives/2099/09/09/img-01/"/>
+  <link rel="canonical" href="https://bloodorange2017.github.io/archives/2017/06/15/thread-01/"/>
 
 
 
 
 
-  <title>欢迎来到薛成的博客 | XueCheng Notes</title>
+  <title>JAVA多线程实现的三种方式 | XueCheng Notes</title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
@@ -254,7 +255,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2099/09/09/img-01/">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/06/15/thread-01/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="XueCheng">
@@ -271,7 +272,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">欢迎来到薛成的博客</h1>
+          <h1 class="post-title" itemprop="name headline">JAVA多线程实现的三种方式</h1>
         
 
         <div class="post-meta">
@@ -283,8 +284,8 @@
               
                 <span class="post-meta-item-text">投稿日</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2099-09-09T12:00:00+08:00">
-                2099-09-09
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-06-15T14:08:06+08:00">
+                2017-06-15
               </time>
             
 
@@ -318,8 +319,43 @@
       
 
       
-        <p><img src="http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/05/05/asong.jpg"></p>
-<div class="collection-title"><br>          <h2>博客中文章仅本人学习使用，如有侵权请尽快通知博主删除</h2><br>        </div>
+        <p>多线程的基础知识进行一下总结：</p>
+
+<p><img alt="Java中多线程实现方式有哪些，听听大神的分析" src="https://static.oschina.net/uploads/img/201706/13190436_vVnS.jpg"></p>
+
+<p>线程生命周期</p>
+
+<p><strong>Java中的多线程有三种完结办法：</strong></p>
+
+<p>1.完结Runnable接口，并完结该接口的run()办法.创立一个Thread目标，用完结的Runnable接口的目标作为参数实例化Thread目标，调用此目标的start办法。</p>
+
+<p>2.承继Thread类，重写run办法。Thread本质上也是一个完结了Runnable的实例，他代表一个线程的实例，而且发动线程的仅有办法即是经过Thread类的start办法。</p>
+
+<p>3.完结Callable接口，重写call办法。Callable接口与Runnable接口的功用相似，但供给了比Runnable更强壮的功用。有以下三点</p>
+
+<p>1）.Callable能够在人物完毕后供给一个返回值，Runnable没有供给这个功用。</p>
+
+<p>2）.Callable中的call办法能够抛出反常，而Runnable的run办法不能抛出反常。</p>
+
+<p>3）.运转Callable能够拿到一个Future目标，表明异步核算的成果，供给了查看核算是不是完结的办法。</p>
+
+<p>需求留意的是，不管用那种办法完结了多线程，调用start办法并不意味着当即履行多线程代码，而是使得线程变为可运转状况。</p>
+
+<p><strong>run、 start的差异</strong></p>
+
+<p>start办法是发动一个线程，而线程中的run办法来完结实践的操作。</p>
+
+<p>假如咱们直接调用run办法，那么就会将这个办法当作一个一般函数来调用，并没有多拓荒线程，假如期望多线程异步履行，则需求调用start办法。</p>
+
+<p><strong>sleep wait的差异</strong></p>
+
+<p>1.sleep是Threa的静态办法，是用来操控线程自身流程的，而wait是object的办法，用于进行线程通讯。</p>
+
+<p>2.两者处理的机制不一样，sleep办法主要是，让线程暂停履行一段时刻，时刻一到主动康复，并不会开释所占用的锁，当调用wait办法今后，他会开释所占用的目标锁，等候别的线程调用notify办法才会再次醒来。</p>
+
+<p>3.两者运用的区域不一样。sleep能够在任何地方运用，wait有必要放在同步操控办法，或者语句块中履行。</p>
+
+<p><img alt="Java中多线程实现方式有哪些，听听大神的分析" src="https://static.oschina.net/uploads/img/201706/13190436_AeYw.jpg"></p>
 
       
     </div>
@@ -356,8 +392,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/06/15/thread-01/" rel="next" title="JAVA多线程实现的三种方式">
-                <i class="fa fa-chevron-left"></i> JAVA多线程实现的三种方式
+              <a href="/2017/06/14/activemq-02/" rel="next" title="Spring整合ActiveMQ 事务管理">
+                <i class="fa fa-chevron-left"></i> Spring整合ActiveMQ 事务管理
               </a>
             
           </div>
@@ -365,6 +401,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2099/09/09/img-01/" rel="prev" title="欢迎来到薛成的博客">
+                欢迎来到薛成的博客 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -411,17 +451,8 @@
       
 
       
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
-            見出し
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview">
-            概要
-          </li>
-        </ul>
-      
 
-      <section class="site-overview sidebar-panel">
+      <section class="site-overview sidebar-panel sidebar-panel-active">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="https://bloodorange2017.github.io/images/img_head_001.jpg"
@@ -465,22 +496,6 @@
 
       </section>
 
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text">博客中文章仅本人学习使用，如有侵权请尽快通知博主删除</span></a></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
       
 
       

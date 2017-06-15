@@ -200,7 +200,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
-            Home
+            ホーム
           </a>
         </li>
       
@@ -210,7 +210,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
-            Archives
+            アーカイブ
           </a>
         </li>
       
@@ -220,7 +220,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
             
-            Tags
+            タグ
           </a>
         </li>
       
@@ -282,7 +282,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">投稿日</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2099-09-09T12:00:00+08:00">
                 2099-09-09
@@ -366,6 +366,154 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/06/15/thread-01/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="XueCheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XueCheng Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/06/15/thread-01/" itemprop="url">JAVA多线程实现的三种方式</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">投稿日</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-06-15T14:08:06+08:00">
+                2017-06-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>多线程的基础知识进行一下总结：</p>
+
+<p><img alt="Java中多线程实现方式有哪些，听听大神的分析" src="https://static.oschina.net/uploads/img/201706/13190436_vVnS.jpg"></p>
+
+<p>线程生命周期</p>
+
+<p><strong>Java中的多线程有三种完结办法：</strong></p>
+
+<p>1.完结Runnable接口，并完结该接口的run()办法.创立一个Thread目标，用完结的Runnable接口的目标作为参数实例化Thread目标，调用此目标的start办法。</p>
+
+<p>2.承继Thread类，重写run办法。Thread本质上也是一个完结了Runnable的实例，他代表一个线程的实例，而且发动线程的仅有办法即是经过Thread类的start办法。</p>
+
+<p>3.完结Callable接口，重写call办法。Callable接口与Runnable接口的功用相似，但供给了比Runnable更强壮的功用。有以下三点</p>
+
+<p>1）.Callable能够在人物完毕后供给一个返回值，Runnable没有供给这个功用。</p>
+
+<p>2）.Callable中的call办法能够抛出反常，而Runnable的run办法不能抛出反常。</p>
+
+<p>3）.运转Callable能够拿到一个Future目标，表明异步核算的成果，供给了查看核算是不是完结的办法。</p>
+
+<p>需求留意的是，不管用那种办法完结了多线程，调用start办法并不意味着当即履行多线程代码，而是使得线程变为可运转状况。</p>
+
+<p><strong>run、 start的差异</strong></p>
+
+<p>start办法是发动一个线程，而线程中的run办法来完结实践的操作。</p>
+
+<p>假如咱们直接调用run办法，那么就会将这个办法当作一个一般函数来调用，并没有多拓荒线程，假如期望多线程异步履行，则需求调用start办法。</p>
+
+<p><strong>sleep wait的差异</strong></p>
+
+<p>1.sleep是Threa的静态办法，是用来操控线程自身流程的，而wait是object的办法，用于进行线程通讯。</p>
+
+<p>2.两者处理的机制不一样，sleep办法主要是，让线程暂停履行一段时刻，时刻一到主动康复，并不会开释所占用的锁，当调用wait办法今后，他会开释所占用的目标锁，等候别的线程调用notify办法才会再次醒来。</p>
+
+<p>3.两者运用的区域不一样。sleep能够在任何地方运用，wait有必要放在同步操控办法，或者语句块中履行。</p>
+
+<p><img alt="Java中多线程实现方式有哪些，听听大神的分析" src="https://static.oschina.net/uploads/img/201706/13190436_AeYw.jpg"></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/06/14/activemq-02/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -395,7 +543,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">投稿日</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-06-14T15:58:38+08:00">
                 2017-06-14
@@ -619,7 +767,7 @@ public String first() {
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">投稿日</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-06-14T14:17:28+08:00">
                 2017-06-14
@@ -810,7 +958,7 @@ public String first() {
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">投稿日</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-06-13T16:23:09+08:00">
                 2017-06-13
@@ -926,7 +1074,7 @@ public String first() {
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">投稿日</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-06-08T16:05:27+08:00">
                 2017-06-08
@@ -1040,7 +1188,7 @@ public String first() {
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">投稿日</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-06-01T15:19:35+08:00">
                 2017-06-01
@@ -1114,127 +1262,11 @@ public String first() {
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/06/01/guavaCache-01/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="XueCheng">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="XueCheng Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/06/01/guavaCache-01/" itemprop="url">转载:Guava Cache高速本地缓存</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-06-01T15:03:48+08:00">
-                2017-06-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <div class="post_content"><br>      <p><a href="http://code.google.com/p/guava-libraries/wiki/CachesExplained" target="_blank">原文地址</a>  <a href="http://ifeve.com/google-guava-cachesexplained/" target="_blank">译文地址</a>    译者：许巧辉  校对：沈义扬</p><br><h2>范例</h2><br><pre class="brush: java; title: ; notranslate" title=""><br>LoadingCache&lt;Key, Graph&gt; graphs = CacheBuilder.newBuilder()<br>        .maximumSize(1000)<br>        .expireAfterWrite(10, TimeUnit.MINUTES)<br>        .removalListener(MY_LISTENER)<br>        .build(<br>            new CacheLoader&lt;Key, Graph&gt;() {<br>                public Graph load(Key key) throws AnyException {<br>                    return createExpensiveGraph(key);<br>                }<br>        });<br></pre><br><p><span id="more-8711"></span></p><br><h2>适用性</h2><br><p>缓存在很多场景下都是相当有用的。例如，计算或检索一个值的代价很高，并且对同样的输入需要不止一次获取值的时候，就应当考虑使用缓存。</p><br><p align="left"><tt></tt><tt>Guava Cache与ConcurrentMap很相似，但也不完全一样。最基本的区别是ConcurrentMap会一直保存所有添加的元素，直到显式地移除。相对地，Guava Cache为了限制内存占用，通常都设定为自动回收元素。在某些场景下，尽管LoadingCache 不回收元素，它也是很有用的，因为它会自动加载缓存。</tt></p><br><p><tt>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/06/01/guavaCache-01/#more" rel="contents">
-              Read more &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1279,8 +1311,8 @@ public String first() {
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">35</span>
-                <span class="site-state-item-name">posts</span>
+                <span class="site-state-item-count">36</span>
+                <span class="site-state-item-name">ポスト</span>
               </a>
             </div>
           
