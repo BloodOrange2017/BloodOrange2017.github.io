@@ -1,0 +1,671 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="关于dubbox的核心原理和细节会另开一篇文章来介绍，这篇文章主要是从配置和应用层面来介绍dubbox 2.8.4的使用。dubbox的服务监控和日志采集：http://blog.csdn.net/u011282930/article/details/52786414zookeeper的安装1、准备工作-下载zookeeper 官方地址：http://apache.fayea.co">
+<meta property="og:type" content="article">
+<meta property="og:title" content="转载:dubbox 2.8.4搭建">
+<meta property="og:url" content="https://bloodorange2017.github.io/archives/2017/07/20/dubbox-01/index.html">
+<meta property="og:site_name" content="XueCheng Notes">
+<meta property="og:description" content="关于dubbox的核心原理和细节会另开一篇文章来介绍，这篇文章主要是从配置和应用层面来介绍dubbox 2.8.4的使用。dubbox的服务监控和日志采集：http://blog.csdn.net/u011282930/article/details/52786414zookeeper的安装1、准备工作-下载zookeeper 官方地址：http://apache.fayea.co">
+<meta property="og:image" content="http://img.blog.csdn.net/20160331083357772">
+<meta property="og:image" content="http://img.blog.csdn.net/20160331084239712">
+<meta property="og:image" content="http://img.blog.csdn.net/20160331084141868">
+<meta property="og:image" content="http://img.blog.csdn.net/20160331172455088">
+<meta property="og:image" content="http://img.blog.csdn.net/20160331090743347">
+<meta property="og:image" content="http://img.blog.csdn.net/20160331085207982">
+<meta property="og:image" content="http://img.blog.csdn.net/20160331090854144">
+<meta property="og:updated_time" content="2017-07-20T02:28:20.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="转载:dubbox 2.8.4搭建">
+<meta name="twitter:description" content="关于dubbox的核心原理和细节会另开一篇文章来介绍，这篇文章主要是从配置和应用层面来介绍dubbox 2.8.4的使用。dubbox的服务监控和日志采集：http://blog.csdn.net/u011282930/article/details/52786414zookeeper的安装1、准备工作-下载zookeeper 官方地址：http://apache.fayea.co">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20160331083357772">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://bloodorange2017.github.io/archives/2017/07/20/dubbox-01/"/>
+
+
+
+
+
+  <title>转载:dubbox 2.8.4搭建 | XueCheng Notes</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">XueCheng Notes</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Where there is a will, there is a way.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Startseite
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archiv
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/07/20/dubbox-01/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="XueCheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XueCheng Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">转载:dubbox 2.8.4搭建</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-07-20T10:27:33+08:00">
+                2017-07-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <div class="article_c"><br>        <div class="markdown_views"><p>关于dubbox的核心原理和细节会另开一篇文章来介绍，这篇文章主要是从配置和应用层面来介绍dubbox 2.8.4的使用。</p><br><br><br><br><h3 id="dubbox的服务监控和日志采集httpblogcsdnnetu011282930articledetails52786414"><strong>dubbox的服务监控和日志采集</strong>：<a href="http://blog.csdn.net/u011282930/article/details/52786414" target="_blank" rel="external">http://blog.csdn.net/u011282930/article/details/52786414</a></h3><br><br><h2 id="zookeeper的安装"><strong>zookeeper的安装</strong></h2><br><br><p>1、准备工作</p><br><br><p>-下载zookeeper <br><br>官方地址：<a href="http://apache.fayea.com/zookeeper/zookeeper-3.4.6/" target="_blank" rel="external">http://apache.fayea.com/zookeeper/zookeeper-3.4.6/</a> <br><br>下载版本：zookeeper-3.4.6.tar.gz</p><br><br><p>-下载JDK <br><br>下载地址：<a href="http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html" target="_blank" rel="external">http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html</a> <br><br>下载版本：JDK1.7.X版本，32位或64位看操作系统 <br><br>JDK的安装就跳过了，直接百度一大堆，一定记得设置PATH，classpath，JAVA_HOME环境变量</p><br><br><p>2、解压和安装zookeeper <br><br>zookeeper的目录我是放置在/usr/zookeeper-3.4.6/这个位置，所以： <br><br><code>tar -zxvf ./zookeeper-3.4.6.tar.gz</code> <br><br><code>mv ./zookeeper-3.4.6 /usr/zookeeper-3.4.6/</code></p><br><br><p>同样的，设置全局环境变量： <br><br><code>export PATH=/usr/zookeeper-3.4.6/bin:$PATH</code></p><br><br><p>好的，安装完成了，是不是简单。接下来，我们讲解一下zookeeper的主配置文件。zookeeper的主配置文件所在的地址是：${您的zookeeper安装位置}/conf/zoo.cfg <br><br>但是，解压后的zookeeper并没有这个配置文件，有一个名叫zoo_sample.cfg，所以，我们复制一个zoo.cfg文件： <br><br><code>cp /usr/zookeeper-3.4.6/conf/zoo_sample.cfg /usr/zookeeper-3.4.6/conf/zoo.cfg</code></p><br><br><p>最后，使用zkServer.sh start命令，启动zookeeper：</p><br><br><br><br><pre class="prettyprint"><code class=" hljs r">[root@vm2 ~]<span class="hljs-comment"># zkServer.sh start</span><br>JMX enabled by default<br>Using config: /usr/zookeeper-<span class="hljs-number">3.4</span><span class="hljs-number">.6</span>/bin/../conf/zoo.cfg<br>Starting zookeeper <span class="hljs-keyword">…</span> STARTED</code></pre><br><br><br><br><h1 id="dubbox"><strong>dubbox</strong></h1><br><br><p>1、准备工作 <br><br>下载dubbox的源代码 <br><br>下载地址：<a href="https://github.com/dangdangdotcom/dubbox" target="_blank" rel="external">https://github.com/dangdangdotcom/dubbox</a></p><br><br><p>2、编译源码（此处默认大家会用maven了） <br><br>运行maven命令：mvn clean install -Dmaven.test.skip=true <br><br>将dubbox的源码打包发布到本地仓库，目的是为了获取：dubbo-admin-2.8.4.war和dubbo-monitor.war</p><br><br><br><br><h2 id="dubbox-admin管理端"><strong>dubbox-admin管理端</strong></h2><br><br><p>懒人下载：<a href="http://download.csdn.net/detail/u011282930/9477514" target="_blank" rel="external">http://download.csdn.net/detail/u011282930/9477514</a></p><br><br><p>1、部署dubbo-admin管理端，将dubbo-admin-2.8.4.war放置到准备好的tomcat目录 <br><br>2、修改WEB-INF下dubbo.properties <br><br>主要是修改zookeeper的地址 <br><br><code>dubbo.registry.address=zookeeper://127.0.0.1:2181</code> <br><br>3、运行tomcat <br><br>输入地址：<a href="http://localhost:8080/dubbo-admin-2.8.4" target="_blank" rel="external">http://localhost:8080/dubbo-admin-2.8.4</a> <br><br>默认登录账户和密码均为：root <br><br>4、登录后首页 <br><br><img src="http://img.blog.csdn.net/20160331083357772" alt="这里写图片描述" title=""> <br><br>到此为止，dubbox的后台管理端就配置成功了</p><br><br><br><br><h2 id="dubbox-monitor监控端"><strong>dubbox-monitor监控端</strong></h2><br><br><p>懒人下载：<a href="http://download.csdn.net/detail/u011282930/9477515" target="_blank" rel="external">http://download.csdn.net/detail/u011282930/9477515</a> <br><br>我们对于dubbo的监控用的是改装后的（页面非常好看）</p><br><br><p>下载dubbox-monitor的源代码 <br><br>下载地址：<a href="http://git.oschina.net/handu/dubbo-monitor" target="_blank" rel="external">http://git.oschina.net/handu/dubbo-monitor</a></p><br><br><p>Dubbo-Monitor配置介绍 <br><br>1、创建数据库 首先创建名称为monitor数据库，编码格式UTF-8。然后将项目sql文件夹下面的create.sql导入到数据库，生成dubbo_invoke表代表成功导入。 <br><br>下载地址：<a href="http://download.csdn.net/detail/u011282930/9650381" target="_blank" rel="external">http://download.csdn.net/detail/u011282930/9650381</a></p><br><br><p>2、编辑项目中application.properties，配置如下：</p><br><br><br><br><pre class="prettyprint"><code class=" hljs avrasm"><span class="hljs-preprocessor">####Dubbo Settings</span><br>dubbo<span class="hljs-preprocessor">.application</span><span class="hljs-preprocessor">.name</span>=dubbo-monitor<br>dubbo<span class="hljs-preprocessor">.application</span><span class="hljs-preprocessor">.owner</span>=handu<span class="hljs-preprocessor">.com</span><br>dubbo<span class="hljs-preprocessor">.registry</span><span class="hljs-preprocessor">.address</span>=zookeeper://<span class="hljs-number">127.0</span><span class="hljs-number">.0</span><span class="hljs-number">.1</span>:<span class="hljs-number">2181</span><br>dubbo<span class="hljs-preprocessor">.protocol</span><span class="hljs-preprocessor">.port</span>=<span class="hljs-number">6060</span><br><br><span class="hljs-preprocessor">####Database Settings</span><br>db<span class="hljs-preprocessor">.url</span>=jdbc:mysql://&lt;database_host&gt;:&lt;database_port&gt;/monitor?prepStmtCacheSize=<span class="hljs-number">517</span>&amp;cachePrepStmts=true&amp;autoReconnect=true&amp;characterEncoding=utf-<span class="hljs-number">8</span><br>db<span class="hljs-preprocessor">.username</span>=root<br>db<span class="hljs-preprocessor">.password</span>=root<br>db<span class="hljs-preprocessor">.maxActive</span>=<span class="hljs-number">500</span><br><br><span class="hljs-preprocessor">####System Manager</span><br>manager<span class="hljs-preprocessor">.username</span>=admin<br>manager<span class="hljs-preprocessor">.password</span>=admin</code></pre><br><br><p>3、打包运行项目 执行maven命令：mvn clean package target文件夹下生成的dubbo-monitor.war即为项目部署文件，将其放置到对应服务器目录下，启动服务器即可。例如：tomcat的webapps文件夹下。</p><br><br><p>4、访问项目 启动web服务器后，访问地址：<a href="http://IP:[port]/dubbo-moniotor" target="_blank" rel="external">http://IP:[port]/dubbo-moniotor</a>，采用配置文件中manager.username和manager.password设置值进行登录。 <br><br><img src="http://img.blog.csdn.net/20160331084239712" alt="这里写图片描述" title=""> <br><br>5、透过dubbox服务管理端，我们会发现多了一个monitor的服务 <br><br><img src="http://img.blog.csdn.net/20160331084141868" alt="这里写图片描述" title=""></p><br><br><br><br><h4 id="下文默认大家已经用maven引入相关依赖或者导入相关包了"><strong>下文默认大家已经用maven引入相关依赖或者导入相关包了</strong></h4><br><br><p>具体依赖jar包如下图所示 <br><br><img src="http://img.blog.csdn.net/20160331172455088" alt="这里写图片描述" title=""> <br><br>maven依赖库</p><br><br><br><br><pre class="prettyprint"><code class=" hljs xml"><span class="hljs-tag">&lt;<span class="hljs-title">dependency</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-title">groupId</span>&gt;</span>com.alibaba<span class="hljs-tag">&lt;/<span class="hljs-title">groupId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-title">artifactId</span>&gt;</span>dubbo<span class="hljs-tag">&lt;/<span class="hljs-title">artifactId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-title">version</span>&gt;</span>2.8.4<span class="hljs-tag">&lt;/<span class="hljs-title">version</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-title">dependency</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-title">dependency</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-title">groupId</span>&gt;</span>com.alibaba<span class="hljs-tag">&lt;/<span class="hljs-title">groupId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-title">artifactId</span>&gt;</span>dubbo-rpc-rest<span class="hljs-tag">&lt;/<span class="hljs-title">artifactId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-title">version</span>&gt;</span>2.8.4<span class="hljs-tag">&lt;/<span class="hljs-title">version</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-title">dependency</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-title">dependency</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-title">groupId</span>&gt;</span>com.alibaba<span class="hljs-tag">&lt;/<span class="hljs-title">groupId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-title">artifactId</span>&gt;</span>dubbo-rpc-webservice<span class="hljs-tag">&lt;/<span class="hljs-title">artifactId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-title">version</span>&gt;</span>2.8.4<span class="hljs-tag">&lt;/<span class="hljs-title">version</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-title">dependency</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-title">dependency</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-title">groupId</span>&gt;</span>com.101tec<span class="hljs-tag">&lt;/<span class="hljs-title">groupId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-title">artifactId</span>&gt;</span>zkclient<span class="hljs-tag">&lt;/<span class="hljs-title">artifactId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-title">version</span>&gt;</span>0.2<span class="hljs-tag">&lt;/<span class="hljs-title">version</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-title">dependency</span>&gt;</span><br><br>        <span class="hljs-tag">&lt;<span class="hljs-title">dependency</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-title">groupId</span>&gt;</span>org.apache.zookeeper<span class="hljs-tag">&lt;/<span class="hljs-title">groupId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-title">artifactId</span>&gt;</span>zookeeper<span class="hljs-tag">&lt;/<span class="hljs-title">artifactId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-title">version</span>&gt;</span>3.3.6<span class="hljs-tag">&lt;/<span class="hljs-title">version</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-title">exclusions</span>&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-title">exclusion</span>&gt;</span><br>                    <span class="hljs-tag">&lt;<span class="hljs-title">groupId</span>&gt;</span>log4j<span class="hljs-tag">&lt;/<span class="hljs-title">groupId</span>&gt;</span><br>                    <span class="hljs-tag">&lt;<span class="hljs-title">artifactId</span>&gt;</span>log4j<span class="hljs-tag">&lt;/<span class="hljs-title">artifactId</span>&gt;</span><br>                <span class="hljs-tag">&lt;/<span class="hljs-title">exclusion</span>&gt;</span><br>            <span class="hljs-tag">&lt;/<span class="hljs-title">exclusions</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-title">dependency</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-title">dependency</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-title">groupId</span>&gt;</span>log4j<span class="hljs-tag">&lt;/<span class="hljs-title">groupId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-title">artifactId</span>&gt;</span>log4j<span class="hljs-tag">&lt;/<span class="hljs-title">artifactId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-title">version</span>&gt;</span>1.2.16<span class="hljs-tag">&lt;/<span class="hljs-title">version</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-title">dependency</span>&gt;</span></code></pre><br><br><br><br><h2 id="服务提供者实例开发"><strong>服务提供者实例开发</strong></h2><br><br><p>1、定义一个Service接口和相关实现类 <br><br>定义一个接口，IUserService.java</p><br><br><br><br><pre class="prettyprint"><code class=" hljs cs">package service;<br><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> IUserService {<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">sayHello</span>();<br>}<br></code></pre><br><br><p>实现这个接口，UserService.java</p><br><br><br><br><pre class="prettyprint"><code class=" hljs java"><span class="hljs-keyword">package</span> service;<br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">UserService</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">IUserService</span> {</span><br><br>    <span class="hljs-annotation">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">sayHello</span>() {<br>        System.err.println(<span class="hljs-string">“HELLO WORLD!”</span>);<br>    }<br><br>}<br></code></pre><br><br><p>2、配置这个接口的xml文件，dubbo-provider.xml</p><br><br><br><br><pre class="prettyprint"><code class=" hljs xml"><span class="hljs-pi">&lt;?xml version=”1.1” encoding=”UTF-8”?&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-title">beans</span> <span class="hljs-attribute">xmlns</span>=<span class="hljs-value">“<a href="http://www.springframework.org/schema/beans" target="_blank" rel="external">http://www.springframework.org/schema/beans</a>“</span><br>    <span class="hljs-attribute">xmlns:xsi</span>=<span class="hljs-value">“<a href="http://www.w3.org/2001/XMLSchema-instance" target="_blank" rel="external">http://www.w3.org/2001/XMLSchema-instance</a>“</span> <span class="hljs-attribute">xmlns:dubbo</span>=<span class="hljs-value">“<a href="http://code.alibabatech.com/schema/dubbo" target="_blank" rel="external">http://code.alibabatech.com/schema/dubbo</a>“</span><br>    <span class="hljs-attribute">xsi:schemaLocation</span>=<span class="hljs-value">“<a href="http://www.springframework.org/schema/beans" target="_blank" rel="external">http://www.springframework.org/schema/beans</a><br>       <a href="http://www.springframework.org/schema/beans/spring-beans.xsd" target="_blank" rel="external">http://www.springframework.org/schema/beans/spring-beans.xsd</a><br>       <a href="http://code.alibabatech.com/schema/dubbo" target="_blank" rel="external">http://code.alibabatech.com/schema/dubbo</a><br>       <a href="http://code.alibabatech.com/schema/dubbo/dubbo.xsd" target="_blank" rel="external">http://code.alibabatech.com/schema/dubbo/dubbo.xsd</a>“</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-title">dubbo:application</span> <span class="hljs-attribute">owner</span>=<span class="hljs-value">“whb”</span> <span class="hljs-attribute">name</span>=<span class="hljs-value">“hello-world-app”</span> /&gt;</span><br>    <span class="hljs-comment">&lt;!–zookeeper注册中心 –&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-title">dubbo:registry</span> <span class="hljs-attribute">address</span>=<span class="hljs-value">“zookeeper://172.17.84.84:2181”</span>/&gt;</span><br>    <span class="hljs-comment">&lt;!–使用multicast广播注册中心暴露服务地址 –&gt;</span><br>    <span class="hljs-comment">&lt;!–&lt;dubbo:registry address=”multicast://10.57.41.19:1234” /&gt; –&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-title">dubbo:protocol</span> <span class="hljs-attribute">name</span> =<span class="hljs-value">“dubbo”</span> <span class="hljs-attribute">port</span>=<span class="hljs-value">“20880”</span> /&gt;</span><br>    <span class="hljs-comment">&lt;!– 配置监控的服务地址和IP–&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-title">dubbo:monitor</span> <span class="hljs-attribute">address</span>=<span class="hljs-value">“127.0.0.1:7070”</span>  /&gt;</span><br>    <span class="hljs-comment">&lt;!– 发布这个服务 –&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-title">dubbo:service</span>  <span class="hljs-attribute">protocol</span>=<span class="hljs-value">“dubbo”</span>  <span class="hljs-attribute">timeout</span>=<span class="hljs-value">“2000”</span> <span class="hljs-attribute">connections</span>=<span class="hljs-value">“100”</span> <span class="hljs-attribute">interface</span> =<span class="hljs-value">“service.IUserService”</span> <span class="hljs-attribute">ref</span>=<span class="hljs-value">“userService”</span> /&gt;</span><br>    <span class="hljs-comment">&lt;!– 和本地bean一样实现服务 –&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-title">bean</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">“userService”</span><br>        <span class="hljs-attribute">class</span>=<span class="hljs-value">“service.UserService”</span> /&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-title">beans</span>&gt;</span>  </code></pre><br><br><p>3、运行发布我们的接口，LuncherProvider.java</p><br><br><br><br><pre class="prettyprint"><code class=" hljs cs">package demo;<br>import org.springframework.context.ApplicationContext;<br>import org.springframework.context.support.ClassPathXmlApplicationContext;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> LuncherProvider {<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span>(String[] args) throws InterruptedException {<br>        LuncherProvider luncher = <span class="hljs-keyword">new</span> LuncherProvider();<br>        luncher.start();<br>        Thread.sleep(<span class="hljs-number">1000</span> <em> <span class="hljs-number">60</span> </em> <span class="hljs-number">10</span>);<br>    }<br><br>    <span class="hljs-keyword">void</span> start() {<br>        String configLocation = <span class="hljs-string">“classpath<em>:/dubbo-provider.xml”</em></span>;<br>        ApplicationContext context = <span class="hljs-keyword">new</span> ClassPathXmlApplicationContext(<br>                configLocation);<br>        String[] names = context.getBeanDefinitionNames();<br>        System.<span class="hljs-keyword">out</span>.print(<span class="hljs-string">“Beans:”</span>);<br>        <span class="hljs-keyword">for</span> (String <span class="hljs-keyword">string</span> : names)<br>            System.<span class="hljs-keyword">out</span>.print(<span class="hljs-keyword">string</span> + <span class="hljs-string">“,”</span>);<br>        System.<span class="hljs-keyword">out</span>.println();<br>    }<br>}</code></pre><br><br><p>控制台输出如下内容，为成功 <br><br><img src="http://img.blog.csdn.net/20160331090743347" alt="这里写图片描述" title=""> <br><br>通过dubbox管理端来查看我们的服务，通过下图，我们可以看到我们的服务已经注册到zookeeper了 <br><br><img src="http://img.blog.csdn.net/20160331085207982" alt="这里写图片描述" title=""></p><br><br><br><br><h2 id="消费者实例开发"><strong>消费者实例开发</strong></h2><br><br><p>如何调用我们发布的服务呢？ <br><br>1、定义一个一模一样的接口，IUserService.java</p><br><br><br><br><pre class="prettyprint"><code class=" hljs cs">package service;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> IUserService {<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">sayHello</span>();<br>}<br></code></pre><br><br><p>2、配置这个接口调用信息，</p><br><br><br><br><pre class="prettyprint"><code class=" hljs xml"><span class="hljs-pi">&lt;?xml version=”1.1” encoding=”UTF-8”?&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-title">beans</span> <span class="hljs-attribute">xmlns</span>=<span class="hljs-value">“<a href="http://www.springframework.org/schema/beans" target="_blank" rel="external">http://www.springframework.org/schema/beans</a>“</span><br>    <span class="hljs-attribute">xmlns:xsi</span>=<span class="hljs-value">“<a href="http://www.w3.org/2001/XMLSchema-instance" target="_blank" rel="external">http://www.w3.org/2001/XMLSchema-instance</a>“</span> <span class="hljs-attribute">xmlns:dubbo</span>=<span class="hljs-value">“<a href="http://code.alibabatech.com/schema/dubbo" target="_blank" rel="external">http://code.alibabatech.com/schema/dubbo</a>“</span><br>    <span class="hljs-attribute">xsi:schemaLocation</span>=<span class="hljs-value">“<a href="http://www.springframework.org/schema/beans" target="_blank" rel="external">http://www.springframework.org/schema/beans</a><br>       <a href="http://www.springframework.org/schema/beans/spring-beans.xsd" target="_blank" rel="external">http://www.springframework.org/schema/beans/spring-beans.xsd</a><br>       <a href="http://code.alibabatech.com/schema/dubbo" target="_blank" rel="external">http://code.alibabatech.com/schema/dubbo</a><br>       <a href="http://code.alibabatech.com/schema/dubbo/dubbo.xsd" target="_blank" rel="external">http://code.alibabatech.com/schema/dubbo/dubbo.xsd</a>“</span>&gt;</span><br>         <span class="hljs-comment">&lt;!–消费方应用名，用于计算依赖关系，不是匹配条件，不要与提供方一样 –&gt;</span><br>         <span class="hljs-tag">&lt;<span class="hljs-title">dubbo:application</span> <span class="hljs-attribute">name</span>=<span class="hljs-value">“consumer-of-helloworld-app”</span> /&gt;</span><br>         <span class="hljs-comment">&lt;!–zookeeper注册中心 –&gt;</span><br>         <span class="hljs-tag">&lt;<span class="hljs-title">dubbo:registry</span>  <span class="hljs-attribute">protocol</span>=<span class="hljs-value">“zookeeper”</span> <span class="hljs-attribute">address</span>=<span class="hljs-value">“172.17.84.84:2181”</span> /&gt;</span><br>         <span class="hljs-comment">&lt;!–使用multicast广播注册中心暴露的服务地址 –&gt;</span><br>         <span class="hljs-comment">&lt;!–&lt;dubbo:registryaddress=”multicast://10.57.41.19:1234” /&gt; –&gt;</span><br>          <span class="hljs-comment">&lt;!–         &lt;dubbo:monitor address=”127.0.0.1:7070”  /&gt; –&gt;</span><br>          <span class="hljs-comment">&lt;!– 生成远程服务代理，可以和本地bean一样使用IUserService–&gt;</span><br>         <span class="hljs-tag">&lt;<span class="hljs-title">dubbo:reference</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">“userService”</span> <span class="hljs-attribute">interface</span>=<span class="hljs-value">“service.IUserService”</span> /&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-title">beans</span>&gt;</span>  </code></pre><br><br><p>3、测试调用服务的代码，LuncherConsumer.java</p><br><br><br><br><pre class="prettyprint"><code class=" hljs java"><span class="hljs-keyword">package</span> demo;<br><br><br><br><span class="hljs-keyword">import</span> org.springframework.context.ApplicationContext;<br><span class="hljs-keyword">import</span> org.springframework.context.support.ClassPathXmlApplicationContext;<br><br><span class="hljs-keyword">import</span> service.IUserService;<br><br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">LuncherConsumer</span>  {</span><br>         <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span>(String[] args) <span class="hljs-keyword">throws</span> InterruptedException{<br>                   LuncherConsumer luncher=<span class="hljs-keyword">new</span> LuncherConsumer();<br>                   String configLocation=<span class="hljs-string">“classpath:/dubbo-consumer.xml”</span>;<br>                   ApplicationContext context =<span class="hljs-keyword">new</span> ClassPathXmlApplicationContext(configLocation);<br>                   IUserService us=(IUserService) context.getBean(<span class="hljs-string">“userService”</span>);<br>                   String[] names=context.getBeanDefinitionNames();<br>                   us.sayHello();<br>         }<br>}  </code></pre><br><br><p>观察服务端的控制台，会输出“HELLO WORLD” <br><br><img src="http://img.blog.csdn.net/20160331090854144" alt="这里写图片描述" title=""></p><br><br><p>至此，dubbox的配置和使用就成功了！</p></div>
+
+</div>
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/17/thread-pool-01/" rel="next" title="转载:线程池原理及实现">
+                <i class="fa fa-chevron-left"></i> 转载:线程池原理及实现
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2099/09/07/download-file/" rel="prev" title="框架软件-下载页">
+                框架软件-下载页 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Inhaltsverzeichnis
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Übersicht
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://bloodorange2017.github.io/images/img_head_001.jpg"
+               alt="XueCheng" />
+          <p class="site-author-name" itemprop="name">XueCheng</p>
+           
+              <p class="site-description motion-element" itemprop="description">Do one thing at a time, and do well.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">45</span>
+                <span class="site-state-item-name">Artikel</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#dubbox的服务监控和日志采集httpblogcsdnnetu011282930articledetails52786414"><span class="nav-number">1.</span> <span class="nav-text">dubbox的服务监控和日志采集：http://blog.csdn.net/u011282930/article/details/52786414</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#zookeeper的安装"><span class="nav-number"></span> <span class="nav-text">zookeeper的安装</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#dubbox"><span class="nav-number"></span> <span class="nav-text">dubbox</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#dubbox-admin管理端"><span class="nav-number"></span> <span class="nav-text">dubbox-admin管理端</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dubbox-monitor监控端"><span class="nav-number"></span> <span class="nav-text">dubbox-monitor监控端</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#下文默认大家已经用maven引入相关依赖或者导入相关包了"><span class="nav-number">0.1.</span> <span class="nav-text">下文默认大家已经用maven引入相关依赖或者导入相关包了</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务提供者实例开发"><span class="nav-number"></span> <span class="nav-text">服务提供者实例开发</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#消费者实例开发"><span class="nav-number"></span> <span class="nav-text">消费者实例开发</span></a></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">XueCheng</span>
+</div>
+
+
+<div class="powered-by">
+  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+<script type="text/javascript"
+color="160,160,233" opacity='0.4' zIndex="-2" count="16" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+</body>
+</html>
