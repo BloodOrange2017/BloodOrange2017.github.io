@@ -200,7 +200,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
-            Startseite
+            Home
           </a>
         </li>
       
@@ -210,7 +210,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
-            Archiv
+            Archives
           </a>
         </li>
       
@@ -282,7 +282,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2099-09-09T12:00:00+08:00">
                 2099-09-09
@@ -395,7 +395,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2099-09-08T15:56:57+08:00">
                 2099-09-08
@@ -507,7 +507,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2099-09-07T11:45:53+08:00">
                 2099-09-07
@@ -590,6 +590,118 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/07/26/truncation-02-md/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="XueCheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XueCheng Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/07/26/truncation-02-md/" itemprop="url">分布式事务？No, 最终一致性</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-07-26T17:54:01+08:00">
+                2017-07-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><div id="react-root"></div><br>    <textarea id="clientConfig" hidden>{“debug”:false,”apiRoot”:””,”paySDK”:”<a href="https://pay.zhihu.com/api/js&quot;,&quot;wechatConfigAPI&quot;:&quot;/api/wechat/jssdkconfig&quot;,&quot;name&quot;:&quot;production&quot;,&quot;instance&quot;:&quot;column&quot;,&quot;tokens&quot;:{&quot;X-XSRF-TOKEN&quot;:&quot;2|57827d9d|1740efe3c2f692fe86b22df878314996|1501062901&quot;,&quot;X-UDID&quot;:&quot;\&quot;AGDC-YBDVwuPTuZS4vF0JePieoArop1E9bQ=|1487614727\&quot;&quot;,&quot;Authorization&quot;:&quot;oauth" target="_blank" rel="external">https://pay.zhihu.com/api/js&quot;,&quot;wechatConfigAPI&quot;:&quot;/api/wechat/jssdkconfig&quot;,&quot;name&quot;:&quot;production&quot;,&quot;instance&quot;:&quot;column&quot;,&quot;tokens&quot;:{&quot;X-XSRF-TOKEN&quot;:&quot;2|57827d9d|1740efe3c2f692fe86b22df878314996|1501062901&quot;,&quot;X-UDID&quot;:&quot;\&quot;AGDC-YBDVwuPTuZS4vF0JePieoArop1E9bQ=|1487614727\&quot;&quot;,&quot;Authorization&quot;:&quot;oauth</a> c3cef7c66a1843f8b3a9e6a1e3160e20”}}</textarea><br>    <textarea id="preloadedState" hidden>{“database”:{“Post”:{“25933039”:{“title”:”分布式事务？No, 最终一致性”,”author”:”itegel”,”content”:”<h1>分布式一致性</h1><h1>一、写在前面</h1><p>现今互联网界，分布式系统和微服务架构盛行。</p><p>一个简单操作，在服务端非常可能是由多个服务和数据库实例协同完成的。</p><p>在互联网金融等一致性要求较高的场景下，多个独立操作之间的一致性问题显得格外棘手。</p><p>基于水平扩容能力和成本考虑，传统的强一致的解决方案（e.g.单机事务）纷纷被抛弃。其理论依据就是响当当的<a href="\"http://link.zhihu.com/?target=https%3A//en.wikipedia.org/wiki/CAP_theorem\"" class="\"" wrap="" external\"="" target="\"_blank\"" rel="\"nofollow" noreferrer\"="">CAP原理<i class="\"icon-external\""></i></a>。</p><p>我们往往为了可用性和分区容错性，忍痛放弃强一致支持，转而追求最终一致性。大部分业务场景下，我们是可以接受短暂的不一致的。</p><p>本文主要讨论一些最终一致性相关的实现思路。</p><noscript><img src="\"https://pic3.zhimg.com/v2-135c492dbc2225ca86af34b837e446fa_b.png\"" data-rawwidth="\"760\"" data-rawheight="\"713\"" class="\"origin_image" zh-lightbox-thumb\"="" width="\"760\"" data-original="\"https://pic3.zhimg.com/v2-135c492dbc2225ca86af34b837e446fa_r.png\""></noscript><img src="\"//zhstatic.zhihu.com/assets/zhihu/ztext/whitedot.jpg\"" data-rawwidth="\"760\"" data-rawheight="\"713\"" class="\"origin_image" zh-lightbox-thumb="" lazy\"="" width="\"760\"" data-original="\"https://pic3.zhimg.com/v2-135c492dbc2225ca86af34b837e446fa_r.png\"" data-actualsrc="\"https://pic3.zhimg.com/v2-135c492dbc2225ca86af34b837e446fa_b.png\""><br><br><h1>二、最终一致性解决方案</h1><p>这个时候一般都会去举一个例子：A给B转100元。</p><p>当然，A跟B很不幸的被分在了不同的数据库实例上。甚者这两个人可能是在不同机构开的户。</p><p>下面讨论基本都是围绕这个场景的。更复杂的场景需要各位客官发挥下超人的想象力和扩展能力了。</p><p>谈到最终一致性，人们首先想到的应该是2PC解决方案。</p><h2>1. 两阶段提交</h2><p>两阶段提交需要有一个协调者，来协调两个操作之间的操作流程。当参与方为更多时，其逻辑其实就比较复杂了。</p><p>而参与者需要实现两阶段提交协议。Pre commit阶段需要锁住相关资源，commit或rollback时分别进行实际提交或释放资源。</p><p>看似还不错。但是考虑到各种异常情况那就比较痛苦了。</p><p>举个例子：如下图，执行到提交阶段，调用A的commit接口超时了，协调者该如何做？</p><p>我们一般会假设预提交成功后，提交或回滚肯定是成功的（由参与者保障）。</p><p>上述情况协调者只能选择继续重试。这也就要求下游接口必须实现幂等（关于幂等的实现下面我们单独再讨论下）。</p><p>一般，下游出现故障，不是短时重试能解决的。所以，我们一般也需要有定时去处理中间状态的逻辑。</p><p>这个地方，其实如果有个支持重试的MQ，可以扔到MQ。在实践中，我们曾经也尝试自己实现了一个基于MySQL的重试队列。下面还会聊到这一点。</p><p>另外，我们也利用了一些外部重试机制。比如支付场景，微信和支付宝都有非常可靠的通知机制。</p><p>我们在通知处理接口中做一些重试策略。如果重试失败，就返回微信或支付宝失败。</p><p>这样第三方还会接着回调我们(怀疑他们可能发现了我厂回调成功率比其他商户要低^_^)，不过作为小厂，利用一些大厂成熟的机制还是可取的。</p><noscript><img src="\"https://pic3.zhimg.com/v2-adeed5162805d0de2b9c08dc5f1f943e_b.png\"" data-rawwidth="\"1107\"" data-rawheight="\"636\"" class="\"origin_image" zh-lightbox-thumb\"="" width="\"1107\"" data-original="\"https://pic3.zhimg.com/v2-adeed5162805d0de2b9c08dc5f1f943e_r.png\""></noscript><img src="\"//zhstatic.zhihu.com/assets/zhihu/ztext/whitedot.jpg\"" data-rawwidth="\"1107\"" data-rawheight="\"636\"" class="\"origin_image" zh-lightbox-thumb="" lazy\"="" width="\"1107\"" data-original="\"https://pic3.zhimg.com/v2-adeed5162805d0de2b9c08dc5f1f943e_r.png\"" data-actualsrc="\"https://pic3.zhimg.com/v2-adeed5162805d0de2b9c08dc5f1f943e_b.png\""><br><h2>2.\n异步确保（没有事务消息）</h2><p>“异步确保”这个词不一定是准确的，还没找到更合适的词，抱歉。</p><p>异步化不只是为了一致性，有时候更多的考虑响应时间，下游稳定性等因素。本节只讨论通过异步方案，如何实现最终一致性。</p><p>该方案关键是要有个消息表。另外，一般会有个队列，而且我们一般都会假设这个MQ不丢消息。不过很不幸此MQ还不支持事务消息。</p><p>基本思路就是：</p><ol><li>消息生产方，需要额外建一个消息表，并记录消息发送状态。消息表和业务数据要在一个事务里提交。实现时为了简单，可以只是增加一个字段。新增字段会跟业务强耦合，新增表处理起来不同交易数据可以通用处理。不过因为消息表跟业务需要在一个事务里，所以存储耦合在所难免。</li><li>消息消费方，需要处理这个消息，并完成自己的业务逻辑。此时如果本地事务处理成功，那发送给生产方一个confirm消息，表明已经处理成功了。如果处理失败，该消息还是需要放回MQ的。如果MQ支持重试，那就省事儿了。如果不支持，可以考虑把该消息放回队尾或另建一个队列特殊处理。当然非要处理成功才能继续，那只能block在这条消息了（估计一般人不会这么做）。Kafka lowlevel接口是支持自己设置offset的，所以可以实现block。</li><li>生产方定时扫描本地消息表，把还没处理完成的消息由发送一遍。如果有靠谱的自动对账补账逻辑，其实这一步也可以省略。在实践中，丢消息或者下游处理失败这种场景还是非常少的。这里要看业务上能不能容忍不一致到一个对账补账周期。</li></ol><p>当然如果进一步简化，那么MQ也可以不要的。直接用一个脚本处理，一些低频场景，也没啥大问题。当然离线扫表这个事情，总让人不爽。业务量不大且也出初期相信很多人干活儿这事儿。</p><p>另外，对一致性要求不高的或者有其他兜底方案的场景（比如较为频繁的对账补账机制），我们就不需要关心消息的confirm等情况，只要扔给消息，就认为万事大吉，一般也是可取的。</p><noscript><img src="\"https://pic1.zhimg.com/v2-38771836390d7db544d0780c96d8d56c_b.png\"" data-rawwidth="\"1140\"" data-rawheight="\"527\"" class="\"origin_image" zh-lightbox-thumb\"="" width="\"1140\"" data-original="\"https://pic1.zhimg.com/v2-38771836390d7db544d0780c96d8d56c_r.png\""></noscript><img src="\"//zhstatic.zhihu.com/assets/zhihu/ztext/whitedot.jpg\"" data-rawwidth="\"1140\"" data-rawheight="\"527\"" class="\"origin_image" zh-lightbox-thumb="" lazy\"="" width="\"1140\"" data-original="\"https://pic1.zhimg.com/v2-38771836390d7db544d0780c96d8d56c_r.png\"" data-actualsrc="\"https://pic1.zhimg.com/v2-38771836390d7db544d0780c96d8d56c_b.png\""><p>上面我们除了处理业务逻辑，还做了很多繁琐的事情。把这些杂活儿都扔给一个中间件多好！这就是阿里等大厂做的事务消息中间件了（比如Notify，RockitMQ的事务消息，请看下节）。</p><h2>3.\n异步确保（事务消息）</h2><p>事务消息实际上是一个很理想的想法。</p><p>理想是：我们只要把消息扔到MQ，那么这个消息肯定会被消费成功。生产方不用担心消息发送失败，也不用担心消息会丢失。</p><p>回到现实，消费方，如果消息处理失败了，还有机会继续消费，直到成功为止（消费方逻辑bug导致消费失败情况不在本文讨论范围内）。</p><p>但遗憾的是市面上大部分MQ都不支持事务消息，其中包括看起来可以一统江湖的kafka。</p><p>RocketMQ号称支持，但是还没开源。阿里云据说免费提供，没玩过（羡慕下阿里等大厂内部猿类们）。不过从网上公开的资料看，用起来还是有些不爽的地方。这是后话了，毕竟解决了很多问题。</p><p>事务消息，关键一点是把上小节中繁琐的消息状态和重发等用中间件形式封装了。</p><p>我厂目前还没提供成熟的支持事务消息的MQ。下面以网传RMQ为例，说明事务消息大概是怎么玩的：</p><p>RMQ的事务消息相对于普通MQ，相当于提供了2PC的提交接口。</p><p>生产方需要先发送一个prepared消息给RMQ。如果操作1失败，返回失败。</p><p>然后执行本地事务，如果成功了需要发送Confirm消息给RMQ。2失败，则调用RMQ cancel接口。 </p><p>那问题是3失败了（或者超时）该如何处理呢？</p><p>别急，RMQ考虑到这个问题了。 RMQ会要求你实现一个check的接口。生产方需要实现该接口，并告知RMQ自己本地事务是否执行成功（第4步）。RMQ会定时轮训所有处于pre状态的消息，并调用对应的check接口，以决定此消息是否可以提交。</p><p>当然第5步也可能会失败。这时候需要RMQ支持消息重试。处理失败的消息果断时间再进行重试，直到成功为止（超过重试次数后会进死信队列，可能得人肉处理了，因为没用过所以细节不是很了解）。</p><p>支持消息重试，这一点也很重要。消息重试机制也不仅仅在这里能用到，还有其他一些特殊的场景，我们会依赖他。下一小节，我们简单探讨一下这个问题。</p><p>RMQ还是很强大的。我们认为这个程度的一致性已经能够满足绝大部分互联网应用场景。代价是生产方做了不少额外的事情，但相比没有事务消息情况，确实解放了不少劳动力。 </p><noscript><img src="\"https://pic2.zhimg.com/v2-cffaa4dd5e45a4d1fa5a528cfaf20991_b.png\"" data-rawwidth="\"556\"" data-rawheight="\"325\"" class="\"origin_image" zh-lightbox-thumb\"="" width="\"556\"" data-original="\"https://pic2.zhimg.com/v2-cffaa4dd5e45a4d1fa5a528cfaf20991_r.png\""></noscript><img src="\"//zhstatic.zhihu.com/assets/zhihu/ztext/whitedot.jpg\"" data-rawwidth="\"556\"" data-rawheight="\"325\"" class="\"origin_image" zh-lightbox-thumb="" lazy\"="" width="\"556\"" data-original="\"https://pic2.zhimg.com/v2-cffaa4dd5e45a4d1fa5a528cfaf20991_r.png\"" data-actualsrc="\"https://pic2.zhimg.com/v2-cffaa4dd5e45a4d1fa5a528cfaf20991_b.png\""><p>P.S. 据说阿里内部因为历史原因，用notify比RMQ要多，他们俩基本原理类似。</p><h2>4. 补偿交易（Compensating\nTransaction）</h2><p>补偿交易，其核心思想是:针对每个操作，都要注册一个与其对应的补偿操作。一般来说操作本身和其补偿（撤销）操作会在一个事务里完成。</p><p>当其后续操作失败后，需要按相反顺序完成前面注册的所有撤销操作。</p><p>跟2PC比，他的核心价值应该是少了锁资源的代价。流程也相对简单一点。但实际操作中，补偿操作不太好定义，其中间状态处理也会比较棘手。</p><p>比如A:-100(补偿为A:+100),\nB:+100。那么如果B:+100失败后就需要执行A:+100。</p><p>曾经有位大牛同事(也是我灰常崇拜的一位技术控)一直热衷于这个思路，相信有些场景用补偿交易模式也是个不错的选择。</p><p>他更多是不断思考如何让补偿看起来跟注册个单库事务一样简单。做到业务无感知。</p><p>因为本人没有相关实战经验，所以留个<a href="\"http://link.zhihu.com/?target=https%3A//docs.microsoft.com/en-us/azure/architecture/patterns/compensating-transaction\"" class="\"" wrap="" external\"="" target="\"_blank\"" rel="\"nofollow" noreferrer\"="">链接在这里<i class="\"icon-external\""></i></a>，供大家扩展阅读。偷懒了，截个此文中的一张图。</p><noscript><img src="\"https://pic3.zhimg.com/v2-706ab3a10327ce6707b316fcb0e6df96_b.png\"" data-rawwidth="\"647\"" data-rawheight="\"380\"" class="\"origin_image" zh-lightbox-thumb\"="" width="\"647\"" data-original="\"https://pic3.zhimg.com/v2-706ab3a10327ce6707b316fcb0e6df96_r.png\""></noscript><img src="\"//zhstatic.zhihu.com/assets/zhihu/ztext/whitedot.jpg\"" data-rawwidth="\"647\"" data-rawheight="\"380\"" class="\"origin_image" zh-lightbox-thumb="" lazy\"="" width="\"647\"" data-original="\"https://pic3.zhimg.com/v2-706ab3a10327ce6707b316fcb0e6df96_r.png\"" data-actualsrc="\"https://pic3.zhimg.com/v2-706ab3a10327ce6707b316fcb0e6df96_b.png\""><br><h2>5.\n消息重试</h2><p>上面多次提到消息重试。如果说事务消息重点解决了生产者和MQ之间的一致性问题，那么重试机制对于确保消费者和MQ之间的一致性是至关重要的。</p><p>重试可以是pull模式，也可以是push模式。我厂目前已经提供push模式的消息重试，这个还是要赞一下的！</p><p>消息重试，重试顾名思义是要解决消息一次性传递过程中的失败场景。举个例子，支付宝回调商户，然后商户系统挂了，怎么办？答案是重试！</p><p>一般来说，消息如果消费失败，就会被放到重试队列。如果是延迟时间固定（比如每次延迟2s），那么只需要按失败的顺序进队列就好了，然后对队首的消息，只有当延迟时间到达才能被消费。</p><p>这里会有个水位的概念。如果按时间作为水位，那么期望执行时间大于当前时间的消息才是高于水位以上的。其他消息对consumer不可见。</p><p>如果要实现每个消息延迟时间不一样，之前想过一种基于队列的方案是，按秒的维度建多个队列。按执行时间入到不同的队列，一天86400个队列（一般丑陋）。然后cosumer按时间消费不同队列。</p><p>当然如果不依赖队列可以有更灵活的方案。</p><p>之前做支付时候，做了个基于DB的延时队列。每次消息进去时候，都会把下次执行时间设置一下。再对这个时间做个索引….</p><p>略土，but it works。毕竟失败的消息不该很多，所以DB容量也不用太在意。很多时候，能跑起来的，简单的架构会得到更多人喜爱。</p><p>我厂提供了一种基于redis的延时队列，可以支持消息重试。用到的主要数据结构是redis的zset，按消息处理时间排序。</p><p>当然实现起来也没说的那么简单。MQ遇到的持久化问题，内存数据丢失问题，重试次数控制，消息追溯等等都需要有一些额外的开发量。</p><p>综上，如果MQ能够提供消息重试特性，那就不要自己折腾了。这里还是有不少坑的。</p><h2>6.\n幂等（接口支持重入）</h2><p>即使没有MQ，重试也是无处不在的。所以幂等问题不是因为用到MQ后引入的，而是老问题。</p><p>幂等怎么做？</p><p>如果是单条insert操作，我们一般会依赖唯一键。如果一个事务里包含一个单条insert，那也可以依赖这条insert做幂等，当insert抛异常就回滚事务。</p><p>如果是update操作，那么状态机控制和版本控制异常重要。这里要多加小心。</p><p>再复杂点的，可以考虑引入一个log表。该log对操作id（消息id？）进行唯一键控制。然后整个操作用事务控制。当插入log失败时整个事务回滚就好了。</p><p>有人会说先查log表或者利用redis等缓存，加锁。我想说的是这个基本上都不work。除非在事务里进行查寻。所以建议，所幸让代码简单点，直接插入，依赖数据库唯一键冲突回滚掉就好了。</p><p>用唯一键挡重入是目前为止个人觉得最有安全感的方式。当然对数据库会有一些额外性能损耗。问题就变成了有多大的并发，其中又有多大是需要重试的？</p><p>我相信Fasion IO卡+分库分表之后，想达到数据库性能瓶颈还是有点难度的（主要是针对金融类场景）。</p><h1>三、后记</h1><p>本文略虚，当然目前最终一致性没有一个放之四海而皆准的成功实践。需要大家根据不同的业务特性和发展阶段，选则适当的方式来实现。</p><p>纠结最终一致性问题，其实万恶之源是因为RPC本身会失败，会有结果不确定的情况。</p><p>隐约感觉本人职业生涯大部分时间都会跟各种失败和timeout搏斗了。</p><p>本文重点讨论利用MQ实现最终一致性。主要原因有：</p><p>1. 目前市面上的MQ都相对非常强大，几乎都号称可以做到不丢数据。相信未来对事务消息应该也会更加普及。</p><p>2. 异步化几乎是不同处理能力（响应时间、吞吐量）和稳定性（99.99%的服务依赖99.9%的服务）的服务之间解耦的毕竟之路。</p><p>当然前面的讨论还很浅显。能力有限，希望能够不断完善此文，请各位看到的客观不吝赐教。</p><p>下一篇，希望能够跟大家share一下，最近在做的一个项目。其主要目的利用现有还未支持事务消息的MQ，在业务层实现类事务消息逻辑，并且尽量不让代码变成一坨。</p></textarea></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/07/20/dubbox-01/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -619,7 +731,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-07-20T10:27:33+08:00">
                 2017-07-20
@@ -732,7 +844,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-07-17T15:06:49+08:00">
                 2017-07-17
@@ -845,7 +957,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-07-04T10:49:40+08:00">
                 2017-07-04
@@ -885,119 +997,6 @@
         
           
             <div id="article_content" class="article_content tracking-ad" data-mod="popu_307" data-dsm="post"><br><br><h1 style="text-align:center"><span style="font-family:Microsoft YaHei; font-size:48px; font-weight:normal">查找（一）</span></h1><br><p><span style="font-size:18px"><br><br></span></p><br><p><span style="font-size:18px"><br><br></span></p><br><p><span style="font-size:18px">我们使用<strong>符号表</strong>这个词来描述一张抽象的表&#26684;，我们会将信息（<u>&#20540;</u>）存储在其中，然后按照指定的<u>键</u>来搜索并获取这些信息。键和&#20540;的具体意义取决于不同的应用。</span></p><br><p><span style="font-size:18px">符号表中可能会保存很多键和很多信息，因此实现一张高效的符号表也是一项很有挑战性的任务。</span></p><br><p><span style="font-size:18px">我们会用三种经典的数据类型来实现高效的符号表：<strong>二叉查找数</strong>、<strong>红黑树</strong>、<strong>散列表</strong>。</span></p><br><p><span style="font-size:18px"><br><br></span></p><br><p></p><br><h1><span style="font-family:Microsoft YaHei; font-size:32px">二分查找</span></h1><br><p></p><br><p style="font-size:18px"><br><br></p><br><p style="font-size:18px">我们使用有序数组存储键，经典的二分查找能够根据数组的索引大大减少每次查找所需的比较次数。</p><br><p style="font-size:18px">在查找时，我们先将被查找的键和子数组的中间键比较。如果被查找的键小于中间键，我们就在左子数组中继续查找，如果大于我们就在右子数组中继续查找，否则中间键就是我们要找的键。</p><br><p style="font-size:18px">&nbsp;</p><br><p style="font-size:18px">一般情况下二分查找都比顺序查找快的多，它也是众多实际应用程序的最佳选择。对于一个静态表（不允许插入）来说，将其在初始化时就排序是&#20540;得的。</p><br><p style="font-size:18px">&nbsp;</p><br><p style="font-size:18px">当然，二分查找也不适合很多应用。现代应用需要<u>同时</u>能够支持高效的查找和插入两种操作的符号表实现。也就是说，<u>我们需要在构造庞大的符号表的同时能够任意插入（也许还有删除）键&#20540;对，同时也要能够完成查找操作</u>。</p><br><p style="font-size:18px">&nbsp;</p><br><p style="font-size:18px">要支持高效的插入操作，我们&#20284;乎需要一种链式结构。当单链接的链表是无法使用二分查找的，因为二分查找的高效来自于能够快速通过索引取得任何子数组的中间元素。为了将二分查找的效率和链表的灵活性结合起来，我们需要更加复杂的数据结构。</p><br><p style="font-size:18px">能够同时拥有两者的就是<strong>二叉查找树</strong>。</p><br><p style="font-size:18px">&nbsp;</p><br><h1><span style="font-family:Microsoft YaHei; font-size:32px">二叉查找树</span></h1><br><p style="font-size:18px"><br><br></p><br><p style="font-size:18px">一颗二叉查找树（<strong>BST</strong>）是一颗二叉树，其中每个节点都含有一个可比较的键（以及相关联的&#20540;）且<u>每个结点的键都大于其左子树中的任意结点的键而小于右子树的任意结点的键</u>。</p><br><p style="font-size:18px">&nbsp;<img src="http://img.blog.csdn.net/20140517140928015?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWFuZ195dWxlaQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""></p><br><p style="font-size:18px"></p><br><p>一颗二叉查找树代表了一组键（及其相应的&#20540;）的集合，而同一个集合可以用多颗不同的二叉查找树表示。</p><br><p>如果我们将一颗二叉查找树的所有键<strong><u>投影</u></strong>到一条直线上，保证一个结点的左子树中的键出现在它的右边，右子树中的键出现在它的右边，那么我们一定可以得到一条有序的键列。</p><br><p>&nbsp;</p><br><img src="http://img.blog.csdn.net/20140517141025312?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWFuZ195dWxlaQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""><br><br><p style="font-size:18px"><br><br></p><br><p></p><br><p><strong><span style="font-size:24px">查找</span></strong></p><br><p style="font-size:18px"><br><br></p><br><p style="font-size:18px">在二叉查找树中查找一个键的递归算法：</p><br><p style="font-size:18px">如果树是空的，则查找未命中。如果被查找的键和根结点的键相等，查找命中。否则我们就在适当的子树中继续查找。如果被查找的键较小就选择左子树，较大就选择右子树。</p><br><p style="font-size:18px">在二叉查找树中，<u>随着我们不断向下查找，当前结点所表示的子树的大小也在减小</u>（理想情况下是减半）</p><br><p style="font-size:18px">&nbsp;</p><br><p><strong><span style="font-size:24px">插入</span></strong></p><br><p style="font-size:18px"><br><br></p><br><p style="font-size:18px">查找代码几乎和二分查找的一样简单，这种<strong><span style="color:red">简洁性</span></strong>是二叉查找树的重要特性之一。而二叉查找树的另一个更重要的特性就是<u>插入的实现难度和查找差不多</u>。</p><br><p style="font-size:18px">当查找一个不存在于树中的结点并结束于一条空链接时，我们需要做的就是将链接指向一个含有被查找的键的新结点。如果被查找的键小于根结点的键，我们会继续在左子树中插入该键，否则在右子树中插入该键。</p><br><p style="font-size:18px">&nbsp;</p><br><p><strong><span style="font-size:24px">分析</span></strong></p><br><p style="font-size:18px"><br><br></p><br><p style="font-size:18px">使用二叉查找树的算法的运行时间取决于<u>树的形状</u>，而树的形状又取决于键被插入的先后顺序。</p><br><p style="font-size:18px">在最好的情况下，一颗含有N个结点的树是完全平衡的，每条空链接和根结点的距离都为~lgN。在最坏的情况下，搜索路径上可能有N个结点。但在一般情况下树的形状和最好情况更接近。</p><br><span style="font-size:18px"><img src="http://img.blog.csdn.net/20140517141307031?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWFuZ195dWxlaQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""></span><br><br><p style="font-size:18px"><br><br></p><br><p style="font-size:18px"></p><br><p>我们假设键的插入顺序是随机的。对这个模型的分析而言，<u>二叉查找树和快速排序几乎就是“双胞胎”</u>。树的根结点就是快速排序中的第一个切分元素（左侧的键都比它小，右侧的键都比它大），而这对于所有的子树同样适用，这和快速排序中对于子数组的递归排序完全对应。</p><br><p>【在由N个随机键构造的二叉查找树中，查找命中平均所需的比较次数为~2lgN。 N越大这个公式越准确】</p><br><p>&nbsp;</p><br><h1>平衡查找树</h1><br><p><br><br></p><br><p>在一颗含有N个结点的树中，我们希望树高为~lgN，这样我们就能保证所有查找都能在~lgN此比较内结束，就和二分查找一样。不幸的是，在动态插入中保证树的完美平衡的代价太高了。我们放松对完美平衡的要求，使符号表API中所有操作均能够在对数时间内完成。</p><br><p>&nbsp;</p><br><h2><span style="color:red">2-3</span><span style="color:red">查找树</span></h2><br><p><br><br></p><br><p>为了保证查找树的平衡性，我们需要一些灵活性，因此在这里我们允许树中的一个结点保存多个键。</p><br><p><strong>2-结点</strong>：含有一个键(及&#20540;)和两条链接，左链接指向的2-3树中的键都小于该结点，右链接指向的2-3树中的键都大于该结点。</p><br><p><strong>3-结点</strong>：含有两个键(及&#20540;)和三条链接，左链接指向的2-3树中的键都小于该结点，中链接指向的2-3树中的键都位于该结点的两个键之间，右链接指向的2-3树中的键都大于该结点。</p><br><p>（2-3指的是2叉-3叉的意思）</p><br><img src="http://img.blog.csdn.net/20140517141525468?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWFuZ195dWxlaQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""><br><br><span style="font-size:18px"><img src="http://img.blog.csdn.net/20140517141558937?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWFuZ195dWxlaQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""></span><br><br><p><span style="font-size:18px"><br><br></span></p><br><p></p><br><p style="font-size:18px">一颗完美平衡的2-3查找树中的所有空链接到根结点的距离都是相同的。</p><br><p style="font-size:18px">&nbsp;</p><br><p><strong><span style="font-size:24px">查找</span></strong></p><br><p style="font-size:18px"><br><br></p><br><p style="font-size:18px">要判断一个键是否在树中，我们先将它和根结点中的键比较。如果它和其中的任何一个相等，查找命中。否则我们就根据比较的结果找到指向相应区间的链接，并在其指向的子树中递归地继续查找。如果这是个空链接，查找未命中。</p><br><p style="font-size:18px">&nbsp;</p><br><p><strong><span style="color:red"><span style="font-size:24px">插入</span></span></strong></p><br><p style="font-size:18px"><br><br></p><br><p style="font-size:18px">要在2-3树中插入一个新结点，我们可以和二叉查找树一样先进行一次未命中的查找，然后把新结点挂在树的底部。但这样的话树无法保持完美平衡性。我们使用2-3树的主要原因就在于它能够在插入之后继续保持平衡。</p><br><p style="font-size:18px">如果未命中的查找结束于一个2-结点，我们只要把这个2-结点替换为一个3-结点，将要插入的键保存在其中即可。<u>如果未命中的查找结束于一个3-结点</u>，事情就要麻烦一些。</p><br><p style="font-size:18px">&nbsp;</p><br><p><span style="font-size:24px"><strong>热身</strong>：</span></p><br><p style="font-size:18px"><br><br></p><br><p style="font-size:18px">先考虑最简单的例子：只有一个3-结点的树，向其插入一个新键。</p><br><p style="font-size:18px">这棵树唯一的结点中已经没有可插入的空间了。我们又不能把新键插在其空结点上（破坏了完美平衡）。为了将新键插入，我们先临时将新键存入该结点中，使之成为一个4-结点。创建一个4-结点很方便，因为很容易将它转换为一颗由3个2-结点组成的2-3树（如图所示），这棵树既是一颗含有3个结点的二叉查找树，同时也是一颗完美平衡的2-3树，其中所有空链接到根结点的距离都相等。</p><br><span style="font-size:18px"><img src="http://img.blog.csdn.net/20140517141709609?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWFuZ195dWxlaQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""></span><br><br><p><span style="font-size:18px"></span></p><br><p>&nbsp;</p><br><p><strong>向一个父结点为2-结点的3-结点中插入新键</strong></p><br><p>假设未命中的查找结束于一个3-结点，而它的父结点是一个2-结点。在这种情况下我们需要在维持树的完美平衡的前提下为新键腾出空间。</p><br><p>我们先像刚才一样构造一个临时的4-结点并将其分解，但此时我们不会为<u>中键</u>创建一个新结点，而是<u>将其移动至原来的父结点中</u>。（如图所示）</p><br><img src="http://img.blog.csdn.net/20140517141807656?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWFuZ195dWxlaQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""><br><br><p><span style="font-size:18px"></span></p><br><p>这次转换也并不影响（完美平衡的）2-3树的主要性质。树仍然是有序的，因为中键被移动到父结点中去了，树仍然是完美平衡的，插入后所有的空链接到根结点的距离仍然相同。</p><br><p>&nbsp;</p><br><p><strong>向一个父结点为3-结点的3-结点中插入新键</strong></p><br><p>假设未命中的查找结束于一个3-结点，而它的父结点是一个3-结点。</p><br><p><u>我们再次和刚才一样构造一个临时的4-结点并分解它，然后将它的中键插入它的父结点中</u>。但父结点也是一个3-结点，因此我们再用这个中键构造一个新的临时4-结点，然后在这个结点上进行相同的变换，即分解这个父结点并将它的中键插入到它的父结点中去。</p><br><p>我们就这样<u>一直向上不断分解临时的4-结点并将中键插入更高的父结点</u>，直至遇到一个2-结点并将它替换为一个不需要继续分解的3-结点，或者是到达3-结点的根。</p><br><img src="http://img.blog.csdn.net/20140517141942296?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWFuZ195dWxlaQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""><br><br><p></p><br><p><span style="font-size:24px"><strong>总结</strong>：</span></p><br><p style="font-size:18px"><strong>先找插入结点，若结点有空(即2-结点)，则直接插入。如结点没空(即3-结点)，则插入使其临时容纳这个元素，然后分裂此结点，把中间元素移到其父结点中。对父结点亦如此处理。</strong>（中键一直往上移，直到找到空位，在此过程中没有空位就先搞个临时的，再分裂。）</p><br><p style="font-size:18px">&nbsp;</p><br><p style="font-size:18px">&nbsp;</p><br><p style="font-size:18px">★2-3树插入算法的<span style="color:red">根本在于</span>这些变换都是局部的：除了相关的结点和链接之外不必修改或者检查树的其他部分。每次变换中，变更的链接数量不会超过一个很小的常数。所有局部变换都不会影响整棵树的有序性和平衡性。</p><br><p style="font-size:18px">&nbsp;</p><br><p style="font-size:18px"><strong>{你确定理解了2-3树的插入过程了吗？ 如果你理解了，那么你也就基本理解了红黑树的插入}</strong></p><br><p style="font-size:18px">&nbsp;</p><br><p><strong><span style="font-size:24px">构造</span></strong></p><br><p style="font-size:18px"><br><br></p><br><p style="font-size:18px">和标准的二叉查找树由上向下生长不同，<span style="color:red">2-3</span><span style="color:red">树的生长是由下向上的</span>。</p><br><span style="font-size:18px"><img src="http://img.blog.csdn.net/20140517142043906?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWFuZ195dWxlaQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""></span><br><br><p><span style="font-size:18px"><br><br></span></p><br><p></p><br><p><strong><span style="font-size:24px">优点</span></strong></p><br><p style="font-size:18px"><br><br></p><br><p style="font-size:18px">2-3树在最坏情况下仍有较好的性能。每个操作中处理每个结点的时间都不会超过一个很小的常数，且这两个操作都只会访问一条路径上的结点，所以<u>任何查找或者插入的成本都肯定不会超过对数级别</u>。</p><br><p style="font-size:18px">完美平衡的2-3树要平展的多。例如，含有10亿个结点的一颗2-3树的高度仅在19到30之间。我们最多只需要访问30个结点就能在10亿个键中进行任意查找和插入操作。</p><br><p style="font-size:18px">&nbsp;</p><br><p><strong><span style="font-size:24px">缺点</span></strong></p><br><p style="font-size:18px"><br><br></p><br><p style="font-size:18px">我们需要维护两种不同类型的结点，查找和插入操作的实现需要大量的代码，而且它们所产生的额外开销可能会使算法比标准的二叉查找树更慢。</p><br><p style="font-size:18px">平衡一棵树的初衷是为了消除最坏情况，但我们希望这种保障所需的代码能够越少越好。</p><br><p style="font-size:18px">&nbsp;</p><br><p style="font-size:18px"><br><br></p><br><h2><span style="font-family:Microsoft YaHei; font-size:32px">红黑二叉查找树</span></h2><br><p style="font-size:18px"><br><br></p><br><p style="font-size:18px">【前言：本文所讨论的红黑树之目的在于使读者能更简单清晰地了解红黑树的构造，使读者能在纸上清晰快速地画出红黑树，而不是为了写出红黑树的实现代码。</p><br><p style="font-size:18px">若是要在代码级理解红黑树，则势必需要记住其复杂的插入和旋转的各种情况，我认为那只有助于增加大家对红黑树的恐惧，实际面试和工作中几乎不会遇到需要自己动手实现红黑树的情况(很多语言的标准库中就有红黑树的实现)。&nbsp; 若对于红黑树的C代码实现有兴趣的，可移步至July的博客。】</p><br><p style="font-size:18px">&nbsp;</p><br><p style="font-size:18px">（<strong>理解红黑树一句话就够了</strong>：<span style="color:red">红黑树就是用红链接表示3-</span>结点的2-3树。那么红黑树的插入、构造就可转化为2-3树的问题，即：<u>在脑中用2-3树来操作，得到结果，再把结果中的3-结点转化为红链接即可</u>。而2-3树的插入，前面已有详细图文，实际也很简单：有空则插，没空硬插，再分裂。&nbsp; 这样，我们就不用记那么复杂且让人头疼的红黑树插入旋转的各种情况了。只要清楚2-3树的插入方式即可。&nbsp;<br> 下面图文详细演示。）</p><br><p style="font-size:18px">&nbsp;</p><br><p style="font-size:18px"><span style="font-family:Microsoft YaHei"><strong>红黑树的本质</strong>：</span></p><br><p style="font-size:18px">红黑树是对2-3查找树的改进，它能用一种统一的方式完成所有变换。</p><br><p style="font-size:18px">&nbsp;</p><br><p><span style="font-size:24px"><span style="color:red">替换</span><span style="color:red">3-</span><span style="color:red">结点</span></span></p><br><p style="font-size:18px"><br><br></p><br><p style="font-size:18px">★红黑树背后的思想是用标准的二叉查找树（完全由2-结点构成）和一些额外的信息（替换3-结点）来表示2-3树。</p><br><p style="font-size:18px">我们将树中的链接分为两种类型：<span style="color:red">红链接</span>将两个2-结点连接起来构成一个3-结点，黑链接则是2-3树中的普通链接。确切地说，<span style="color:red">我们将</span><span style="color:red">3-</span><span style="color:red">结点表示为由一条<strong><u>左斜</u></strong>的红色链接相连的两个</span><span style="color:red">2-</span><span style="color:red">结点</span>。</p><br><p style="font-size:18px">这种表示法的一个优点是，我们无需修改就可以直接使用标准二叉查找树的get()方法。对于任意的2-3树，只要对结点进行转换，我们都可以立即派生出一颗对应的二叉查找树。我们将用这种方式表示2-3树的二叉查找树称为红黑树。</p><br><span style="font-size:18px"><img src="http://img.blog.csdn.net/20140517142303390?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWFuZ195dWxlaQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""></span><br><br><p><span style="font-size:18px"></span></p><br><p><strong>红黑树的另一种定义</strong>是满足下列条件的二叉查找树：</p><br><p>⑴红链接均为左链接。</p><br><p>⑵没有任何一个结点同时和两条红链接相连。</p><br><p>⑶该树是完美黑色平衡的，即任意空链接到根结点的路径上的黑链接数量相同。</p><br><p>&nbsp;</p><br><p>如果我们<span style="color:red">将一颗红黑树中的红链接画平</span>，那么所有的空链接到根结点的距离都将是相同的。如果我们将由红链接相连的结点合并，得到的就是一颗2-3树。</p><br><p>相反，如果将一颗2-3树中的3-结点画作由红色左链接相连的两个2-结点，那么不会存在能够和两条红链接相连的结点，且树必然是完美平衡的。</p><br><img src="http://img.blog.csdn.net/20140517142543921?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWFuZ195dWxlaQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""><br><br><p></p><br><p style="font-size:18px">&nbsp;</p><br><p style="font-size:18px">无论我们用何种方式去定义它们，<span style="color:red">红黑树都既是二叉查找树，也是</span><span style="color:red">2-3</span><span style="color:red">树</span>。</p><br><p style="font-size:18px">（2-3树的深度很小，平衡性好，效率高，但是其有两种不同的结点，实际代码实现比较复杂。而红黑树用红链接表示2-3树中另类的3-结点，统一了树中的结点类型，使代码实现简单化，又不破坏其高效性。）</p><br><p style="font-size:18px">&nbsp;</p><br><p><span style="font-size:24px"><strong>颜色表示</strong>：</span></p><br><p style="font-size:18px">因为每个结点都只会有一条指向自己的链接（从它的父结点指向它），我们将链接的颜色保存在表示结点的Node数据类型的布尔变量color中（若指向它的链接是红色的，那么该变量为true，黑色则为false）。</p><br><p style="font-size:18px">当我们提到一个结点颜色时，我们指的是指向该结点的链接的颜色。</p><br><p style="font-size:18px">&nbsp;</p><br><p><strong><span style="font-size:24px">旋转</span></strong></p><br><p style="font-size:18px"><br><br></p><br><p style="font-size:18px">在我们实现的某些操作中可能会出现红色右链接或者两条连续的红链接，但在操作完成前这些情况都会被小心地旋转并修复。</p><br><p style="font-size:18px">（我们在这里不讨论旋转的几种情况，把红黑树看做2-3树，自然可以得到正确的旋转后结果）</p><br><p style="font-size:18px">&nbsp;</p><br><p><strong><span style="color:red"><span style="font-size:24px">插入</span></span></strong></p><br><p style="font-size:18px"><br><br></p><br><p style="font-size:18px">在插入时我们可以使用旋转操作帮助我们保证2-3树和红黑树之间的一一对应关系，因为旋转操作可以保持红黑树的两个重要性质：<span style="color:red">有序性</span>和<span style="color:red">完美平衡性</span>。</p><br><p style="font-size:18px">&nbsp;</p><br><p><span style="font-size:24px"><strong>热身</strong>：</span></p><br><p style="font-size:18px"><strong><br><br></strong></p><br><p style="font-size:18px"><strong>向2-结点中插入新键</strong></p><br><p style="font-size:18px">（向红黑树中插入操作时，想想2-3树的插入操作。红黑树与2-3树在本质上是相同的，只是它们对3结点的表示不同。</p><br><p style="font-size:18px">向一个只含有一个2-结点的2-3树中插入新键后，2-结点变为3-结点。我们再把这个3-结点转化为红结点即可）</p><br><span style="font-size:18px"><img src="http://img.blog.csdn.net/20140517143549781?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWFuZ195dWxlaQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""></span><br><br><p><span style="font-size:18px"></span></p><br><p><strong>向一颗双键树（即一个3-结点）中插入新键</strong></p><br><p>（向红黑树中插入操作时，想想2-3树的插入操作。你把红黑树当做2-3树来处理插入，一切都变得简单了）</p><br><p>（向2-3树中的一个3-结点插入新键，这个3结点临时成为4-结点，然后分裂成3个2结点）</p><br><img src="http://img.blog.csdn.net/20140517143641906?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWFuZ195dWxlaQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""><br><br><p><span style="font-size:18px"><br><br></span></p><br><p></p><br><p><strong><span style="font-size:24px">★一颗红黑树的构造全过程</span></strong></p><br><span style="font-size:18px"><img src="http://img.blog.csdn.net/20140517143739453?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWFuZ195dWxlaQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""></span><br><br><p><span style="font-size:18px"></span></p><br><h2>平衡二叉树（AVL树）</h2><br><p></p><br><p><span style="color:red"><br><br></span></p><br><p><span style="color:red">定义</span>：平衡二叉树(Balance Binary Tree)又称AVL树。它或者是一颗空树，或者是具有下列性质的二叉树：它的左子树和右子树都是平衡二叉树，且左子树和右子树的深度之差的绝对&#20540;不超过1。</p><br><p>若将二叉树上结点的平衡因子BF(BalanceFactor)定义为该结点的左子树深度减去它的右子树深度，则<strong>平衡因子的绝对&#20540;大于1</strong>。</p><br><p>&nbsp;</p><br><p>其旋转操作 用2-3树的分裂来类比想象。</p><br><br><br><p><span style="font-size:18px"><br><br></span></p><br><p><span style="font-size:18px"><br><br></span></p><br><p><span style="font-size:18px"><a target="_blank" href="http://blog.csdn.net/yang_yulei/article/details/26104921">下半部分——散列表、B树、B&#43;树、Trie树。</a></span></p><br><p><span style="font-size:18px"><br><br></span></p><br><p><span style="font-size:18px"><br><br></span></p><br><p><br><br></p><br><p><br><br></p><br><br></div>
-
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/06/26/truncation-01/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="XueCheng">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="XueCheng Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/06/26/truncation-01/" itemprop="url">转载:分布式事务保持最终一致性</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Veröffentlicht am</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-06-26T15:58:28+08:00">
-                2017-06-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <div id="cnblogs_post_body"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 目前的应用系统，不管是企业级应用还是互联网应用，<strong>最终数据的一致性</strong>是每个应用系统都要面临的问题，随着分布式的逐渐普及，数据一致性更加艰难，但是也很难有银弹的解决方案，也并不是<strong>引入特定的中间件或者特定的开源框架</strong>能够解决的，更多的还是看<strong>业务场景</strong>，根据场景来给出解决方案。根据笔者最近几年的了解，总结了几个点，更多的应用系统在编码的时候，更加关注数据的一致性，这样系统才是健壮的。</p><br><p>一、基础理论</p><br><p>&nbsp;&nbsp; 目前关于事务的几大理论包括：<strong>ACID事务特性，CAP分布式理论，以及BASE</strong>等。<span style="color: #ff0000;"><strong>ACID在数据库事务中体现</strong></span>，<strong><span style="color: #ff0000;">CAP和BASE则是分布式事务的理论</span></strong>，结合业务系统，例如订单管理，例如仓储管理等，可以借鉴这些理论，从而解决问题。</p><br><p><strong>1、ACID 特性</strong></p><br><p><strong>2、CAP特性</strong></p><br><ul><br><li>C（一致性）一致性是指数据的原子性，在经典的数据库中通过事务来保障，事务完成时，无论成功或回滚，数据都会处于一致的状态，在分布式环境下，一致性是指多个节点数据是否一致；</li><br><li>A（可用性）服务一直保持可用的状态，当用户发出一个请求，服务能在一定的时间内返回结果；</li><br><li>P（分区容忍性）在分布式应用中，可能因为一些分布式的原因导致系统无法运转，好的分区容忍性，使应用虽然是一个分布式系统，但是好像一个可以正常运转的整体</li><br></ul><br><p><strong>3、BASE特性</strong></p><br><ul><br><li>BA: Basic Availability 基本业务可用性；</li><br><li>S: Soft state 柔性状态；</li><br><li>E: Eventual consistency 最终一致性；</li><br></ul><br><p>二、最终一致性的常用做法</p><br><p><img style="margin-right: auto; margin-left: auto; display: block;" src="http://images2015.cnblogs.com/blog/37237/201603/37237-20160329211439738-299763280.png" alt=""></p><br><p>1、<span style="font-size: 14px;">单数据库事务</span></p><br><p><span style="font-size: 14px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 如果应用系统是单一的数据库，那么这个很好保证，利用数据库的事务特性来满足事务的一致性，这时候的一致性是强一致性的。对于java应用系统来讲，很少直接通过事务的start和commit以及rollback来硬编码，大多通过spring的事务模板或者声明式事务来保证；</span></p><br><p><span style="font-size: 14px;">2、多数据库事务</span></p><br><p><span style="font-size: 14px;">&nbsp;&nbsp;&nbsp;&nbsp; 针对多数据库事务可以根据二阶段提交协议，采用spring 3.0 + Atomikos + JTA进行支持； </span></p><br><p><span style="font-size: 14px;">3、基于<strong>事务型消息队列</strong>的最终一致性</span></p><br><p><span style="font-size: 14px;">&nbsp;&nbsp;&nbsp;&nbsp; 借助消息队列，在处理业务逻辑的地方发送消息，业务逻辑处理成功后，提交消息，确保消息是发送成功的，之后消息队列投递来进行处理，如果成功，则结束，如果没有成功，则重试，直到成功，不过仅仅适用业务逻辑中，第一阶段成功，第二阶段必须成功的场景。对应上图中的C流程。</span></p><br><p><span style="font-size: 14px;">4、基于<strong>消息队列+定时补偿机制</strong>的最终一致性</span></p><br><p><span style="font-size: 14px;">&nbsp;&nbsp;&nbsp;&nbsp; 前面部分和上面基于事务型消息的队列，不同的是，第二阶段重试的地方，不再是消息中间件自身的重试逻辑了，而是单独的补偿任务机制。其实在大多数的逻辑中，第二阶段失败的概率比较小，所以单独独立补偿任务表出来，可以更加清晰，能够比较明确的直到当前多少任务是失败的。对应上图的E流程。</span></p><br><p><span style="font-size: 14px;">5、异步回调机制的引入</span></p><br><p><span style="font-size: 14px;">&nbsp;&nbsp;&nbsp;&nbsp; A应用调用B，在同步调用的返回结果中，B返回成功给到A，一般情况下，这时候就结束了，其实在99.99%的情况是没问题的，但是有时候为了确保100%，记住最起码在系统设计中100%，这时候B系统再回调A一下，告诉A，你调用我的逻辑，确实成功了。其实这个逻辑，非常类似TCP协议中的三次握手。上图中的B流程。</span></p><br><p><span style="font-size: 14px;">6、类似double check机制的确认机制</span></p><br><p><span style="font-size: 14px;">&nbsp;&nbsp;&nbsp;&nbsp;还是上图中异步回调的过程，A在同步调用B，B返回成功了。这次调用结束了，但是A为了确保，在过一段时间，这个时间可以是几秒，也可以是每天定时处理，再调用B一次，查询一下之前的那次调用是否成功。例如A调用B更新订单状态，这时候成功了，延迟几秒后，A查询B，确认一下状态是否是自己刚刚期望的。上图中的D流程。</span></p><br><p><span style="font-size: 14px;">三、分布式事务的缺点</span></p><br><p><span style="font-size: 14px;">1、二阶段提交协议缺点</span></p><br><p><span style="font-size: 14px;">&nbsp;&nbsp;&nbsp; 两阶段提交涉及到多个节点的网络通信,通信时间如果过长,事务的相对时间也就会过长,那么锁定资源的时间也就长了.在高并发的服务中,就会存在严重的性能瓶劲</span></p><br><p>&nbsp;2、消息队列</p><br><p>&nbsp;&nbsp; 在高并发的环境中，我们一般会采用消息队列来避免分布式事务的执行。</p><br><p>&nbsp;&nbsp; 在使用消息队列时，我们需要做到可靠凭证的保存（分布式事务的消息），有如下几种方式：</p><br><p>&nbsp;&nbsp; 以支付宝和余额宝为例进行说明.</p><br><p>&nbsp;&nbsp; 支付宝完成扣钱的动作时,记录消息数据,将消息数据和业务数据存在同一个数据库实例中.</p><br><div class="cnblogs_code"><br><pre><span style="color: #000000;">Begin Transaction<br>  update A set amount</span>=amount-1000 where uid=100<span style="color: #000000;">;<br>  insert into message(uid,amount,status) values (</span>1,1000,1<span style="color: #000000;">)<br>End Transaction<br>Commit;</span></pre><br></div><br><p>将支付宝完成扣钱的消息及时发送给余额宝，余额宝完成处理后返回成功消息，支付宝收到消息后，消除消息表中对应的消息记录，即完成本次扣钱操作.</p><br><p><img style="margin-right: auto; margin-left: auto; display: block;" src="http://images2015.cnblogs.com/blog/37237/201604/37237-20160407223903047-1106443422.png" alt=""></p><br><p><span style="font-family: &lsquo;Times New Roman&lsquo;; font-size: 14px;">传统方式是，我做完了，发你消息。解决一致性的方案的意思就是，我先发你消息，我做完了再跟你确认我做完了。这是改进后的有事务的消息中间件。</span></p><br><p><span style="font-family: &lsquo;Times New Roman&lsquo;; font-size: 14px;">参见：<a href="http://coolshell.cn/articles/10910.html" target="_blank" rel="external">http://coolshell.cn/articles/10910.html</a></span></p></div><div id="MySignature"></div><br><div class="clear"></div><br><div id="blog_post_info_block"><br><div id="BlogPostCategory"></div><br><div id="EntryTag"></div><br><div id="blog_post_info"><br></div><br><div class="clear"></div><br><div id="post_next_prev"></div><br></div>
 
 
           
@@ -1082,8 +1081,8 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">45</span>
-                <span class="site-state-item-name">Artikel</span>
+                <span class="site-state-item-count">46</span>
+                <span class="site-state-item-name">posts</span>
               </a>
             </div>
           
@@ -1137,7 +1136,7 @@
 
 
 <div class="powered-by">
-  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
 </div>
 
 <div class="theme-info">
