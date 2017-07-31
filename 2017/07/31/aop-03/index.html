@@ -90,15 +90,16 @@
 
 
 
-<meta name="description" content="Do one thing at a time, and do well.">
-<meta property="og:type" content="website">
-<meta property="og:title" content="XueCheng Notes">
-<meta property="og:url" content="https://bloodorange2017.github.io/archives/archives/2017/page/7/index.html">
+<meta name="description" content="&amp;lt;div id=&amp;quot;cnblogs_post_body&amp;quot;&amp;gt;&amp;lt;div class=&amp;quot;cnblogs_code&amp;quot;&amp;gt; public boolean testDelete(String jobCode) throws Exception {      boolean flag = false;      //1.获取事务控制管理器      D">
+<meta property="og:type" content="article">
+<meta property="og:title" content="转载：Spring AOP手动控制事务范例">
+<meta property="og:url" content="https://bloodorange2017.github.io/archives/2017/07/31/aop-03/index.html">
 <meta property="og:site_name" content="XueCheng Notes">
-<meta property="og:description" content="Do one thing at a time, and do well.">
+<meta property="og:description" content="&amp;lt;div id=&amp;quot;cnblogs_post_body&amp;quot;&amp;gt;&amp;lt;div class=&amp;quot;cnblogs_code&amp;quot;&amp;gt; public boolean testDelete(String jobCode) throws Exception {      boolean flag = false;      //1.获取事务控制管理器      D">
+<meta property="og:updated_time" content="2017-07-31T07:50:46.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="XueCheng Notes">
-<meta name="twitter:description" content="Do one thing at a time, and do well.">
+<meta name="twitter:title" content="转载：Spring AOP手动控制事务范例">
+<meta name="twitter:description" content="&amp;lt;div id=&amp;quot;cnblogs_post_body&amp;quot;&amp;gt;&amp;lt;div class=&amp;quot;cnblogs_code&amp;quot;&amp;gt; public boolean testDelete(String jobCode) throws Exception {      boolean flag = false;      //1.获取事务控制管理器      D">
 
 
 
@@ -126,13 +127,13 @@
 
 
 
-  <link rel="canonical" href="https://bloodorange2017.github.io/archives/archives/2017/page/7/"/>
+  <link rel="canonical" href="https://bloodorange2017.github.io/archives/2017/07/31/aop-03/"/>
 
 
 
 
 
-  <title>Archive | XueCheng Notes</title>
+  <title>转载：Spring AOP手动控制事务范例 | XueCheng Notes</title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
@@ -157,7 +158,7 @@
     
   
 
-  <div class="container sidebar-position-left  page-archive  ">
+  <div class="container sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -241,143 +242,147 @@
           <div id="content" class="content">
             
 
-  <section id="posts" class="posts-collapse">
-    <span class="archive-move-on"></span>
+  <div id="posts" class="posts-expand">
+    
 
-    <span class="archive-page-counter">
-      
-      
-       
-      
-      OK! 49 posts in total. Keep on posting.
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/07/31/aop-03/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="XueCheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XueCheng Notes">
     </span>
 
     
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">转载：Spring AOP手动控制事务范例</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-07-31T15:49:17+08:00">
+                2017-07-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
 
       
       
+
+      
+        <pre><code>&lt;div id=&quot;cnblogs_post_body&quot;&gt;&lt;div class=&quot;cnblogs_code&quot;&gt;
+</code></pre><p><pre><span style="color: #0000ff;">public</span> <span style="color: #0000ff;">boolean</span> testDelete(String jobCode) <span style="color: #0000ff;">throws</span><span style="color: #000000;"> Exception {<br>      </span><span style="color: #0000ff;">boolean</span> flag = <span style="color: #0000ff;">false</span><span style="color: #000000;">;<br>      </span><span style="color: #008000;">//</span><span style="color: #008000;">1.获取事务控制管理器</span><br>      DataSourceTransactionManager transactionManager =<span style="color: #000000;"> HqznContext.getBean(<br>           </span>“transactionManager”, DataSourceTransactionManager.<span style="color: #0000ff;">class</span><span style="color: #000000;">);//这里是spring手动注入bean,也可以使用自动注入 HqznContext是一个工具类:主要用于简化spring手动注入代码<br>      </span><span style="color: #008000;">//</span><span style="color: #008000;">2.获取事务定义</span><br>      DefaultTransactionDefinition def = <span style="color: #0000ff;">new</span><span style="color: #000000;"> DefaultTransactionDefinition();<br>      </span><span style="color: #008000;">//</span><span style="color: #008000;">3.设置事务隔离级别，开启新事务</span><br><span style="color: #000000;">      def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);<br>      </span><span style="color: #008000;">//</span><span style="color: #008000;">4.获得事务状态</span><br>      TransactionStatus status =<span style="color: #000000;"> transactionManager.getTransaction(def);<br>      </span><span style="color: #0000ff;">try</span><span style="color: #000000;"> {<br>        </span><span style="color: #008000;">//</span><span style="color: #008000;">5.具体的数据库操作（多个）</span><br>        BOBaseJob r = <span style="color: #0000ff;">new</span><span style="color: #000000;"> BOBaseJob();<br>        r.setJobCode(</span>“SW001”<span style="color: #000000;">);<br>        r.setJobName(</span>“事务001”<span style="color: #000000;">);<br>        BOBaseJobMapper.deleteByPrimaryKey(jobCode);<br>        BOBaseJobMapper.insert(r);<br>        flag </span>= <span style="color: #0000ff;">true</span><span style="color: #000000;">;<br>        transactionManager.commit(status);<br>      } </span><span style="color: #0000ff;">catch</span><span style="color: #000000;"> (Exception e) {<br>        transactionManager.rollback(status);<br>      }<br>      </span><span style="color: #0000ff;">return</span><span style="color: #000000;"> flag;<br>   }</span></pre><br></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
       
 
       
         
-        <div class="collection-title">
-          <h2 class="archive-year motion-element" id="archive-year-2017">2017</h2>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/31/aop-02/" rel="next" title="转载:Spring事务配置的五种方式和spring里面事务的传播属性和事务隔离级别">
+                <i class="fa fa-chevron-left"></i> 转载:Spring事务配置的五种方式和spring里面事务的传播属性和事务隔离级别
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/31/aop-04/" rel="prev" title="转载:Spring实现AOP的4种方式">
+                转载:Spring实现AOP的4种方式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
         </div>
       
-      
 
       
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2017/05/05/sysgc_01/" itemprop="url">
-              
-                <span itemprop="name">转载:java 垃圾回收 常用算法</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-05-05T17:05:04+08:00"
-              content="2017-05-05" >
-          05-05
-        </time>
-      </div>
-
-    </header>
+      
+    </footer>
   </article>
 
 
 
-    
-
+    <div class="post-spread">
       
-      
-      
-
-      
-      
-
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2017/05/05/jvm-01/" itemprop="url">
-              
-                <span itemprop="name">转载:JVM原理及性能调优</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-05-05T16:53:53+08:00"
-              content="2017-05-05" >
-          05-05
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-    
-
-      
-      
-      
-
-      
-      
-
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2017/05/05/first/" itemprop="url">
-              
-                <span itemprop="name">HEXO教程-搭建一个属于自己的HEXO博客</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-05-05T15:18:31+08:00"
-              content="2017-05-05" >
-          05-05
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-    
-
-  </section>
-
-  
-  <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/archives/2017/page/6/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/archives/2017/">1</a><span class="space">&hellip;</span><a class="page-number" href="/archives/2017/page/6/">6</a><span class="page-number current">7</span>
-  </nav>
-
-
+    </div>
+  </div>
 
 
           </div>
@@ -385,6 +390,10 @@
 
 
           
+  <div class="comments" id="comments">
+    
+  </div>
+
 
         </div>
         
@@ -562,11 +571,9 @@
   
 
   
-  
-    <script type="text/javascript" id="motion.page.archive">
-      $('.archive-year').velocity('transition.slideLeftIn');
-    </script>
-  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
 
 
   

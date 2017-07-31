@@ -253,6 +253,257 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/05/10/LinkedBlockingQueue-01/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="XueCheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XueCheng Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/05/10/LinkedBlockingQueue-01/" itemprop="url">转载:LinkedBlockingQueue源码分析</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-10T09:46:50+08:00">
+                2017-05-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>在前面的文章<a href="http://www.jianshu.com/p/9a652250e0d1" target="_blank">ArrayBlockingQueue源码分析</a>中，已经对JDK中的BlockingQueue中的做了一个回顾，同时对ArrayBlockingQueue中的核心方法作了说明，而LinkedBlockingQueue作为JDK中BlockingQueue家族系列中一员，由于其作为固定大小线程池(Executors.newFixedThreadPool())底层所使用的阻塞队列，分析它的目的主要在于2点：<br>(1) 与ArrayBlockingQueue进行类比学习，加深各种数据结构的理解<br>(2) 了解底层实现，能够更好地理解每一种阻塞队列对线程池性能的影响，做到真正的知其然，且知其所以然</p><br><ul><br><li>源码分析LinkedBlockingQueue的实现</li><br><li>与ArrayBlockingQueue进行比较</li><br><li>说明为什么选择LinkedBlockingQueue作为固定大小的线程池的阻塞队列<br><strong>如发现有分析不对或不准确的地方，请您及时纠正(在此谢过)</strong><br></li><br></ul><br><h2>1.LinkedBlockingQueue深入分析</h2><br><p>LinkedBlockingQueue，见名之意，它是由一个基于链表的阻塞队列，首先看一下的核心组成：</p><br><pre><code class="java">    // 所有的元素都通过Node这个静态内部类来进行存储，这与LinkedList的处理方式完全一样<br>    static class Node&lt;E&gt; {<br>        //使用item来保存元素本身<br>        E item;<br>        //保存当前节点的后继节点<br>        Node&lt;E&gt; next;<br>        Node(E x) { item = x; }<br>    }<br>    /<strong><br>        阻塞队列所能存储的最大容量<br>        用户可以在创建时手动指定最大容量,如果用户没有指定最大容量<br>        那么最默认的最大容量为Integer.MAX_VALUE.<br>    */<br>    private final int capacity;<br><br>    /</strong><br>        当前阻塞队列中的元素数量<br>        PS:如果你看过ArrayBlockingQueue的源码,你会发现<br>        ArrayBlockingQueue底层保存元素数量使用的是一个<br>        普通的int类型变量。其原因是在ArrayBlockingQueue底层<br>        对于元素的入队列和出队列使用的是同一个lock对象。而数<br>        量的修改都是在处于线程获取锁的情况下进行操作，因此不<br>        会有线程安全问题。<br>        而LinkedBlockingQueue却不是，它的入队列和出队列使用的是两个<br>        不同的lock对象,因此无论是在入队列还是出队列，都会涉及对元素数<br>        量的并发修改，(之后通过源码可以更加清楚地看到)因此这里使用了一个原子操作类<br>        来解决对同一个变量进行并发修改的线程安全问题。<br>    <em>/<br>    private final AtomicInteger count = new AtomicInteger(0);<br><br>    /**
+     </em> 链表的头部<br>     <em> LinkedBlockingQueue的头部具有一个不变性:
+     </em> 头部的元素总是为null，head.item==null<br>     <em>/<br>    private transient Node&lt;E&gt; head;<br><br>    /**
+     </em> 链表的尾部<br>     <em> LinkedBlockingQueue的尾部也具有一个不变性:
+     </em> 即last.next==null<br>     <em>/<br>    private transient Node&lt;E&gt; last;<br><br>    /**<br>     元素出队列时线程所获取的锁<br>     当执行take、poll等操作时线程需要获取的锁
+    </em>/<br>    private final ReentrantLock takeLock = new ReentrantLock();<br><br>    /<strong><br>    当队列为空时，通过该Condition让从队列中获取元素的线程处于等待状态<br>    */<br>    private final Condition notEmpty = takeLock.newCondition();<br><br>    /</strong><br>      元素入队列时线程所获取的锁<br>      当执行add、put、offer等操作时线程需要获取锁<br>    <em>/<br>    private final ReentrantLock putLock = new ReentrantLock();<br><br>    /**<br>     当队列的元素已经达到capactiy，通过该Condition让元素入队列的线程处于等待状态
+    </em>/<br>    private final Condition notFull = putLock.newCondition();</code></pre><br><p>通过上面的分析，我们可以发现LinkedBlockingQueue在入队列和出队列时使用的不是同一个Lock，这也意味着它们之间的操作不会存在互斥操作。在多个CPU的情况下，它们可以做到真正的在同一时刻既消费、又生产，能够做到并行处理。</p><br><p>下面让我们看下LinkedBlockingQueue的构造方法：</p><br><pre><code>    /<strong><br>     <em> 如果用户没有显示指定capacity的值，默认使用int的最大值
+     </em>/<br>    public LinkedBlockingQueue() {<br>        this(Integer.MAX_VALUE);<br>    }<br>    /</strong><br>     可以看到,当队列中没有任何元素的时候,此时队列的头部就等于队列的尾部,<br>     指向的是同一个节点,并且元素的内容为null<br>    <em>/<br>    public LinkedBlockingQueue(int capacity) {<br>        if (capacity &lt;= 0) throw new IllegalArgumentException();<br>        this.capacity = capacity;<br>        last = head = new Node&lt;E&gt;(null);<br>    }<br><br>    /</em><br>    在初始化LinkedBlockingQueue的时候，还可以直接将一个集合<br>    中的元素全部入队列，此时队列最大容量依然是int的最大值。<br>    <em>/<br>    public LinkedBlockingQueue(Collection&lt;? extends E&gt; c) {<br>        this(Integer.MAX_VALUE);<br>        final ReentrantLock putLock = this.putLock;<br>        //获取锁<br>        putLock.lock(); // Never contended, but necessary for visibility<br>        try {<br>            //迭代集合中的每一个元素,让其入队列,并且更新一下当前队列中的元素数量<br>            int n = 0;<br>            for (E e : c) {<br>                if (e == null)<br>                    throw new NullPointerException();<br>                if (n == capacity)<br>                    throw new IllegalStateException(“Queue full”);<br>                //参考下面的enqueue分析<br>                enqueue(new Node&lt;E&gt;(e));<br>                ++n;<br>            }<br>            count.set(n);<br>        } finally {<br>            //释放锁<br>            putLock.unlock();<br>        }<br>    }<br><br>    /**
+     </em> 我去，这代码其实可读性不怎么样啊。<br>     <em> 其实下面的代码等价于如下内容:
+     </em> last.next=node;<br>     <em> last = node;
+     </em> 其实也没有什么花样:<br>       就是让新入队列的元素成为原来的last的next，让进入的元素称为last<br>     <em>
+     </em>/<br>    private void enqueue(Node&lt;E&gt; node) {<br>        // assert putLock.isHeldByCurrentThread();<br>        // assert last.next == null;<br>        last = last.next = node;<br>    }</code></pre><br><p>在分析完LinkedBlockingQueue的核心组成之后,下面让我们再看下核心的几个操作方法,首先分析一下元素入队列的过程:</p><br><pre><code>    public void put(E e) throws InterruptedException {<br>        if (e == null) throw new NullPointerException();<br>        // Note: convention in all put/take/etc is to preset local var<br><br>        /<em>注意上面这句话,约定所有的put/take操作都会预先设置本地变量,<br>        可以看到下面有一个将putLock赋值给了一个局部变量的操作
+        </em>/<br>        int c = -1;<br>        Node&lt;E&gt; node = new Node(e);<br>        /<em><br>         在这里首先获取到putLock,以及当前队列的元素数量<br>         即上面所描述的预设置本地变量操作
+        </em>/<br>        final ReentrantLock putLock = this.putLock;<br>        final AtomicInteger count = this.count;<br>        /<em><br>            执行可中断的锁获取操作,即意味着如果线程由于获取<br>            锁而处于Blocked状态时，线程是可以被中断而不再继<br>            续等待，这也是一种避免死锁的一种方式，不会因为<br>            发现到死锁之后而由于无法中断线程最终只能重启应用。
+        </em>/<br>        putLock.lockInterruptibly();<br>        try {<br>            /<em><br>            当队列的容量到底最大容量时,此时线程将处于等待状<br>            态，直到队列有空闲的位置才继续执行。使用while判<br>            断依旧是为了放置线程被”伪唤醒”而出现的情况,即当<br>            线程被唤醒时而队列的大小依旧等于capacity时，线<br>            程应该继续等待。
+            </em>/<br>            while (count.get() == capacity) {<br>                notFull.await();<br>            }<br>            //让元素进行队列的末尾,enqueue代码在上面分析过了<br>            enqueue(node);<br>            //首先获取原先队列中的元素个数,然后再对队列中的元素个数+1.<br>            c = count.getAndIncrement();<br>            /<em>注:c+1得到的结果是新元素入队列之后队列元素的总和。<br>            当前队列中的总元素个数小于最大容量时,此时唤醒其他执行入队列的线程<br>            让它们可以放入元素,如果新加入元素之后,队列的大小等于capacity，<br>            那么就意味着此时队列已经满了,也就没有必须要唤醒其他正在等待入队列的线程,因为唤醒它们之后，它们也还是继续等待。
+            </em>/<br>            if (c + 1 &lt; capacity)<br>                notFull.signal();<br>        } finally {<br>            //完成对锁的释放<br>            putLock.unlock();<br>        }<br>        /<em>当c=0时，即意味着之前的队列是空队列,出队列的线程都处于等待状态，<br>        现在新添加了一个新的元素,即队列不再为空,因此它会唤醒正在等待获取元素的线程。
+        </em>/<br>        if (c == 0)<br>            signalNotEmpty();<br>    }<br><br>    /<em><br>    唤醒正在等待获取元素的线程,告诉它们现在队列中有元素了
+    </em>/<br>    private void signalNotEmpty() {<br>        final ReentrantLock takeLock = this.takeLock;<br>        takeLock.lock();<br>        try {<br>            //通过notEmpty唤醒获取元素的线程<br>            notEmpty.signal();<br>        } finally {<br>            takeLock.unlock();<br>        }<br>    }</code></pre><br><p>看完put方法，下面再看看下offer是如何处理的方法：</p><br><pre><code>    /<strong><br>    在BlockingQueue接口中除了定义put方法外(当队列元素满了之后就会阻塞，<br>    直到队列有新的空间可以方法线程才会继续执行)，还定义一个offer方法，<br>    该方法会返回一个boolean值，当入队列成功返回true,入队列失败返回false。<br>    该方法与put方法基本操作基本一致，只是有细微的差异。<br>    <em>/<br>     public boolean offer(E e) {<br>        if (e == null) throw new NullPointerException();<br>        final AtomicInteger count = this.count;<br>        /</em><br>            当队列已经满了，它不会继续等待,而是直接返回。<br>            因此该方法是非阻塞的。<br>        <em>/<br>        if (count.get() == capacity)<br>            return false;<br>        int c = -1;<br>        Node&lt;E&gt; node = new Node(e);<br>        final ReentrantLock putLock = this.putLock;<br>        putLock.lock();<br>        try {<br>            /</em><br>            当获取到锁时，需要进行二次的检查,因为可能当队列的大小为capacity-1时，<br>            两个线程同时去抢占锁，而只有一个线程抢占成功，那么此时<br>            当线程将元素入队列后，释放锁，后面的线程抢占锁之后，此时队列<br>            大小已经达到capacity，所以将它无法让元素入队列。<br>            下面的其余操作和put都一样，此处不再详述<br>            */<br>            if (count.get() &lt; capacity) {<br>                enqueue(node);<br>                c = count.getAndIncrement();<br>                if (c + 1 &lt; capacity)<br>                    notFull.signal();<br>            }<br>        } finally {<br>            putLock.unlock();<br>        }<br>        if (c == 0)<br>            signalNotEmpty();<br>        return c &gt;= 0;<br>    }</strong></code></pre><br><p>BlockingQueue还定义了一个限时等待插入操作，即在等待一定的时间内，如果队列有空间可以插入，那么就将元素入队列，然后返回true,如果在过完指定的时间后依旧没有空间可以插入，那么就返回false，下面是限时等待操作的分析:</p><br><pre><code>        /<br>         通过timeout和TimeUnit来指定等待的时长<br>         timeout为时间的长度,TimeUnit为时间的单位<br>        <em>/<br>        public boolean offer(E e, long timeout, TimeUnit unit)<br>        throws InterruptedException {<br><br>        if (e == null) throw new NullPointerException();<br>        //将指定的时间长度转换为毫秒来进行处理<br>        long nanos = unit.toNanos(timeout);<br>        int c = -1;<br>        final ReentrantLock putLock = this.putLock;<br>        final AtomicInteger count = this.count;<br>        putLock.lockInterruptibly();<br>        try {<br>            while (count.get() == capacity) {<br>                //如果等待的剩余时间小于等于0，那么直接返回<br>                if (nanos &lt;= 0)<br>                    return false;<br>            /</em><br>              通过condition来完成等待，此时当前线程会完成锁的，并且处于等待状态<br>              直到被其他线程唤醒该线程、或者当前线程被中断、<br>              等待的时间截至才会返回，该返回值为从方法调用到返回所经历的时长。<br>              注意：上面的代码是condition的awitNanos()方法的通用写法，<br>              可以参看Condition.awaitNaos的API文档。<br>              下面的其余操作和put都一样，此处不再详述<br>            <em>/<br>                nanos = notFull.awaitNanos(nanos);<br>            }<br>            enqueue(new Node&lt;E&gt;(e));<br>            c = count.getAndIncrement();<br>            if (c + 1 &lt; capacity)<br>                notFull.signal();<br>        } finally {<br>            putLock.unlock();<br>        }<br>        if (c == 0)<br>            signalNotEmpty();<br>        return true;<br>    }</em></code></pre><br><p>通过上面的分析，我们应该比较清楚地知道了LinkedBlockingQueue的入队列的操作，其主要是通过获取到putLock锁来完成，当队列的数量达到最大值，此时会导致线程处于阻塞状态或者返回false(根据具体的方法来看)；如果队列还有剩余的空间，那么此时会新创建出一个Node对象，将其设置到队列的尾部，作为LinkedBlockingQueue的last元素。</p><br><p>在分析完入队列的过程之后，我们接下来看看LinkedBlockingQueue出队列的过程；由于BlockingQueue的方法都具有对称性，此处就只分析take方法的实现，其余方法的实现都如出一辙：</p><br><pre><code> public E take() throws InterruptedException {<br>        E x;<br>        int c = -1;<br>        final AtomicInteger count = this.count;<br>        final ReentrantLock takeLock = this.takeLock;<br>        //通过takeLock获取锁，并且支持线程中断<br>        takeLock.lockInterruptibly();<br>        try {<br>            //当队列为空时，则让当前线程处于等待<br>            while (count.get() == 0) {<br>                notEmpty.await();<br>            }<br>            //完成元素的出队列<br>            x = dequeue();<br>            /<br>               队列元素个数完成原子化操作-1,可以看到count元素会<br>               在插入元素的线程和获取元素的线程进行并发修改操作。<br>            <em>/<br>            c = count.getAndDecrement();<br>            /</em><br>              当一个元素出队列之后，队列的大小依旧大于1时<br>              当前线程会唤醒其他执行元素出队列的线程,让它们也<br>              可以执行元素的获取<br>            <em>/<br>            if (c &gt; 1)<br>                notEmpty.signal();<br>        } finally {<br>            //完成锁的释放<br>            takeLock.unlock();<br>        }<br>        /</em><br>            当c==capaitcy时，即在获取当前元素之前，<br>            队列已经满了，而此时获取元素之后，队列就会<br>            空出一个位置，故当前线程会唤醒执行插入操作的线<br>            程通知其他中的一个可以进行插入操作。<br>        <em>/<br>        if (c == capacity)<br>            signalNotFull();<br>        return x;<br>    }<br><br><br>    /**
+     </em> 让头部元素出队列的过程<br>     <em> 其最终的目的是让原来的head被GC回收，让其的next成为head
+     </em> 并且新的head的item为null.<br>     <em> 因为LinkedBlockingQueue的头部具有一致性:即元素为null。
+     </em>/<br>    private E dequeue() {<br>        Node&lt;E&gt; h = head;<br>        Node&lt;E&gt; first = h.next;<br>        h.next = h; // help GC<br>        head = first;<br>        E x = first.item;<br>        first.item = null;<br>        return x;<br>    }</code></pre><br><div class="image-package"><br><img src="http://upload-images.jianshu.io/upload_images/1684370-9bea30e290a8822c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-original-src="http://upload-images.jianshu.io/upload_images/1684370-9bea30e290a8822c.png?imageMogr2/auto-orient/strip%7CimageView2/2"><br><div class="image-caption">LinkedBlockingQueue出队列大致过程.png</div><br></div><br><p>对于LinkedBlockingQueue的源码分析就到这里，下面让我们将LinkedBlockingQueue与ArrayBlockingQueue进行一个比较。</p><br><h2>2.LinkedBlockingQueue与ArrayBlockingQueue的比较</h2><br><p>ArrayBlockingQueue由于其底层基于数组，并且在创建时指定存储的大小，在完成后就会立即在内存分配固定大小容量的数组元素，因此其存储通常有限，故其是一个<strong>“有界“</strong>的阻塞队列；而LinkedBlockingQueue可以由用户指定最大存储容量，也可以无需指定，如果不指定则最大存储容量将是Integer.MAX_VALUE，即可以看作是一个<strong>“无界”</strong>的阻塞队列，由于其节点的创建都是动态创建，并且在节点出队列后可以被GC所回收，因此其具有灵活的伸缩性。但是由于ArrayBlockingQueue的有界性，因此其能够更好的对于性能进行预测，而LinkedBlockingQueue由于没有限制大小，当任务非常多的时候，不停地向队列中存储，就有可能导致内存溢出的情况发生。</p><br><p>其次，ArrayBlockingQueue中在入队列和出队列操作过程中，使用的是同一个lock，所以即使在多核CPU的情况下，其读取和操作的都无法做到并行，而LinkedBlockingQueue的读取和插入操作所使用的锁是两个不同的lock，它们之间的操作互相不受干扰，因此两种操作可以并行完成，故LinkedBlockingQueue的吞吐量要高于ArrayBlockingQueue。</p><br><h2>3.选择LinkedBlockingQueue的理由</h2><br><pre><code>    /<em>*<br>        下面的代码是Executors创建固定大小线程池的代码，其使用了<br>        LinkedBlockingQueue来作为任务队列。
+    </em>/<br>    public static ExecutorService newFixedThreadPool(int nThreads) {<br>        return new ThreadPoolExecutor(nThreads, nThreads,<br>                                      0L, TimeUnit.MILLISECONDS,<br>                                      new LinkedBlockingQueue&lt;Runnable&gt;());<br>    }</code></pre><br><p>JDK中选用LinkedBlockingQueue作为阻塞队列的原因就在于其<strong>无界性</strong>。因为线程大小固定的线程池，其线程的数量是不具备伸缩性的，当任务非常繁忙的时候，就势必会导致所有的线程都处于工作状态，如果使用一个有界的阻塞队列来进行处理，那么就非常有可能很快导致队列满的情况发生，从而导致任务无法提交而抛出RejectedExecutionException，而使用无界队列由于其良好的存储容量的伸缩性，可以很好的去缓冲任务繁忙情况下场景，即使任务非常多，也可以进行动态扩容，当任务被处理完成之后，队列中的节点也会被随之被GC回收，非常灵活。</p><br><p>至此，LinkedBlockingQueue的分析就到这里，如果您发现有任何编写不对的地方，请指出(万分感谢！)。</p>
+
+<pre><code>&lt;/div&gt;
+&lt;!--  --&gt;
+</code></pre>
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/05/09/innoDB-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="XueCheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XueCheng Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/05/09/innoDB-2/" itemprop="url">转载：innoDB -MVCC浅析</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-09T18:27:23+08:00">
+                2017-05-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <div id="article_content" class="article_content"><br><p><span style="white-space:pre">    </span>在并发读写数据库时，读操作可能会不一致的数据（脏读）。为了避免这种情况，需要实现数据库的并发访问控制，最简单的方式就是加锁访问。由于，加锁会将读写操作串行化，所以不会出现不一致的状态。但是，读操作会被写操作阻塞，大幅降低读性能。在java concurrent包中，有copyonwrite系列的类，专门用于<strong>优化读远大于写</strong>的情况。而其优化的手段就是，在进行写操作时，将数据copy一份，不会影响原有数据，然后进行修改，修改完成后原子替换掉旧的数据，而读操作只会读取原有数据。通过这种方式实现写操作不会阻塞读操作，从而优化读效率。而写操作之间是要互斥的，并且每次写操作都会有一次copy，所以只适合读大于写的情况。</p><p><span style="white-space:pre">    </span>MVCC的原理与copyonwrite类似，全称是Multi-Version Concurrent Control，即多版本并发控制。在MVCC协议下，每个读操作会看到一个一致性的snapshot，并且可以实现非阻塞的读。MVCC允许数据具有多个版本，这个版本可以是时间戳或者是全局递增的事务ID，在同一个时间点，不同的事务看到的数据是不同的。</p><p><span style="white-space:pre">    </span>实现原理：&nbsp;</p><p><span style="white-space:pre">    </span>——————————————————————————————&gt; 时间轴</p><p><span style="white-space:pre">            </span>|——-R(T1)—–|</p><p><span style="white-space:pre">        </span>|———–U(T2)———–|</p><p><span style="white-space:pre">    </span>如上图，假设有两个并发操作R(T1)和U(T2)，T1和T2是事务ID，T1小于T2，系统中包含数据a = 1(T1)，R和W的操作如下：</p><p><span style="white-space:pre">        </span>R：read a (T1)</p><p><span style="white-space:pre">        </span>U：a = 2 &nbsp; &nbsp;(T2)</p><p><span style="white-space:pre">    </span>R（读操作）的版本T1表示要读取数据的版本，而之后写操作才会更新版本，读操作不会。在时间轴上，R晚于U，而由于U在R开始之后提交，所以对于R是不可见的。所以，R只会读取T1版本的数据，即a = 1。</p><p><span style="white-space:pre">    </span>由于在update操作提交之前，不能影响已有数据的一致性，所以不会改变旧的数据，update操作会被拆分成insert + delete。需要标记删除旧的数据，insert新的数据。只有update提交之后，才会影响后续的读操作。而对于读操作而且，只能读到在其之前的所有的写操作，正在执行中的写操作对其是不可见的。</p><p><span style="white-space:pre">    </span>上面说了一堆的虚的理论，下面来点干活，看一下mysql的innodb引擎是如何实现MVCC的。innodb会为每一行添加两个字段，分别表示该行<strong>创建的版本</strong>和<strong>删除的版本</strong>，填入的是事务的版本号，这个版本号随着事务的创建不断递增。在repeated read的隔离级别（<a target="_blank" href="http://blog.csdn.net/chosen0ne/article/details/10036775">事务的隔离级别请看这篇文章</a>）下，具体各种数据库操作的实现：</p><p><span style="white-space:pre">    </span>select：满足以下两个条件innodb会返回该行数据：（1）该行的创建版本号小于等于当前版本号，用于保证在select操作之前所有的操作已经执行落地。（2）该行的删除版本号大于当前版本或者为空。删除版本号大于当前版本意味着有一个并发事务将该行删除了。</p><p><span style="white-space:pre">    </span>insert：将新插入的行的创建版本号设置为当前系统的版本号。</p><p><span style="white-space:pre">    </span>delete：将要删除的行的删除版本号设置为当前系统的版本号。</p><p><span style="white-space:pre">    </span>update：不执行原地update，而是转换成insert + delete。将旧行的删除版本号设置为当前版本号，并将新行insert同时设置创建版本号为当前版本号。</p><p><span style="white-space:pre">    </span>其中，写操作（insert、delete和update）执行时，需要将系统版本号递增。</p><p><span style="white-space:pre">    </span>由于旧数据并不真正的删除，所以必须对这些数据进行清理，innodb会开启一个后台线程执行清理工作，具体的规则是将删除版本号小于当前系统版本的行删除，这个过程叫做purge。</p><p><span style="white-space:pre">    </span>通过MVCC很好的实现了事务的隔离性，可以达到repeated read级别，要实现serializable还必须加锁。</p><br></div>
+
+
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/05/09/innoDB-01/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -838,385 +1089,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/05/08/ConcurrentHashMap-02/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="XueCheng">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="XueCheng Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/05/08/ConcurrentHashMap-02/" itemprop="url">转载:深入分析ConcurrentHashMap</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-08T18:19:39+08:00">
-                2017-05-08
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p></p><h1><b>术语定义</b></h1><p></p>
-<p><table border="1" cellspacing="0" cellpadding="0"></table></p>
-<p><tbody></tbody></p>
-<p><tr></tr></p>
-<p><td valign="top" width="55"><strong>术语</strong></td></p>
-<p><td valign="top" width="99"><strong>英文</strong></td></p>
-<p><td valign="top" width="308"><strong>解释</strong></td><br></p>
-<p><tr></tr></p>
-<p><td valign="top" width="55">哈希算法</td></p>
-<p><td valign="top" width="99"><b>hash algorithm</b></td></p>
-<p><td valign="top" width="308">是一种将任意内容的输入转换成相同长度输出的加密方式，其输出被称为哈希值。<b> </b></td><br></p>
-<p><tr></tr></p>
-<p><td valign="top" width="55">哈希表</td></p>
-<p><td valign="top" width="99"><b>hash table</b></td></p>
-<p><td valign="top" width="308">根据设定的哈希函数H(key)和处理冲突方法将一组关键字映象到一个有限的地址区间上，并以关键字在地址区间中的象作为记录在表中的存储位置，这种表称为哈希表或散列，所得存储位置称为哈希地址或散列地址。</td><br><br><br></p>
-<p></p><h1><b>线程不安全的HashMap</b></h1><p></p>
-<p></p><p>因为多线程环境下，使用Hashmap进行put操作会引起死循环，导致CPU利用率接近100%，所以在并发情况下不能使用HashMap。<br><br><span id="more-269"></span><br><br>如以下代码：</p><p></p>
-<p><pre class="brush: java; title: ; notranslate" title=""><br>final HashMap&lt;String, String&gt; map = new HashMap&lt;String, String&gt;(2);</pre></p>
-<pre><code>Thread t = new Thread(new Runnable() {
-
-    @Override
-
-    public void run() {
-
-        for (int i = 0; i &amp;lt; 10000; i++) {
-
-            new Thread(new Runnable() {
-
-                @Override
-
-                public void run() {
-
-                    map.put(UUID.randomUUID().toString(), &amp;quot;&amp;quot;);
-
-                }
-
-            }, &amp;quot;ftf&amp;quot; + i).start();
-
-        }
-
-    }
-
-}, &amp;quot;ftf&amp;quot;);
-
-t.start();
-
-t.join();
-</code></pre><p></p>
-<p></p><h1><b>效率低下的</b><b>HashTable</b><b>容器</b></h1><p></p>
-<p></p><p><b>     </b>HashTable容器使用synchronized来保证线程安全，但在线程竞争激烈的情况下HashTable的效率非常低下。因为当一个线程访问HashTable的同步方法时，其他线程访问HashTable的同步方法时，可能会进入阻塞或轮询状态。如线程1使用put进行添加元素，线程2不但不能使用put方法添加元素，并且也不能使用get方法来获取元素，所以竞争越激烈效率越低。</p><p></p>
-<p></p><h1><b>ConcurrentHashMap</b><b>的锁分段技术</b></h1><p></p>
-<p></p><p><b>     </b>HashTable容器在竞争激烈的并发环境下表现出效率低下的原因，是因为所有访问HashTable的线程都必须竞争同一把锁，那假如容器里有多把锁，每一把锁用于锁容器其中一部分数据，那么当多线程访问容器里不同数据段的数据时，线程间就不会存在锁竞争，从而可以有效的提高并发访问效率，这就是ConcurrentHashMap所使用的锁分段技术，首先将数据分成一段一段的存储，然后给每一段数据配一把锁，当一个线程占用锁访问其中一个段数据的时候，其他段的数据也能被其他线程访问。</p><p></p>
-<p></p><h1><b>ConcurrentHashMap</b><b>的结构</b></h1><p></p>
-<p></p><p>我们通过ConcurrentHashMap的类图来分析ConcurrentHashMap的结构。<br><br><a href="http://ifeve.com/concurrenthashmap/concurrenthashmap%e7%b1%bb%e5%9b%be/" rel="external" target="_blank"><img class="alignnone size-full wp-image-273" alt="ConcurrentHashMap类图" src="http://ifeve.com/wp-content/uploads/2012/12/ConcurrentHashMap类图.jpg" width="500" height="416"></a><br><br>ConcurrentHashMap是由Segment数组结构和HashEntry数组结构组成。Segment是一种可重入锁ReentrantLock，在ConcurrentHashMap里扮演锁的角色，HashEntry则用于存储键值对数据。一个ConcurrentHashMap里包含一个Segment数组，Segment的结构和HashMap类似，是一种数组和链表结构， 一个Segment里包含一个HashEntry数组，每个HashEntry是一个链表结构的元素， 每个Segment守护者一个HashEntry数组里的元素,当对HashEntry数组的数据进行修改时，必须首先获得它对应的Segment锁。<br><br><a href="http://ifeve.com/concurrenthashmap/concurrenthashmap%e7%bb%93%e6%9e%84%e5%9b%be/" rel="external" target="_blank"><img class="alignnone size-full wp-image-277" alt="ConcurrentHashMap结构图" src="http://ifeve.com/wp-content/uploads/2012/12/ConcurrentHashMap结构图.jpg" width="500" height="255"></a><br><br><b> </b></p><p></p>
-<p></p><h1><b>ConcurrentHashMap</b><b>的初始化</b></h1><p></p>
-<p></p><p>ConcurrentHashMap初始化方法是通过initialCapacity，loadFactor, concurrencyLevel几个参数来初始化segments数组，段偏移量segmentShift，段掩码segmentMask和每个segment里的HashEntry数组。</p><p></p>
-<p></p><p><b>初始化</b><b>segments</b><b>数组</b>。让我们来看一下初始化segmentShift，segmentMask和segments数组的源代码。</p><p></p>
-<p><pre class="brush: java; title: ; notranslate" title=""><br> if (concurrencyLevel &gt; MAX_SEGMENTS)</pre></p>
-<p>concurrencyLevel = MAX_SEGMENTS;</p>
-<p>// Find power-of-two sizes best matching arguments</p>
-<p>int sshift = 0;</p>
-<p>int ssize = 1;</p>
-<p>while (ssize &lt; concurrencyLevel) {</p>
-<p>++sshift;</p>
-<p>ssize &lt;&lt;= 1;</p>
-<p>}</p>
-<p>segmentShift = 32 - sshift;</p>
-<p>segmentMask = ssize - 1;</p>
-<p>this.segments = Segment.newArray(ssize);</p>
-<p></p><p>由上面的代码可知segments数组的长度ssize通过concurrencyLevel计算得出。为了能通过按位与的哈希算法来定位segments数组的索引，必须保证segments数组的长度是2的N次方（power-of-two size），所以必须计算出一个是大于或等于concurrencyLevel的最小的2的N次方值来作为segments数组的长度。假如concurrencyLevel等于14，15或16，ssize都会等于16，即容器里锁的个数也是16。注意concurrencyLevel的最大大小是65535，意味着segments数组的长度最大为65536，对应的二进制是16位。</p><p></p>
-<p></p><p><b>初始化segmentShift和segmentMask</b>。这两个全局变量在定位segment时的哈希算法里需要使用，sshift等于ssize从1向左移位的次数，在默认情况下concurrencyLevel等于16，1需要向左移位移动4次，所以sshift等于4。segmentShift用于定位参与hash运算的位数，segmentShift等于32减sshift，所以等于28，这里之所以用32是因为ConcurrentHashMap里的hash()方法输出的最大数是32位的，后面的测试中我们可以看到这点。segmentMask是哈希运算的掩码，等于ssize减1，即15，掩码的二进制各个位的值都是1。因为ssize的最大长度是65536，所以segmentShift最大值是16，segmentMask最大值是65535，对应的二进制是16位，每个位都是1。</p><p></p>
-<p></p><p><b>初始化每个</b>Segment。输入参数initialCapacity是ConcurrentHashMap的初始化容量，loadfactor是每个<b>segment</b>的负载因子，在构造方法里需要通过这两个参数来初始化数组中的每个<b>segment</b><b>。 </b></p><p></p>
-<p><pre class="brush: java; title: ; notranslate" title=""><br>  if (initialCapacity &gt; MAXIMUM_CAPACITY)</pre></p>
-<pre><code>    initialCapacity = MAXIMUM_CAPACITY;
-
-int c = initialCapacity / ssize;
-
-if (c * ssize &amp;lt; initialCapacity)
-
-    ++c;
-
-int cap = 1;
-
-while (cap &amp;lt; c)
-
-    cap &amp;lt;&amp;lt;= 1;
-
-for (int i = 0; i &amp;lt; this.segments.length; ++i)
-
-    this.segments[i] = new Segment&amp;lt;K,V&amp;gt;(cap, loadFactor);
-</code></pre><p></p>
-<p></p><p>上面代码中的变量cap就是segment里HashEntry数组的长度，它等于initialCapacity除以ssize的倍数c，如果c大于1，就会取大于等于c的2的N次方值，所以cap不是1，就是2的N次方。segment的容量threshold＝(int)cap*loadFactor，默认情况下initialCapacity等于16，loadfactor等于0.75，通过运算cap等于1，threshold等于零。</p><p></p>
-<p></p><h2><b>定位</b><b>Segment</b></h2><p></p>
-<p></p><p>既然ConcurrentHashMap使用分段锁Segment来保护不同段的数据，那么在插入和获取元素的时候，必须先通过哈希算法定位到Segment。可以看到ConcurrentHashMap会首先使用Wang/Jenkins hash的变种算法对元素的hashCode进行一次再哈希。</p><p></p>
-<pre class="brush: java; title: ; notranslate" title="">
-
-<p>private static int hash(int h) {</p>
-<p>h += (h &lt;&lt; 15) ^ 0xffffcd7d; h ^= (h &gt;&gt;&gt; 10);</p>
-<p>h += (h &lt;&lt; 3); h ^= (h &gt;&gt;&gt; 6);</p>
-<p>h += (h &lt;&lt; 2) + (h &lt;&lt; 14); return h ^ (h &gt;&gt;&gt; 16);</p>
-<p>}<br></p></pre><p></p>
-<p></p><p>再哈希，其目的是为了减少哈希冲突，使元素能够均匀的分布在不同的Segment上，从而提高容器的存取效率。假如哈希的质量差到极点，那么所有的元素都在一个Segment中，不仅存取元素缓慢，分段锁也会失去意义。我做了一个测试，不通过再哈希而直接执行哈希计算。</p><p></p>
-<pre class="brush: java; title: ; notranslate" title="">
-
-<p>System.out.println(Integer.parseInt(&quot;0001111&quot;, 2) &amp; 15);</p>
-<p>System.out.println(Integer.parseInt(&quot;0011111&quot;, 2) &amp; 15);</p>
-<p>System.out.println(Integer.parseInt(&quot;0111111&quot;, 2) &amp; 15);</p>
-<p>System.out.println(Integer.parseInt(&quot;1111111&quot;, 2) &amp; 15);</p>
-<p></p></pre><p></p>
-<p></p><p>计算后输出的哈希值全是15，通过这个例子可以发现如果不进行再哈希，哈希冲突会非常严重，因为只要低位一样，无论高位是什么数，其哈希值总是一样。我们再把上面的二进制数据进行再哈希后结果如下，为了方便阅读，不足32位的高位补了0，每隔四位用竖线分割下。</p><p></p>
-<p><pre class="brush: java; title: ; notranslate" title=""><br>0100｜0111｜0110｜0111｜1101｜1010｜0100｜1110</pre></p>
-<p>1111｜0111｜0100｜0011｜0000｜0001｜1011｜1000</p>
-<p>0111｜0111｜0110｜1001｜0100｜0110｜0011｜1110</p>
-<p>1000｜0011｜0000｜0000｜1100｜1000｜0001｜1010<br></p>
-<p></p><p>可以发现每一位的数据都散列开了，通过这种再哈希能让数字的每一位都能参加到哈希运算当中，从而减少哈希冲突。ConcurrentHashMap通过以下哈希算法定位segment。</p><p></p>
-<p></p><p>默认情况下segmentShift为28，segmentMask为15，再哈希后的数最大是32位二进制数据，向右无符号移动28位，意思是让高4位参与到hash运算中， (hash &gt;&gt;&gt; segmentShift) &amp; segmentMask的运算结果分别是4，15，7和8，可以看到hash值没有发生冲突。</p><p></p>
-<p><pre class="brush: java; title: ; notranslate" title=""><br>final Segment&lt;K,V&gt; segmentFor(int hash) {</pre></p>
-<pre><code>    return segments[(hash &amp;gt;&amp;gt;&amp;gt; segmentShift) &amp;amp; segmentMask];
-
-}
-</code></pre><p></p>
-<p></p><h1><b>ConcurrentHashMap</b><b>的get操作</b></h1><p></p>
-<p></p><p>Segment的get操作实现非常简单和高效。先经过一次再哈希，然后使用这个哈希值通过哈希运算定位到segment，再通过哈希算法定位到元素，代码如下：</p><p></p>
-<pre class="brush: java; title: ; notranslate" title="">
-
-<p> public V get(Object key) {</p>
-<pre><code>    int hash = hash(key.hashCode());
-
-    return segmentFor(hash).get(key, hash);
-
-}
-</code></pre><p></p></pre><p></p>
-<p></p><p>get操作的高效之处在于整个get过程不需要加锁，除非读到的值是空的才会加锁重读，我们知道HashTable容器的get方法是需要加锁的，那么ConcurrentHashMap的get操作是如何做到不加锁的呢？原因是它的get方法里将要使用的共享变量都定义成volatile，如用于统计当前Segement大小的count字段和用于存储值的HashEntry的value。定义成volatile的变量，能够在线程之间保持可见性，能够被多线程同时读，并且保证不会读到过期的值，但是只能被单线程写（有一种情况可以被多线程写，就是写入的值不依赖于原值），在get操作里只需要读不需要写共享变量count和value，所以可以不用加锁。之所以不会读到过期的值，是根据java内存模型的happen before原则，对volatile字段的写入操作先于读操作，即使两个线程同时修改和获取volatile变量，get操作也能拿到最新的值，这是用volatile替换锁的经典应用场景。</p><p></p>
-<p><pre class="brush: java; title: ; notranslate" title=""><br>transient volatile int count;</pre></p>
-<p>volatile V value;</p>
-<p></p>
-<p></p><p>在定位元素的代码里我们可以发现定位HashEntry和定位Segment的哈希算法虽然一样，都与数组的长度减去一相与，但是相与的值不一样，定位Segment使用的是元素的hashcode通过再哈希后得到的值的高位，而定位HashEntry直接使用的是再哈希后的值。其目的是避免两次哈希后的值一样，导致元素虽然在Segment里散列开了，但是却没有在HashEntry里散列开。</p><p></p>
-<pre class="brush: java; title: ; notranslate" title="">
-
-<p>hash &gt;&gt;&gt; segmentShift) &amp; segmentMask//定位Segment所使用的hash算法</p>
-<p>int index = hash &amp; (tab.length - 1);// 定位HashEntry所使用的hash算法</p>
-<p></p></pre><p></p>
-<p></p><p><b>ConcurrentHashMap</b><b>的Put操作</b></p><p></p>
-<p></p><p>由于put方法里需要对共享变量进行写入操作，所以为了线程安全，在操作共享变量时必须得加锁。Put方法首先定位到Segment，然后在Segment里进行插入操作。插入操作需要经历两个步骤，第一步判断是否需要对Segment里的HashEntry数组进行扩容，第二步定位添加元素的位置然后放在HashEntry数组里。</p><p></p>
-<p></p><p><b>是否需要扩容</b>。在插入元素前会先判断Segment里的HashEntry数组是否超过容量（threshold），如果超过阀值，数组进行扩容。值得一提的是，Segment的扩容判断比HashMap更恰当，因为HashMap是在插入元素后判断元素是否已经到达容量的，如果到达了就进行扩容，但是很有可能扩容之后没有新元素插入，这时HashMap就进行了一次无效的扩容。</p><p></p>
-<p></p><p><b>如何扩容。</b>扩容的时候首先会创建一个两倍于原容量的数组，然后将原数组里的元素进行再hash后插入到新的数组里。为了高效ConcurrentHashMap不会对整个容器进行扩容，而只对某个segment进行扩容。</p><p></p>
-<p></p><h1 align="left"><b>ConcurrentHashMap</b><b>的size操作</b></h1><p></p>
-<p></p><p align="left">如果我们要统计整个ConcurrentHashMap里元素的大小，就必须统计所有Segment里元素的大小后求和。Segment里的全局变量count是一个volatile变量，那么在多线程场景下，我们是不是直接把所有Segment的count相加就可以得到整个ConcurrentHashMap大小了呢？不是的，虽然相加时可以获取每个Segment的count的最新值，但是拿到之后可能累加前使用的count发生了变化，那么统计结果就不准了。所以最安全的做法，是在统计size的时候把所有Segment的put，remove和clean方法全部锁住，但是这种做法显然非常低效。</p><p></p>
-<p></p><p align="left">因为在累加count操作过程中，之前累加过的count发生变化的几率非常小，所以ConcurrentHashMap的做法是先尝试2次通过不锁住Segment的方式来统计各个Segment大小，如果统计的过程中，容器的count发生了变化，则再采用加锁的方式来统计所有Segment的大小。</p><p></p>
-<p></p><p>那么ConcurrentHashMap是如何判断在统计的时候容器是否发生了变化呢？使用modCount变量，在put , remove和clean方法里操作元素前都会将变量modCount进行加1，那么在统计size前后比较modCount是否发生变化，从而得知容器的大小是否发生变化。</p><p></p>
-<p></p><h1><b>参考资料</b></h1><p></p>
-<p><ol></ol></p>
-<p><li>JDK1.6源代码。</li></p>
-<p><li>《Java并发编程实践》</li></p>
-<p><li><a href="http://www.goldendoc.org/2011/06/juc_concurrenthashmap/" target="_blank" rel="external">Java并发编程之ConcurrentHashMap</a></li><br></p>
-<div style="margin-top: 15px; font-style: italic"><br><p><strong>原创文章，转载请注明：</strong> 转载自<a href="http://ifeve.com/" target="_blank" rel="external">并发编程网 &#8211; ifeve.com</a><strong>本文链接地址:</strong> <a href="http://ifeve.com/concurrenthashmap/" target="_blank" rel="external">聊聊并发（四）深入分析ConcurrentHashMap</a></p><br><p><a target="_blank" href="http://pro.badouxueyuan.cn/ifeve/"><img class="aligncenter size-full wp-image-31623" src="http://ifeve.com/wp-content/uploads/2017/04/WechatIMG1.jpeg"></a></p><br></div>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/05/08/ConcurrentHashMap-01/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="XueCheng">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="XueCheng Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/05/08/ConcurrentHashMap-01/" itemprop="url">转载:ConcurrentHashMap简要原理分析</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-08T18:12:45+08:00">
-                2017-05-08
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><span class="Apple-style-span" style="color: rgb(42, 42, 42); font-family: 宋体; font-size: 14px; line-height: 21px; "><div> <wbr> <wbr> <wbr> 集合是编程中最常用的数据结构。而谈到并发，几乎总是离不开集合这类高级数据结构的支持。比如两个线程需要同时访问一个中间临界区（Queue），比如常会用缓存作为外部文件的副本（HashMap）。这篇文章主要分析jdk1.5的3种并发集合类型（concurrent，copyonright，queue）中的ConcurrentHashMap，让我们从原理上细致的了解它们，能够让我们在深度项目开发中获益非浅。</div><div> <wbr> <wbr> <wbr> 在tiger之前，我们使用得最多的数据结构之一就是HashMap和Hashtable。大家都知道，HashMap中未进行同步考虑，而Hashtable则使用了synchronized，带来的直接影响就是可选择，我们可以在单线程时使用HashMap提高效率，而多线程时用Hashtable来保证安全。</div><div> <wbr> <wbr> <wbr> 当我们享受着jdk带来的便利时同样承受它带来的不幸恶果。通过分析Hashtable就知道，synchronized是针对整张Hash表的，即每次锁住整张表让线程独占，安全的背后是巨大的浪费，慧眼独具的Doug Lee立马拿出了解决方案—-ConcurrentHashMap。</div><div> <wbr> <wbr> <wbr> ConcurrentHashMap和Hashtable主要区别就是围绕着锁的粒度以及如何锁。如图</div><div><span class="Apple-style-span" style="color: rgb(44, 88, 65);"> <img src="http://p.blog.csdn.net/images/p_blog_csdn_net/liuzhengkang/EntryImages/20080912/58adc9e7b4725349c149a.jpg" alt="" align=""></span><a href="http://blog.photo.sina.com.cn/showpic.html#blogid=58adc9e701000a27&amp;url=http://static11.photo.sina.com.cn/orignal/58adc9e7b4725349c149a" target="_blank" style="color: rgb(44, 88, 65); "></a></div><div><a href="http://blog.photo.sina.com.cn/showpic.html#blogid=58adc9e701000a27&amp;url=http://static15.photo.sina.com.cn/orignal/58adc9e71d01f8da6db8e" target="_blank" style="color: rgb(44, 88, 65); "></a></div><div> <wbr> <wbr> <wbr> 左边便是Hashtable的实现方式—锁整个hash表；而右边则是ConcurrentHashMap的实现方式—锁桶（或段）。ConcurrentHashMap将hash表分为16个桶（默认值），诸如get,put,remove等常用操作只锁当前需要用到的桶。试想，原来只能一个线程进入，现在却能同时16个写线程进入（写线程才需要锁定，而读线程几乎不受限制，之后会提到），并发性的提升是显而易见的。</div><div> <wbr> <wbr> <wbr> 更令人惊讶的是ConcurrentHashMap的读取并发，因为在读取的大多数时候都没有用到锁定，所以读取操作几乎是完全的并发操作，而写操作锁定的粒度又非常细，比起之前又更加快速（这一点在桶更多时表现得更明显些）。只有在求size等操作时才需要锁定整个表。而在迭代时，ConcurrentHashMap使用了不同于传统集合的快速失败迭代器（见之前的文章《JAVA API备忘—集合》）的另一种迭代方式，我们称为弱一致迭代器。在这种迭代方式中，当iterator被创建后集合再发生改变就不再是抛出ConcurrentModificationEx<wbr>ception，取而代之的是在改变时new新的数据从而不影响原有的数据，iterator完成后再将头指针替换为新的数据，这样iterator线程可以使用原来老的数据，而写线程也可以并发的完成改变，更重要的，这保证了多个线程并发执行的连续性和扩展性，是性能提升的关键。</div><div> <wbr> <wbr> <wbr> 接下来，让我们看看ConcurrentHashMap中的几个重要方法，心里知道了实现机制后，使用起来就更加有底气。</div><div> <wbr> <wbr> <wbr> ConcurrentHashMap中主要实体类就是三个：ConcurrentHashMap（整个Hash表）,Segment（桶），HashEntry（节点），对应上面的图可以看出之间的关系。</div><div> <wbr> <wbr> <wbr> get方法（请注意，这里分析的方法都是针对桶的，因为ConcurrentHashMap的最大改进就是将粒度细化到了桶上），首先判断了当前桶的数据个数是否为0，为0自然不可能get到什么，只有返回null，这样做避免了不必要的搜索，也用最小的代价避免出错。然后得到头节点（方法将在下面涉及）之后就是根据hash和key逐个判断是否是指定的值，如果是并且值非空就说明找到了，直接返回；程序非常简单，但有一个令人困惑的地方，这句return readValueUnderLock(e)到底是用来干什么的呢？研究它的代码，在锁定之后返回一个值。但这里已经有一句V v = e.value得到了节点的值，这句return readValueUnderLock(e)是否多此一举？事实上，这里完全是为了并发考虑的，这里当v为空时，可能是一个线程正在改变节点，而之前的get操作都未进行锁定，根据bernstein条件，读后写或写后读都会引起数据的不一致，所以这里要对这个e重新上锁再读一遍，以保证得到的是正确值，这里不得不佩服Doug Lee思维的严密性。整个get操作只有很少的情况会锁定，相对于之前的Hashtable，并发是不可避免的啊！</div><div><table align="center" style="border-right-color: rgb(153, 153, 153); border-right-width: 1px; border-right-style: solid; border-top-color: rgb(153, 153, 153); border-top-width: 1px; border-top-style: solid; font-size: 12px; border-left-color: rgb(153, 153, 153); border-left-width: 1px; border-left-style: solid; width: 80%; border-bottom-color: rgb(153, 153, 153); border-bottom-width: 1px; border-bottom-style: solid; "><tbody><tr><td><font face="Simsun"> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> V get(Object key, int hash) {<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> if (count != 0) { // read-volatile<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> HashEntry e = getFirst(hash);<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> while (e != null) {<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> if (e.hash == hash &amp;&amp; key.equals(e.key)) {<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> V v = e.value;<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> if (v != null)<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> return v;<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> return readValueUnderLock(e); // recheck<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> }<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> e = e.next;<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> }<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> }<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> return null;<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> }</font></td></tr></tbody></table></div><p> <wbr></p><table align="center" style="border-right-color: rgb(153, 153, 153); border-right-width: 1px; border-right-style: solid; border-top-color: rgb(153, 153, 153); border-top-width: 1px; border-top-style: solid; font-size: 12px; border-left-color: rgb(153, 153, 153); border-left-width: 1px; border-left-style: solid; width: 80%; border-bottom-color: rgb(153, 153, 153); border-bottom-width: 1px; border-bottom-style: solid; "><tbody><tr><td><font face="Simsun"> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> V readValueUnderLock(HashEntry e) {<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> lock();<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> try {<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> return e.value;<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> } finally {<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> unlock();<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> }<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> }</font></td></tr></tbody></table><p> <wbr></p><p> <wbr> <wbr> <wbr> put操作一上来就锁定了整个segment，这当然是为了并发的安全，修改数据是不能并发进行的，必须得有个判断是否超限的语句以确保容量不足时能够rehash，而比较难懂的是这句int index = hash &amp; (tab.length - 1)，原来segment里面才是真正的hashtable，即每个segment是一个传统意义上的hashtable,如上图，从两者的结构就可以看出区别，这里就是找出需要的entry在table的哪一个位置，之后得到的entry就是这个链的第一个节点，如果e!=null，说明找到了，这是就要替换节点的值（onlyIfAbsent == false），否则，我们需要new一个entry，它的后继是first，而让tab[index]指向它，什么意思呢？实际上就是将这个新entry插入到链头，剩下的就非常容易理解了。</p><table align="center" style="border-right-color: rgb(153, 153, 153); border-right-width: 1px; border-right-style: solid; border-top-color: rgb(153, 153, 153); border-top-width: 1px; border-top-style: solid; font-size: 12px; border-left-color: rgb(153, 153, 153); border-left-width: 1px; border-left-style: solid; width: 80%; border-bottom-color: rgb(153, 153, 153); border-bottom-width: 1px; border-bottom-style: solid; "><tbody><tr><td><p><font face="Simsun"> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> V put(K key, int hash, V value, boolean onlyIfAbsent) {<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> lock();<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> try {<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> int c = count;<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> if (c++ &gt; threshold) // ensure capacity<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> rehash();<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> HashEntry[] tab = table;<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> int index = hash &amp; (tab.length - 1);<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> HashEntry first = (HashEntry) tab[index];<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> HashEntry e = first;<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> while (e != null &amp;&amp; (e.hash != hash || !key.equals(e.key)))<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> e = e.next;</font></p><p><font face="Simsun"> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> V oldValue;<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> if (e != null) {<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> oldValue = e.value;<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> if (!onlyIfAbsent)<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> e.value = value;<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> }<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> else {<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> oldValue = null;<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> ++modCount;<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> tab[index] = new HashEntry(key, hash, first, value);<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> count = c; // write-volatile<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> }<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> return oldValue;<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> } finally {<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> unlock();<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> }<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> }</font></p></td></tr></tbody></table><p> <wbr></p><p> <wbr> <wbr> <wbr> remove操作非常类似put，但要注意一点区别，中间那个for循环是做什么用的呢？（<em>号标记）从代码来看，就是将定位之后的所有entry克隆并拼回前面去，但有必要吗？每次删除一个元素就要将那之前的元素克隆一遍？这点其实是由entry的不变性来决定的，仔细观察entry定义，发现除了value，其他所有属性都是用final来修饰的，这意味着在第一次设置了next域之后便不能再改变它，取而代之的是将它之前的节点全都克隆一次。至于entry为什么要设置为不变性，这跟不变性的访问不需要同步从而节省时间有关，关于不变性的更多内容，请参阅之前的文章《线程高级—线程的一些编程技巧》</em></p><table align="center" style="border-right-color: rgb(153, 153, 153); border-right-width: 1px; border-right-style: solid; border-top-color: rgb(153, 153, 153); border-top-width: 1px; border-top-style: solid; font-size: 12px; border-left-color: rgb(153, 153, 153); border-left-width: 1px; border-left-style: solid; width: 80%; border-bottom-color: rgb(153, 153, 153); border-bottom-width: 1px; border-bottom-style: solid; "><tbody><tr><td><p><font face="Simsun"> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> V remove(Object key, int hash, Object value) {<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> lock();<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> try {<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> int c = count - 1;<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> HashEntry[] tab = table;<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> int index = hash &amp; (tab.length - 1);<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> HashEntry first = (HashEntry)tab[index];<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> HashEntry e = first;<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> while (e != null &amp;&amp; (e.hash != hash || !key.equals(e.key)))<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> e = e.next;</font></p><p><font face="Simsun"> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> V oldValue = null;<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> if (e != null) {<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> V v = e.value;<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> if (value == null || value.equals(v)) {<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> oldValue = v;<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> // All entries following removed node can stay<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> // in list, but all preceding ones need to be<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> // cloned.<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> ++modCount;<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> HashEntry newFirst = e.next;<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> for (HashEntry p = first; p != e; p = p.next)<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr>* <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> newFirst = new HashEntry(p.key, p.hash, <wbr><br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> newFirst, p.value);<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> tab[index] = newFirst;<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> count = c; // write-volatile<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> }<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> }<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> return oldValue;<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> } finally {<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> unlock();<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> }<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> }</font></p></td></tr></tbody></table><p> <wbr></p><table align="center" style="border-right-color: rgb(153, 153, 153); border-right-width: 1px; border-right-style: solid; border-top-color: rgb(153, 153, 153); border-top-width: 1px; border-top-style: solid; font-size: 12px; border-left-color: rgb(153, 153, 153); border-left-width: 1px; border-left-style: solid; width: 80%; border-bottom-color: rgb(153, 153, 153); border-bottom-width: 1px; border-bottom-style: solid; "><tbody><tr><td><p><font face="Simsun"> <wbr> <wbr> <wbr> static final class HashEntry {<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> final K key;<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> final int hash;<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> volatile V value;<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> final HashEntry next;</font></p><p><font face="Simsun"> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> HashEntry(K key, int hash, HashEntry next, V value) {<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> this.key = key;<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> this.hash = hash;<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> this.next = next;<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> this.value = value;<br> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> <wbr> }<br> <wbr> <wbr> <wbr> }</font></p></td></tr></tbody></table><p> <wbr></p><p> <wbr> <wbr> <wbr> 以上，分析了几个最简单的操作，限于篇幅，这里不再对rehash或iterator等实现进行讨论，有兴趣可以参考src。</p><p> <wbr> <wbr> <wbr> 接下来实际上还有一个疑问，ConcurrentHashMap跟HashMap相比较性能到底如何。这在Brian Goetz的文章中已经有过评测<font face="Simsun"><a href="http://www.ibm.com/developerworks/cn/java/j-jtp07233/" style="color: rgb(44, 88, 65); " target="_blank" rel="external"><font color="#0000FF">http://www.ibm.com/developerworks/cn/java/j-jtp07233/</font></a>。</font></p></span><br></p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -1266,7 +1138,7 @@ for (int i = 0; i &amp;lt; this.segments.length; ++i)
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">47</span>
+                <span class="site-state-item-count">49</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
