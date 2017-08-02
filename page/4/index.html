@@ -253,6 +253,118 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/06/01/exception-01/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="XueCheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XueCheng Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/06/01/exception-01/" itemprop="url">转载:SpringMVC对异常进行全局处理,并区分对待ajax和普通请求</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-06-01T15:19:35+08:00">
+                2017-06-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+             <div class="article_body" id="nei"><br>            <div><br>  <p><br>    异常信息应统一进行处理. 程序员开发过程中,应尽量少用try..catch.避免因为catch造成的业务歧义.    <br><br>    而在web开发中,普通的页面提交动作,和ajax提交动作,处理方式不一样,因为跳转后直接显示响应数据,而ajax是通过error回调函数进行处理.  </p><br>  <p><br>    这里的处理思路,适用springmvc和struts2. 只是叫法不一样,一个是    <span>HandlerExceptionResolver</span><br>    ,一个是exceptioninterceptor.  </p><br>  <p>下面是部分摘要,体现一下思路</p><br>  <p>首先定义异常拦截器:</p><br>  <div><br>    <pre class="prettyprint"><span style="color: #000000;">@Component<br></span><span style="color: #0000ff;">public</span> <span style="color: #0000ff;">class</span><span style="color: #000000;"> MyExceptionHandler implements HandlerExceptionResolver {<br>    </span><span style="color: #0000ff;">protected</span> Log log = LogFactory.getLog(<span style="color: #0000ff;">this</span><span style="color: #000000;">.getClass());<br><br>    @Override<br>    </span><span style="color: #0000ff;">public</span><span style="color: #000000;"> ModelAndView resolveException(HttpServletRequest request,<br>            HttpServletResponse response, Object handler, Exception ex) {<br>        log.error(</span><span style="color: #800000;">&quot;</span><span style="color: #800000;">异常捕获</span><span style="color: #800000;">&quot;</span><span style="color: #000000;">, ex);<br>        String requestURI </span>=<span style="color: #000000;"> request.getRequestURI();<br>        String fileExtName </span>=<span style="color: #000000;"> StringUtils.getFileExtName(requestURI);<br>        boolean isajax </span>= <span style="color: #800000;">&quot;</span><span style="color: #800000;">ajax</span><span style="color: #800000;">&quot;</span><span style="color: #000000;">.equals(fileExtName);<br>        Throwable parseException </span>=<span style="color: #000000;"> parseException(ex);<br>        </span><span style="color: #0000ff;">return</span><span style="color: #000000;"> ExceptionHandlerFactory.createExceptionhandler(parseException)<br>                .resolveException(request, response, handler, parseException, isajax);<br>    }<br>　　//这里要获取到最内层的异常<br>    </span><span style="color: #0000ff;">private</span> <span style="color: #0000ff;">static</span><span style="color: #000000;"> Throwable parseException(Throwable e){<br>        Throwable tmp </span>=<span style="color: #000000;"> e;<br>        </span><span style="color: #0000ff;">int</span> breakPoint = <span style="color: #800080;">0</span><span style="color: #000000;">;<br>        </span><span style="color: #0000ff;">while</span>(tmp.getCause()!=<span style="color: #0000ff;">null</span><span style="color: #000000;">){<br>            </span><span style="color: #0000ff;">if</span><span style="color: #000000;">(tmp.equals(tmp.getCause())){<br>                </span><span style="color: #0000ff;">break</span><span style="color: #000000;">;<br>            }<br>            tmp</span>=<span style="color: #000000;">tmp.getCause();<br>            breakPoint</span>++<span style="color: #000000;">;<br>            </span><span style="color: #0000ff;">if</span>(breakPoint&gt;<span style="color: #800080;">1000</span><span style="color: #000000;">){<br>                </span><span style="color: #0000ff;">break</span><span style="color: #000000;">;<br>            }<br>        }<br>        </span><span style="color: #0000ff;">return</span><span style="color: #000000;"> tmp;<br>    }<br>}</span></pre><br>  </div><br>  <p><br>    然后是    <span>ExceptionHandlerFactory</span><br>    主要是用于生成 异常处理的具体类型  </p><br>  <div><br>    <pre class="prettyprint"><span style="color: #0000ff;">public</span> <span style="color: #0000ff;">class</span><span style="color: #000000;"> ExceptionHandlerFactory {<br><br>    </span><span style="color: #008000;">/<em></em></span><span style="color: #008000;"><br>     <em>  外挂的自定义处理器,用于外部扩展<br>     </em></span><span style="color: #008000;">/</span><br>    <span style="color: #0000ff;">private</span> <span style="color: #0000ff;">static</span>  Map&lt;String , ExceptionHandler&gt; handlerList = <span style="color: #0000ff;">null</span><span style="color: #000000;">;<br><br>    </span><span style="color: #0000ff;">public</span> <span style="color: #0000ff;">static</span><span style="color: #000000;"> ExceptionHandler createExceptionhandler(Throwable ex){<br>        </span><span style="color: #008000;">//</span><span style="color: #008000;">这个是自定义的接口</span><br>        ExceptionHandler exceptionHandler=<span style="color: #0000ff;">null</span><span style="color: #000000;">;<br>        String packageName</span>=ExceptionHandlerFactory.<span style="color: #0000ff;">class</span>.getName().replace(ExceptionHandlerFactory.<span style="color: #0000ff;">class</span>.getSimpleName(), <span style="color: #800000;">&quot;&quot;</span><span style="color: #000000;">);<br>        String className </span>=<span style="color: #000000;"> ex.getClass().getSimpleName();<br>        String classFullName </span>=<span style="color: #000000;"> ex.getClass().getName();<br><br>        </span><span style="color: #0000ff;">if</span>(handlerList==<span style="color: #0000ff;">null</span><span style="color: #000000;">){<br>            handlerList </span>= <span style="color: #0000ff;">new</span> HashMap&lt;String, ExceptionHandler&gt;<span style="color: #000000;">();<br>        }<br>        </span><span style="color: #0000ff;">if</span><span style="color: #000000;">(handlerList.containsKey(classFullName)){<br>            </span><span style="color: #0000ff;">return</span> handlerList.<span style="color: #0000ff;">get</span><span style="color: #000000;">(classFullName);<br>        }<br><br>        </span><span style="color: #008000;">//</span><span style="color: #008000;">能走到这边,说明自定义的没有生效,走过之后,下面会将他缓存,也就是说,自定义的优先级永远大过系统自带的</span><br>        <span style="color: #0000ff;">try</span><span style="color: #000000;"> {<br>　　　　　　　　//这里查找系统自带的,按照捕获的异常名称+ Handler进行查找,算是简单约定,因为框架开发中的内置我可以约定,扩展的使用配置文件进行<br>            exceptionHandler </span>= (ExceptionHandler)Class.forName(packageName+ className+<span style="color: #800000;">&quot;</span><span style="color: #800000;">Handler</span><span style="color: #800000;">&quot;</span><span style="color: #000000;">).newInstance();<br>        } </span><span style="color: #0000ff;">catch</span><span style="color: #000000;"> (Exception e) {<br>            e.printStackTrace();<br>        }<br>        </span><span style="color: #0000ff;">if</span>(exceptionHandler==<span style="color: #0000ff;">null</span><span style="color: #000000;">){<br>            exceptionHandler </span>=  <span style="color: #0000ff;">new</span><span style="color: #000000;"> SimpleExceptionHandler();<br>        }<br>        handlerList.put(classFullName, exceptionHandler);<br><br>        </span><span style="color: #0000ff;">return</span><span style="color: #000000;"> exceptionHandler;<br>    }<br><br>    </span><span style="color: #0000ff;">public</span> Map&lt;String, ExceptionHandler&gt;<span style="color: #000000;"> getHandlerList() {<br>        </span><span style="color: #0000ff;">return</span><span style="color: #000000;"> handlerList;<br>    }<br>　　//这里有getset,用于spring注入<br>    </span><span style="color: #0000ff;">public</span> <span style="color: #0000ff;">void</span> setHandlerList(Map&lt;String, ExceptionHandler&gt;<span style="color: #000000;"> handlerList) {<br>        ExceptionHandlerFactory.handlerList </span>=<span style="color: #000000;"> handlerList;<br>    }<br><br><br><br><br><br><br>}</span></pre><br>  </div><br>  <p>最后书写一个用于验证异常的处理类型</p><br>  <div><br>    <pre class="prettyprint"><span style="color: #0000ff;">public</span> <span style="color: #0000ff;">class</span><span style="color: #000000;"> ConstraintViolationExceptionHandler  extends <strong>BaseExceptionHandler</strong>{<br><br>    @Override<br>    </span><span style="color: #0000ff;">public</span><span style="color: #000000;"> Object processException(HttpServletRequest request,<br>            HttpServletResponse response, Object handler, Throwable ex,<br>            boolean isajax) {<br>        ConstraintViolationException e</span>=<span style="color: #000000;">(ConstraintViolationException)ex;<br>        Set</span>&lt;ConstraintViolation&lt;?&gt;&gt; constraintViolations =<span style="color: #000000;"> e.getConstraintViolations();<br> 　　　　　　//ValidateInfo包含当前出错的字段,错误信息,出错的字段所在的类型,等必要的信息<br>　　　　　　　// 在ajax特别是ajaxForm的提交中,只要前端约定好了命名规则,就可以根据返回的信息,进行界面提示,比如可渲染成和validate一样的风格<br>　　　　　　// 也可以给出一个dialog提示,或者……<br><br>         List</span>&lt;ValidateInfo&gt; validateInfos =<span style="color: #0000ff;">new</span> ArrayList&lt;ValidateInfo&gt;<span style="color: #000000;">();<br>         </span><span style="color: #0000ff;">if</span>(constraintViolations!=<span style="color: #0000ff;">null</span> &amp;&amp; !<span style="color: #000000;">constraintViolations.isEmpty()){<br>            </span><span style="color: #0000ff;">for</span>(ConstraintViolation&lt;?&gt;<span style="color: #000000;"> violation : constraintViolations){<br>                ValidateInfo info </span>= <span style="color: #0000ff;">new</span><span style="color: #000000;"> ValidateInfo();<br>                info.setField(violation.getPropertyPath().toString().replaceAll(</span><span style="color: #800000;">&quot;</span><span style="color: #800000;">\.</span><span style="color: #800000;">&quot;</span>,<span style="color: #800000;">&quot;</span><span style="color: #800000;">_</span><span style="color: #800000;">&quot;</span><span style="color: #000000;">));<br>                info.setMessage(violation.getMessage());<br>                Class</span>&lt;? extends Object&gt; class1 =<span style="color: #000000;"> violation.getRootBean().getClass();<br>                String simpleName </span>=<span style="color: #000000;">StringUtils.getSpringName(class1);<br>                </span><span style="color: #0000ff;">if</span>(simpleName.indexOf(<span style="color: #800000;">&quot;</span><span style="color: #800000;">$pcsubclass</span><span style="color: #800000;">&quot;</span>)&gt;-<span style="color: #800080;">1</span><span style="color: #000000;">){  //这个判断是openjpa的代理类型,带$的不光是代理类型,内部类的名称同样有,所以编码上要约束<br>                     String[] ss </span>= simpleName.split(<span style="color: #800000;">&quot;</span><span style="color: #800000;">\$</span><span style="color: #800000;">&quot;</span><span style="color: #000000;">);<br>                     </span><span style="color: #0000ff;">if</span>(ss.length&gt;<span style="color: #800080;">1</span><span style="color: #000000;">){<br>                         simpleName </span>= ss[ss.length-<span style="color: #800080;">2</span><span style="color: #000000;">];<br>                         simpleName </span>= simpleName.substring(<span style="color: #800080;">0</span>,<span style="color: #800080;">1</span>).toLowerCase()+simpleName.substring(<span style="color: #800080;">1</span><span style="color: #000000;">);<br>                     }<br>                }<br><br>                info.setClassName(simpleName);<br>                Object ov </span>=<span style="color: #000000;">violation.getInvalidValue();<br>                </span><span style="color: #0000ff;">if</span>(ov==<span style="color: #0000ff;">null</span><span style="color: #000000;">){<br>                    info.setCurrentValue(</span><span style="color: #800000;">&quot;&quot;</span><span style="color: #000000;">);<br>                }</span><span style="color: #0000ff;">else</span><span style="color: #000000;">{<br>                    info.setCurrentValue(ov.toString());<br>                }<br><br>                validateInfos.add(info);<br>            }<br><br>         }<br>        </span><span style="color: #0000ff;">return</span><span style="color: #000000;"> validateInfos; //返回经过封装的验证信息,用于jquery ajax error回调方法进行统一处理<br>    }<br>}</span></pre><br>  </div><br>  <p><br>    而    <span><br>      <strong>BaseExceptionHandler</strong><br>    </span><br>    只是对最后响应代码做一个判断  </p><br>  <div><br>    <pre class="prettyprint"><span style="color: #0000ff;">public</span> <span style="color: #0000ff;">abstract</span> <span style="color: #0000ff;">class</span><span style="color: #000000;"> BaseExceptionHandler implements ExceptionHandler{<br><br>    </span><span style="color: #008000;">/<em></em></span><span style="color: #008000;"><br>     <em> 用于传递到页面的值<br>     </em></span><span style="color: #008000;">/</span><br>    <span style="color: #0000ff;">protected</span> Map&lt;String, Object&gt; data = <span style="color: #0000ff;">new</span> HashMap&lt;String, Object&gt;<span style="color: #000000;">();<br><br>    </span><span style="color: #008000;">/<em></em></span><span style="color: #008000;"><br>     <em> 写到输出流<br>     </em></span><span style="color: #008000;">/</span><br>    <span style="color: #0000ff;">protected</span><span style="color: #000000;"> ModelAndView write(HttpServletRequest request,<br>            HttpServletResponse response, Object handler, Throwable ex,<br>            boolean isajax,Object dt){<br>        </span><span style="color: #0000ff;">int</span> responseCode=<span style="color: #800080;">500</span><span style="color: #000000;">;<br>        </span><span style="color: #0000ff;">if</span><span style="color: #000000;">(ex instanceof BaseRuntimeException){<br>            responseCode</span>=<span style="color: #000000;">((BaseRuntimeException)ex).getResponseCode();<br>        }<br>        </span><span style="color: #0000ff;">if</span><span style="color: #000000;">(ex instanceof ConstraintViolationException){<br>            responseCode</span>=<span style="color: #800080;">5001</span><span style="color: #000000;">;<br>        }<br>        response.setStatus(responseCode);<br>        </span><span style="color: #0000ff;">if</span>(!isajax){<span style="color: #008000;">//</span><span style="color: #008000;">非ajax,直接跳转的,这里的是否ajax很简单,我们约定,ajax请求全部使用.ajax扩展.当然通过httpheader也能,jquery还支持preFilter,可以在这里统一加参数</span><br>            ModelAndView modelAndView = <span style="color: #0000ff;">new</span> ModelAndView(<span style="color: #800000;">&quot;</span><span style="color: #800000;">/error/error</span><span style="color: #800000;">&quot;</span><span style="color: #000000;">);<br>            modelAndView.addObject(</span><span style="color: #800000;">&quot;</span><span style="color: #800000;"><strong>exception</strong></span><span style="color: #800000;">&quot;</span><span style="color: #000000;">, ex);<br>            modelAndView.addAllObjects(data);<br>            </span><span style="color: #0000ff;">if</span>(dt!=<span style="color: #0000ff;">null</span><span style="color: #000000;">){<br>            modelAndView.addObject(dt);<br>            }<br>            </span><span style="color: #0000ff;">return</span><span style="color: #000000;"> modelAndView;<br>        }<br>        //这个是封装的标准返回值模版,包含相应code,错误信息和响应数据等字段<br>        ResultTemplate createFailResult </span>=<span style="color: #000000;"> ResultTemplate.createFailResult(ex.getMessage());<br>        createFailResult.setData(dt);<br>        WebUtils.renderJson(createFailResult);<br>        </span><span style="color: #0000ff;">return</span> <span style="color: #0000ff;">null</span><span style="color: #000000;">;<br>    }<br><br>    </span><span style="color: #0000ff;">public</span> <span style="color: #0000ff;">abstract</span><span style="color: #000000;"> Object processException(HttpServletRequest request,<br>            HttpServletResponse response, Object handler, Throwable ex,<br>            boolean isajax);<br><br><br>    @Override<br>    </span><span style="color: #0000ff;">public</span><span style="color: #000000;"> ModelAndView resolveException(HttpServletRequest request,<br>            HttpServletResponse response, Object handler, Throwable ex,<br>            boolean isajax) {<br>        Object d </span>=<span style="color: #000000;"> processException(request,  response,   handler,   ex,  isajax);<br>        </span><span style="color: #0000ff;">return</span><span style="color: #000000;"> write(request,<br>                  response,   handler,   ex,<br>                  isajax,d);<br>    }<br><br><br><br>}</span></pre><br>  </div><br>  <p>xml 配置</p><br>  <div><br>    <pre class="prettyprint"><span style="color: #0000ff;">&lt;</span><span style="color: #800000;">bean </span><span style="color: #ff0000;">class</span><span style="color: #0000ff;">=&quot;com.core.web.interceptor.exceptionhandler.ExceptionHandlerFactory&quot;</span><span style="color: #0000ff;">&gt;</span><br>        <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">property </span><span style="color: #ff0000;">name</span><span style="color: #0000ff;">=&quot;handlerList&quot;</span><span style="color: #0000ff;">&gt;</span><br>                     <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">map</span><span style="color: #0000ff;">&gt;</span><br>                         <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">entry </span><span style="color: #ff0000;">key</span><span style="color: #0000ff;">=&quot;javax.validation.ConstraintViolationException&quot;</span> <span style="color: #0000ff;">&gt;</span> <span style="color: #008000;">&lt;!–</span><span style="color: #008000;"> jpa验证异常,这里可以不配置,系统内置,也可以配置自己的,替换系统自带的 </span><span style="color: #008000;">–&gt;</span><br>                          <span style="color: #0000ff;">&lt;</span><span style="color: #800000;">bean </span><span style="color: #ff0000;">class</span><span style="color: #0000ff;">=&quot;com.core.web.interceptor.exceptionhandler.ConstraintViolationExceptionHandler&quot;</span><span style="color: #0000ff;">/&gt;</span><br>                         <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">entry</span><span style="color: #0000ff;">&gt;</span><br><br>                     <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">map</span><span style="color: #0000ff;">&gt;</span><br>             <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">property</span><span style="color: #0000ff;">&gt;</span><br>    <span style="color: #0000ff;">&lt;/</span><span style="color: #800000;">bean</span><span style="color: #0000ff;">&gt;</span></pre><br>  </div><br></div>
+</div>
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/06/01/guavaCache-01/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -937,119 +1049,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/05/16/aop-01/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="XueCheng">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="XueCheng Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/05/16/aop-01/" itemprop="url">转载:Java动态代理的两种实现方法</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Veröffentlicht am</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-16T09:04:51+08:00">
-                2017-05-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <div class="article_c"><br><br>&nbsp;AOP的拦截功能是由java中的动态代理来实现的。说白了，就是在目标类的基础上增加切面逻辑，生成增强的目标类（该切面逻辑或者在目标类函数执行之前，或者目标类函数执行之后，或者在目标类函数抛出异常时候执行。不同的切入时机对应不同的Interceptor的种类，如BeforeAdviseInterceptor，AfterAdviseInterceptor以及ThrowsAdviseInterceptor等）。<br><br><p><br><br></p><br><p>那么动态代理是如何实现将切面逻辑（advise）织入到目标类方法中去的呢？下面我们就来详细介绍并实现AOP中用到的两种动态代理。<br><br></p><br><p>AOP的源码中用到了两种动态代理来实现拦截切入功能：jdk动态代理和cglib动态代理。两种方法同时存在，各有优劣。<span style="color:#FF0000">jdk动态代理是由java内部的反射机制来实现的，cglib动态代理底层则是借助asm来实现的。总的来说，反射机制在生成类的过程中比较高效，而asm在生成类之后的相关执行过程中比较高效（可以通过将asm生成的类进行缓存，这样解决asm生成类过程低效问题）。还有一点必须注意：jdk动态代理的应用前提，必须是目标类基于统一的接口。如果没有上述前提，jdk动态代理不能应用。</span>由此可以看出，jdk动态代理有一定的局限性，cglib这种第三方类库实现的动态代理应用更加广泛，且在效率上更有优势。。<br><br></p><br><h1>1、定义接口和实现</h1><br><p></p><br><pre name="code" class="java">package com.meituan.hyt.test3.service;<br><br><br>public interface UserService {<br>    public String getName(int id);<br><br>    public Integer getAge(int id);<br>}<br></pre><br><p></p><br><p><br><br></p><br><p></p><br><pre name="code" class="java">package com.meituan.hyt.test3.service.impl;<br><br>import com.meituan.hyt.test3.service.UserService;<br><br><br>public class UserServiceImpl implements UserService {<br>    @Override<br>    public String getName(int id) {<br>        System.out.println(&quot;——getName——&quot;);<br>        return &quot;Tom&quot;;<br>    }<br><br>    @Override<br>    public Integer getAge(int id) {<br>        System.out.println(&quot;——getAge——&quot;);<br>        return 10;<br>    }<br>}<br></pre><br><br><p></p><br><h1>2、jdk动态代理实现</h1><br><p></p><br><pre name="code" class="java">package com.meituan.hyt.test3.jdk;<br><br>import java.lang.reflect.InvocationHandler;<br>import java.lang.reflect.Method;<br><br><br>public class MyInvocationHandler implements InvocationHandler {<br>    private Object target;<br><br>    MyInvocationHandler() {<br>        super();<br>    }<br><br>    MyInvocationHandler(Object target) {<br>        super();<br>        this.target = target;<br>    }<br><br>    @Override<br>    public Object invoke(Object o, Method method, Object[] args) throws Throwable {<br>        if(&quot;getName&quot;.equals(method.getName())){<br>            System.out.println(&quot;++++++before &quot; + method.getName() + &quot;++++++&quot;);<br>            Object result = method.invoke(target, args);<br>            System.out.println(&quot;++++++after &quot; + method.getName() + &quot;++++++&quot;);<br>            return result;<br>        }else{<br>            Object result = method.invoke(target, args);<br>            return result;<br>        }<br><br>    }<br>}<br></pre><br><br><pre name="code" class="java">package com.meituan.hyt.test3.jdk;<br><br>import com.meituan.hyt.test3.service.UserService;<br>import com.meituan.hyt.test3.service.impl.UserServiceImpl;<br><br>import java.lang.reflect.InvocationHandler;<br>import java.lang.reflect.Proxy;<br><br><br>public class Main1 {<br>    public static void main(String[] args) {<br>        UserService userService = new UserServiceImpl();<br>        InvocationHandler invocationHandler = new MyInvocationHandler(userService);<br>        UserService userServiceProxy = (UserService)Proxy.newProxyInstance(userService.getClass().getClassLoader(),<br>                userService.getClass().getInterfaces(), invocationHandler);<br>        System.out.println(userServiceProxy.getName(1));<br>        System.out.println(userServiceProxy.getAge(1));<br>    }<br>}</pre><br><br>运行结果<br><p></p><br><p>&#43;&#43;&#43;&#43;&#43;&#43;before getName&#43;&#43;&#43;&#43;&#43;&#43;<br><br>——getName——<br><br>&#43;&#43;&#43;&#43;&#43;&#43;after getName&#43;&#43;&#43;&#43;&#43;&#43;<br><br>Tom<br><br>——getAge——<br><br>10</p><br><h1>3、cglib动态代理实现<br><br></h1><br><p>Cglib是一个优秀的动态代理框架，它的底层使用ASM在内存中动态的生成被代理类的子类，使用CGLIB即使代理类没有实现任何接口也可以实现动态代理功能。CGLIB具有简单易用，它的运行速度要远远快于JDK的Proxy动态代理：<br><br><br><br>CGLIB的核心类：<br><br>&nbsp;&nbsp;&nbsp; net.sf.cglib.proxy.Enhancer – 主要的增强类<br><br>&nbsp;&nbsp;&nbsp; net.sf.cglib.proxy.MethodInterceptor – 主要的方法拦截类，它是Callback接口的子接口，需要用户实现<br><br>&nbsp;&nbsp;&nbsp; net.sf.cglib.proxy.MethodProxy – JDK的java.lang.reflect.Method类的代理类，可以方便的实现对源对象方法的调用,如使用：<br><br>&nbsp;&nbsp;&nbsp; Object o = methodProxy.invokeSuper(proxy, args);//虽然第一个参数是被代理对象，也不会出现死循环的问题。<br><br><br><br>net.sf.cglib.proxy.MethodInterceptor接口是最通用的回调（callback）类型，它经常被基于代理的AOP用来实现拦截（intercept）方法的调用。这个接口只定义了一个方法<br><br>public Object intercept(Object object, java.lang.reflect.Method method,<br><br>Object[] args, MethodProxy proxy) throws Throwable;<br><br><br><br>第一个参数是代理对像，第二和第三个参数分别是拦截的方法和方法的参数。原来的方法可能通过使用java.lang.reflect.Method对象的一般反射调用，或者使用 net.sf.cglib.proxy.MethodProxy对象调用。net.sf.cglib.proxy.MethodProxy通常被首选使用，因为它更快。</p><br><p></p><br><pre name="code" class="java">package com.meituan.hyt.test3.cglib;<br><br><br>import net.sf.cglib.proxy.MethodInterceptor;<br>import net.sf.cglib.proxy.MethodProxy;<br><br>import java.lang.reflect.Method;<br><br><br>public class CglibProxy implements MethodInterceptor {<br>    @Override<br>    public Object intercept(Object o, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {<br>        System.out.println(&quot;++++++before &quot; + methodProxy.getSuperName() + &quot;++++++&quot;);<br>        System.out.println(method.getName());<br>        Object o1 = methodProxy.invokeSuper(o, args);<br>        System.out.println(&quot;++++++before &quot; + methodProxy.getSuperName() + &quot;++++++&quot;);<br>        return o1;<br>    }<br>}<br></pre><br><br><br><br><pre name="code" class="java">package com.meituan.hyt.test3.cglib;<br><br>import com.meituan.hyt.test3.service.UserService;<br>import com.meituan.hyt.test3.service.impl.UserServiceImpl;<br>import net.sf.cglib.proxy.Enhancer;<br><br><br><br>public class Main2 {<br>    public static void main(String[] args) {<br>        CglibProxy cglibProxy = new CglibProxy();<br><br>        Enhancer enhancer = new Enhancer();<br>        enhancer.setSuperclass(UserServiceImpl.class);<br>        enhancer.setCallback(cglibProxy);<br><br>        UserService o = (UserService)enhancer.create();<br>        o.getName(1);<br>        o.getAge(1);<br>    }<br>}</pre><br><br>运行结果：<br><p></p><br><p>&#43;&#43;&#43;&#43;&#43;&#43;before CGLIB$getName$0&#43;&#43;&#43;&#43;&#43;&#43;<br><br>getName<br><br>——getName——<br><br>&#43;&#43;&#43;&#43;&#43;&#43;before CGLIB$getName$0&#43;&#43;&#43;&#43;&#43;&#43;<br><br>&#43;&#43;&#43;&#43;&#43;&#43;before CGLIB$getAge$1&#43;&#43;&#43;&#43;&#43;&#43;<br><br>getAge<br><br>——getAge——<br><br>&#43;&#43;&#43;&#43;&#43;&#43;before CGLIB$getAge$1&#43;&#43;&#43;&#43;&#43;&#43;<br><br></p><br><div id="xunlei_com_thunder_helper_plugin_d462f475-c18e-46be-bd10-327458d045bd"></div><br><div id="xunlei_com_thunder_helper_plugin_d462f475-c18e-46be-bd10-327458d045bd"></div><br><div id="xunlei_com_thunder_helper_plugin_d462f475-c18e-46be-bd10-327458d045bd"></div><br> </div>
-
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -1099,7 +1098,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">50</span>
+                <span class="site-state-item-count">51</span>
                 <span class="site-state-item-name">Artikel</span>
               </a>
             </div>
