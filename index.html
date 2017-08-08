@@ -590,6 +590,237 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/08/08/activeMq-05/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="XueCheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XueCheng Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/08/08/activeMq-05/" itemprop="url">ActiveMQ 整合Spring 事务配置</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-08T17:18:00+08:00">
+                2017-08-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+             <div class="post_body">
+
+<pre><code>&lt;div class=&quot;tag&quot;&gt;
+    &lt;span&gt;&lt;a href=&quot;http://www.csdn.net/tag/activeMq java spring&quot; target=&quot;_blank&quot;&gt;activeMq java spring&lt;/a&gt;&lt;/span&gt;
+&lt;/div&gt;
+    &lt;pre class=&quot;brush: java&quot;&gt;&amp;lt;?xml&amp;nbsp;version=&quot;1.0&quot;&amp;nbsp;encoding=&quot;UTF-8&quot;?&amp;gt;&lt;br /&gt;
+</code></pre><p>&lt;!–&nbsp;查找最新的schemaLocation&nbsp;访问&nbsp;<a href="http://www.springframework.org/schema/&nbsp;--&amp;gt" target="_blank" rel="external">http://www.springframework.org/schema/&nbsp;--&amp;gt</a>;<br><br>&lt;beans&nbsp;xmlns=”<a href="http://www.springframework.org/schema/beans" target="_blank" rel="external">http://www.springframework.org/schema/beans</a>“<br><br>    xmlns:xsi=”<a href="http://www.w3.org/2001/XMLSchema-instance&quot;&nbsp;xmlns:amq=&quot;http://activemq.apache.org/schema/core" target="_blank" rel="external">http://www.w3.org/2001/XMLSchema-instance&quot;&nbsp;xmlns:amq=&quot;http://activemq.apache.org/schema/core</a>“<br><br>    xmlns:jms=”<a href="http://www.springframework.org/schema/jms" target="_blank" rel="external">http://www.springframework.org/schema/jms</a>“<br><br>    xmlns:tx=”<a href="http://www.springframework.org/schema/tx" target="_blank" rel="external">http://www.springframework.org/schema/tx</a>“<br><br>    xsi:schemaLocation=”<a href="http://www.springframework.org/schema/beans&nbsp;&nbsp;&amp;nbsp" target="_blank" rel="external">http://www.springframework.org/schema/beans&nbsp;&nbsp;&amp;nbsp</a>;<br><br>        <a href="http://www.springframework.org/schema/beans/spring-beans-3.2.xsd" target="_blank" rel="external">http://www.springframework.org/schema/beans/spring-beans-3.2.xsd</a><br><br>        <a href="http://www.springframework.org/schema/jms" target="_blank" rel="external">http://www.springframework.org/schema/jms</a><br><br>        <a href="http://www.springframework.org/schema/jms/spring-jms-4.1.xsd" target="_blank" rel="external">http://www.springframework.org/schema/jms/spring-jms-4.1.xsd</a><br><br>        <a href="http://activemq.apache.org/schema/core" target="_blank" rel="external">http://activemq.apache.org/schema/core</a><br><br>        <a href="http://activemq.apache.org/schema/core/activemq-core-5.8.0.xsd" target="_blank" rel="external">http://activemq.apache.org/schema/core/activemq-core-5.8.0.xsd</a><br><br>        <a href="http://www.springframework.org/schema/tx&amp;nbsp" target="_blank" rel="external">http://www.springframework.org/schema/tx&amp;nbsp</a>;<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.springframework.org/schema/tx/spring-tx-4.1.xsd&quot;&amp;gt" target="_blank" rel="external">http://www.springframework.org/schema/tx/spring-tx-4.1.xsd&quot;&amp;gt</a>;<br><br><br><br>    &lt;!–&nbsp;ActiveMQ&nbsp;连接工厂&nbsp;–&gt;<br><br>    &lt;!–&nbsp;真正可以产生Connection的ConnectionFactory，由对应的&nbsp;JMS服务厂商提供&nbsp;–&gt;<br><br>    &lt;!–&nbsp;如果连接网络：tcp://ip:61616；未连接网络：tcp://localhost:61616&nbsp;以及用户名，密码&nbsp;–&gt;<br><br>    &lt;bean&nbsp;id=”targetConnectionFactory”&nbsp;class=”org.apache.activemq.ActiveMQConnectionFactory”&gt;<br><br>        &lt;property&nbsp;name=”brokerURL”&nbsp;value=”tcp://localhost:61616”&nbsp;/&gt;<br><br>    &lt;/bean&gt;<br><br>    &lt;!–&nbsp;Spring&nbsp;Caching连接工厂&nbsp;–&gt;<br><br>    &lt;!–&nbsp;Spring用于管理真正的ConnectionFactory的ConnectionFactory&nbsp;–&gt;<br><br>    &lt;bean&nbsp;id=”connectionFactory”&nbsp;class=”org.apache.activemq.pool.PooledConnectionFactory”&gt;<br><br>        &lt;!–&nbsp;目标ConnectionFactory对应真实的可以产生JMS&nbsp;Connection的ConnectionFactory&nbsp;–&gt;<br><br>        &lt;property&nbsp;name=”connectionFactory”&nbsp;ref=”targetConnectionFactory”&gt;&lt;/property&gt;<br><br>        &lt;!–&nbsp;线程池&nbsp;–&gt;<br><br>        &lt;property&nbsp;name=”maxConnections”&nbsp;value=”10”/&gt;<br><br>    &lt;/bean&gt;<br><br><br><br>    &lt;!–&nbsp;Spring&nbsp;JmsTemplate&nbsp;的消息生产者&nbsp;start&nbsp;–&gt;<br><br><br><br>    &lt;!–&nbsp;定义JmsTemplate的Queue类型&nbsp;–&gt;<br><br>    &lt;bean&nbsp;id=”jmsQueueTemplate”&nbsp;class=”org.springframework.jms.core.JmsTemplate”&gt;<br><br>        &lt;!–&nbsp;这个connectionFactory对应的是我们定义的Spring提供的那个ConnectionFactory对象&nbsp;–&gt;<br><br>        &lt;constructor-arg&nbsp;ref=”connectionFactory”&nbsp;/&gt;<br><br>        &lt;!–&nbsp;非pub/sub模型（发布/订阅），即队列模式&nbsp;–&gt;<br><br>        &lt;!–&nbsp;&lt;property&nbsp;name=”pubSubDomain”&nbsp;value=”false”&nbsp;/&gt;&nbsp;–&gt;<br><br>        &lt;property&nbsp;name=”defaultDestination”&nbsp;ref=”destination”/&gt;<br><br>        &lt;property&nbsp;name=”deliveryMode”&nbsp;value=”2”/&gt;<br><br>    &lt;/bean&gt;<br><br>    &lt;!–&nbsp;定义目标队列主题&nbsp;与类型&nbsp;：队列&nbsp;–&gt;<br><br>    &lt;bean&nbsp;id=”destination”&nbsp;class=”org.apache.activemq.command.ActiveMQQueue”&gt;<br><br>        &lt;constructor-arg&nbsp;index=”0”&nbsp;value=”MyQueue”&nbsp;/&gt;<br><br>    &lt;/bean&gt;<br><br>    <br><br>    &lt;!–&nbsp;消息消费者&nbsp;start&nbsp;–&gt;<br><br>    &lt;bean&nbsp;id=”queueReceiver1”&nbsp;class=”com.dtb.member.activemq.QueueReceiver1”/&gt;<br><br>    &lt;!–&nbsp;定义Queue监听器&nbsp;–&gt;<br><br>    &lt;bean&nbsp;id=”listenerContainer”&nbsp;class=”org.springframework.jms.listener.DefaultMessageListenerContainer”&gt;<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;property&nbsp;name=”connectionFactory”&nbsp;ref=”connectionFactory”&nbsp;/&gt;<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;property&nbsp;name=”messageListener”&nbsp;ref=”queueReceiver1”&nbsp;/&gt;<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;property&nbsp;name=”destination”&nbsp;ref=”destination”&nbsp;/&gt;<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;property&nbsp;name=”sessionTransacted”&nbsp;value=”true”&nbsp;/&gt;<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;property&nbsp;name=”transactionManager”&nbsp;ref=”jmsTransactionManager”&nbsp;/&gt;<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&lt;/bean&gt;<br><br>    &lt;!–&nbsp;定义Topic监听器&nbsp;–&gt;<br><br>    &lt;!–&nbsp;&lt;jms:listener-container&nbsp;destination-type=”topic”&nbsp;container-type=”default”&nbsp;<br><br>        connection-factory=”connectionFactory”&nbsp;acknowledge=”auto”&gt;&nbsp;&lt;jms:listener&nbsp;<br><br>        destination=”test.topic”&nbsp;ref=”topicReceiver1”/&gt;&nbsp;&lt;jms:listener&nbsp;destination=”test.topic”&nbsp;<br><br>        ref=”topicReceiver2”/&gt;&nbsp;&lt;/jms:listener-container&gt;&nbsp;–&gt;<br><br>    &lt;!–&nbsp;消息消费者&nbsp;end&nbsp;–&gt;<br><br><br><br><br><br>    &lt;!–&nbsp;事务配置&nbsp;–&gt;<br><br>    &lt;bean&nbsp;id=”jmsTransactionManager”&nbsp;&nbsp;&nbsp;class=”org.springframework.jms.connection.JmsTransactionManager”&gt;&nbsp;&nbsp;<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;property&nbsp;name=”connectionFactory”&nbsp;ref=”connectionFactory”&nbsp;/&gt;&nbsp;&nbsp;<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&lt;/bean&gt;&nbsp;&nbsp;<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&lt;tx:annotation-driven&nbsp;transaction-manager=”jmsTransactionManager”&nbsp;/&gt;&nbsp;&nbsp;<br><br>&lt;/beans&gt;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+</div>
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/08/08/activeMq-04/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="XueCheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XueCheng Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/08/08/activeMq-04/" itemprop="url">activeMq-04</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-08T14:32:03+08:00">
+                2017-08-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <div id="article_content" class="article_content tracking-ad" data-mod="popu_307" data-dsm="post"><br><br><h3><span style="font-family:Microsoft YaHei; font-size:14px">1.为什么要用事务？</span></h3><br><p></p><br><div><span style="font-family:Microsoft YaHei; font-size:14px">&nbsp; &nbsp; &nbsp; &nbsp;消息事务是在生产者producer到broker或broker到consumer过程中同一个session中发生的，保证几条消息在发送过程中的原子性。</span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px">&nbsp; &nbsp; &nbsp; &nbsp;可以在connection的createSession方法中指定一个布尔&#20540;开启，如果消息确认机制是事务确认，那么在发送message的过程中session就会开启事务（实际上broker的），不用用户显示调用 beginTransaction，这时所有通过session发送的消息都被缓存下来，用户调用session.commit时会发送所有消息，当发送出现异常时用户可以调用rollback进行回滚操作，只有在开启事务状态下有效。</span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px">&nbsp;</span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px"></span><br><p>为什么commit之后，不会有持久的消息重新传送呢?</p><br><p>&nbsp; &nbsp; &nbsp; &nbsp;原因在于commit操作会自动将为签收确认的消息进行签收确认，如果是当前接收但未签收确认的消息，都会被确认处理。因而在commit之后不会有持久化的消息出现。</p><br><br><br></div><br><h3><span style="font-family:Microsoft YaHei; font-size:14px">2.activeMQ支持的事务：</span></h3><br><div><span style="font-family:Microsoft YaHei; font-size:14px"></span><br><p style="font-family:verdana,arial,helvetica,sans-serif; margin-top:3px; line-height:24px"><br>ActiveMQ有支持两种事务，</p><br><ul style="font-family:verdana,arial,helvetica,sans-serif; margin-left:15px; margin-top:5px; margin-bottom:5px; line-height:24px"><br><li>JMS transactions - the commit() / rollback() methods on a Session (which is like doing commit() / rollback() on a JDBC connection)</li><li>XA Transactions - where the&nbsp;<a target="_blank" href="http://activemq.apache.org/maven/activemq-core/apidocs/org/apache/activemq/ActiveMQXASession.html" class="external-link" style="color:#880055">XASession</a>&nbsp;acts as an&nbsp;<a target="_blank" href="http://java.sun.com/j2ee/1.4/docs/api/javax/transaction/xa/XAResource.html" class="external-link" style="color:#880055">XAResource</a>&nbsp;by<br> communicating with the Message Broker, rather like a JDBC Connection takes place in an XA transaction by communicating with the database.</li></ul><br><p style="margin-top:10px; line-height:24px">在支持事务的session中，producer发送message时在message中带有transaction ID。broker收到message后判断是否有transaction ID，如果有就把message保存在transaction store中，等待commit或者rollback消息。所以<span style="line-height:1.5">ActiveMq的事务是针对broker而不是producer的，不管session是否commit，broker都会收到message。</span></p><br><p style="margin-top:10px; line-height:24px"><span style="line-height:1.5em">如果producer发送模式选择了persistent，那么message过期后会进入死亡队列。在message进入死亡队列之前，ActiveMQ会删除message中的transaction ID，这样过期的message就不在事务中了，不会保存在</span><span style="line-height:1.5em">transaction store中，会直接进入死亡队列。具体删除transaction<br> ID的地方是在：</span><span style="line-height:1.5em">org.apache.activemq.util.</span><span style="line-height:1.5em">BrokerSupport的doResend，将transaction ID保存在了originalTransactionID中，删除了transaction ID。</span></p><br><p style="margin-top:10px; line-height:24px"><span style="line-height:1.5em">&nbsp; &nbsp; &nbsp; &nbsp;在下面的介绍中我用的是<span style="font-family:verdana,arial,helvetica,sans-serif; font-size:14px">JMS transactions.</span></span></p><br><p style="margin-top:10px; line-height:24px"><span style="font-family:verdana,arial,helvetica,sans-serif; font-size:14px">JMS transactions事务的配置：</span><br><br></p><br><p style="margin-top:10px; line-height:24px"><span style="font-family:verdana,arial,helvetica,sans-serif; font-size:14px">&nbsp; &nbsp; &nbsp; ①建立JMS事务，并引入关联链接事务。</span></p><br><p style="margin-top:10px; line-height:24px">&nbsp; &nbsp; &nbsp; &nbsp;<span style="font-size:14px"> &nbsp;②.设置一个jmsTamplat，并关联监听容器。</span></p><br><p style="margin-top:10px; line-height:24px"><pre name="code" class="html">&lt;!– jms事务 –&gt;<br>    &lt;bean id=&quot;jmsTransactionManager&quot;<br>        class=&quot;org.springframework.jms.connection.JmsTransactionManager&quot;&gt;<br>        &lt;property name=&quot;connectionFactory&quot; ref=&quot;connectionFactory&quot; /&gt;<br>    &lt;/bean&gt;<br>    &lt;tx:annotation-driven transaction-manager=&quot;jmsTransactionManager&quot; /&gt;<br><br><br>&lt;!– 消息监听容器 消息接收监听器用于异步接收消息 –&gt;<br>    &lt;bean id=&quot;jmsContainerOne&quot; class=&quot;org.springframework.jms.listener.DefaultMessageListenerContainer&quot;&gt;<br>        &lt;property name=&quot;connectionFactory&quot; ref=&quot;connectionFactory&quot; /&gt;<br>        &lt;property name=&quot;destination&quot; ref=&quot;destinationOne&quot; /&gt;<br>        &lt;property name=&quot;messageListener&quot; ref=&quot;consumerMessageListenerOfOne&quot; /&gt;<br>        &lt;!– &lt;property name=&quot;sessionTransacted&quot; value=&quot;true&quot;/&gt; –&gt;  &lt;!– 给listener添加事务，只负责接收消息的回滚 （有了transactionManager就不用这个了，这个功能不全） 设置后好像并没有起作用 不知道为啥 –&gt;<br>        &lt;!– &lt;property name=&quot;transactionManager&quot; ref=&quot;jtaTransactionManager&quot;/&gt; –&gt; &lt;!– 接收消息和数据库访问处于同一事务中 jta –&gt;<br>        &lt;property name=&quot;transactionManager&quot; ref=&quot;jmsTransactionManager&quot; /&gt; &lt;!–jms事务 –&gt;<br>        &lt;property name=&quot;sessionAcknowledgeMode&quot; value=&quot;4&quot;&gt;&lt;/property&gt;   &lt;!– 应答模式是 INDIVIDUAL_ACKNOWLEDGE <a href="http://blog.csdn.net/yueding_h/article/details/54944254" target="_blank" rel="external">http://blog.csdn.net/yueding_h/article/details/54944254</a> –&gt;<br>        &lt;!– ActiveMQ:设置多个并行的消费者 –&gt;<br>        &lt;property name=&quot;concurrency&quot; value=&quot;2-3&quot; /&gt;<br>    &lt;/bean&gt;</pre><br><br></p><br></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px">上面配置文件配置完成后，在接收着那边接受消息失败后，进行事务回滚。</span><pre name="code" class="html">session.rollback();</pre></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px">&nbsp; &nbsp;具体实现：</span><pre name="code" class="html"> public void onMessage(Message message, Session session) {<br>          TextMessage textMsg = (TextMessage) message;<br>            try {<br>                    System.out.println(1);<br>                    String endStr = textMsg.getText();<br>                    Integer endInt = Integer.parseInt(endStr);<br>                    System.out.println(&quot;消息：===&quot;+endInt);<br>                    //只要被确认后   就会出队，接受失败没有确认成功，会在原队列里面<br>                        textMsg.acknowledge();<br><br>            } catch (Exception e) {<br>                try {<br>                    session.rollback();<br>                    System.out.println(&quot;测试回滚&quot;);<br>                                      e.printStackTrace();<br>                                 System.out.println(&quot;异常信息是：===：&quot; + e.getMessage());<br>                      }<br>        }<br><br></pre>&nbsp; 这就介绍完了。</div><br><div><span style="font-family:Microsoft YaHei; font-size:14px">&nbsp; 另外，activeMQ还有一种JtaTransactionManager 事务控制。</span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px">&nbsp;&nbsp;事务控制： （这里让接收消息和数据库访问处于同一事务中）我们就可以配置一个外部的事务管理同时配置一个支持外部事务管理的消息监听容器（如DefaultMessageListenerContainer）&nbsp;。要配置这样一个参与分布式事务管理的消息监听容器，我们可以配置一个JtaTransactionManager，当然底层的JMS ConnectionFactory需要能够支持分布式事务管理，&nbsp;并正确地注册我们的JtaTransactionManager。这样消息监听器进行消息接收和对应的数据库访问就会处于同一数据库控制下，当消息接收失败或数据库访问失败都会进行事务回滚操作。&nbsp;</span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px">&nbsp; &nbsp;这种事务控制，我在配置的时候，失败了，所以选用了JMS事务控制。<br><br>&nbsp; &nbsp;待我详细了解<span style="font-family:&quot;Microsoft YaHei&quot;; font-size:14px">JtaTransactionManager 后，再说吧。</span></span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px"><br><br></span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px"><br><br></span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px"><br><br></span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px"><br><br></span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px"><br><br></span></div><br><p></p><br><br></div>
+
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/08/02/truncation-03/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -807,232 +1038,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/07/31/aop-04/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="XueCheng">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="XueCheng Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/07/31/aop-04/" itemprop="url">转载:Spring实现AOP的4种方式</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Veröffentlicht am</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-07-31T15:51:08+08:00">
-                2017-07-31
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <div id="article_content" class="article_content tracking-ad" data-mod="popu_307" data-dsm="post"><br><br><blockquote><br><h1 align="left"><strong>Spring实现AOP的4种方式</strong></h1><br><p align="left">&nbsp;</p><br><p align="left">&nbsp; <span style="font-family:宋体">先了解</span><span style="font-family:Calibri">AOP</span><span style="font-family:宋体">的相关术语</span><span style="font-family:Calibri">:</span><br><br><strong>1.<span style="font-family:宋体">通知</span><span style="font-family:Calibri">(Advice):</span></strong><br><br><span style="font-family:宋体">通知定义了切面是什么以及何时使用。描述了切面要完成的工作和何时需要执行这个工作。</span><br><br><strong>2.<span style="font-family:宋体">连接点</span><span style="font-family:Calibri">(</span><a target="_blank" name="OLE_LINK1">Joinpoint</a>):</strong><br><br><span style="font-family:宋体">程序能够应用通知的一</span> <span style="font-family:宋体">个</span>“<span style="font-family:宋体">时机</span><span style="font-family:Calibri">”</span><span style="font-family:宋体">，这些</span><span style="font-family:Calibri">“</span><span style="font-family:宋体">时机</span><span style="font-family:Calibri">”</span><span style="font-family:宋体">就是连接点，例如方法被调用时、异常被抛出时等等。</span><br><br><strong>3.<span style="font-family:宋体">切入点</span><span style="font-family:Calibri">(Pointcut)</span></strong><br><br><span style="font-family:宋体">通知定义了切面要发生的</span>“<span style="font-family:宋体">故事</span><span style="font-family:Calibri">”</span><span style="font-family:宋体">和时间，那么切入点就定义了</span><span style="font-family:Calibri">“</span><span style="font-family:宋体">故事</span><span style="font-family:Calibri">”</span><span style="font-family:宋体">发生的地点，例如某个类或方法的名称，</span><a target="_blank" href="http://lib.csdn.net/base/javaee" title="Java EE知识库"><strong><u><span style="color:#df3434">spring</span></u></strong></a><span style="font-family:宋体">中允许我们方便的用正则表达式来指定</span><br><br><strong>4.<span style="font-family:宋体">切面</span><span style="font-family:Calibri">(Aspect)</span></strong><br><br><span style="font-family:宋体">通知和切入点共同组成了切面：时间、地点和要发生的</span>“<span style="font-family:宋体">故事</span><span style="font-family:Calibri">”</span><br><br><strong>5.<span style="font-family:宋体">引入</span><span style="font-family:Calibri">(Introduction)</span></strong><br><br><span style="font-family:宋体">引入允许我们向现有的类添加新的方法和属性</span>(Spring<span style="font-family:宋体">提供了一个方法注入的功能）</span><br><br><strong>6.<span style="font-family:宋体">目标</span><span style="font-family:Calibri">(Target)</span></strong><br><br><span style="font-family:宋体">即被通知的对象，如果没有</span>AOP,<span style="font-family:宋体">那么它的逻辑将要交叉别的事务逻辑，有了</span><span style="font-family:Calibri">AOP</span><span style="font-family:宋体">之后它可以只关注自己要做的事（</span><span style="font-family:Calibri">AOP</span><span style="font-family:宋体">让他做爱做的事）</span><br><br><strong>7.<span style="font-family:宋体">代理</span><span style="font-family:Calibri">(proxy)</span></strong><br><br><span style="font-family:宋体">应用通知的对象，详细内容参见设计模式里面的代理模式</span><br><br><strong>8.<span style="font-family:宋体">织入</span><span style="font-family:Calibri">(Weaving)</span></strong><br><br><span style="font-family:宋体">把切面应用到目标对象来创建新的代理对象的过程，织入一般发生在如下几个时机</span>:<br><br>(1)<span style="font-family:宋体">编译时：当一个类文件被编译时进行织入，这需要特殊的编译器才可以做的到，例如</span><span style="font-family:Calibri">AspectJ</span><span style="font-family:宋体">的织入编译器</span><br><br>(2)<span style="font-family:宋体">类加载时：使用特殊的</span><span style="font-family:Calibri">ClassLoader</span><span style="font-family:宋体">在目标类被加载到程序之前增强类的字节代码</span><br><br>(3)<span style="font-family:宋体">运行时：切面在运行的某个时刻被织入</span><span style="font-family:Calibri">,SpringAOP</span><span style="font-family:宋体">就是以这种方式织入切面的，原理应该是使用了</span><span style="font-family:Calibri">JDK</span><span style="font-family:宋体">的动态代理技术</span><br><br><strong><br><br>Spring<span style="font-family:宋体">提供了</span><span style="font-family:Calibri">4</span><span style="font-family:宋体">种实现</span><span style="font-family:Calibri">AOP</span><span style="font-family:宋体">的方式：</span><br><br>1.<span style="font-family:宋体">经典的基于代理的</span><span style="font-family:Calibri">AOP</span><br><br>2.@AspectJ<span style="font-family:宋体">注解驱动的切面</span><br><br>3.<span style="font-family:宋体">纯</span><span style="font-family:Calibri">POJO</span><span style="font-family:宋体">切面</span><br><br>4.<span style="font-family:宋体">注入式</span><span style="font-family:Calibri">AspectJ</span><span style="font-family:宋体">切面</span></strong><br><br><br><br><span style="font-family:宋体">首先看经典的基于代理的</span>AOP:<br><br>Spring<span style="font-family:宋体">支持五种类型的通知：</span><br><br>Before(<span style="font-family:宋体">前</span><span style="font-family:Calibri">)&nbsp; org.apringframework.aop.MethodBeforeAdvice</span><br><br>After-returning(<span style="font-family:宋体">返回后</span><span style="font-family:Calibri">) org.springframework.aop.AfterReturningAdvice</span><br><br>After-throwing(<span style="font-family:宋体">抛出后</span><span style="font-family:Calibri">) org.springframework.aop.ThrowsAdvice</span><br><br>Arround(<span style="font-family:宋体">周围</span><span style="font-family:Calibri">) org.aopaliance.intercept.MethodInterceptor</span><br><br>Introduction(<span style="font-family:宋体">引入</span><span style="font-family:Calibri">) org.springframework.aop.IntroductionInterceptor</span><br><br><br><br><span style="font-family:宋体">&#20540;的说明的是周围通知，他是由</span>AOP Alliance<span style="font-family:宋体">中的接口定义的而非</span><span style="font-family:Calibri">Spring,</span><span style="font-family:宋体">周围通知相当于前通知、返回后通知、抛出后通知的结合（传说中的完全体？好吧，我看日和看多</span><br><br><br><br><span style="font-family:宋体">了）还有引入通知怎么玩我还没搞清楚，等心无杂念的时候玩玩</span><br><br><br><br><span style="font-family:宋体">这东西怎么玩？这么几个步骤：</span><br><br>1.<span style="font-family:宋体">创建通知：实现这几个接口，把其中的方法实现了</span><br><br>2.<span style="font-family:宋体">定义切点和通知者：在</span><span style="font-family:Calibri">Spring</span><span style="font-family:宋体">配制文件中配置这些信息</span><br><br>3.<span style="font-family:宋体">使用</span><span style="font-family:Calibri">ProxyFactoryBean</span><span style="font-family:宋体">来生成代理</span><br><br><br><br><span style="font-family:宋体">具体做法。。。大晚上的就举个睡觉的例子吧</span>:<br><br><br><br><span style="font-family:宋体">首先写一个接口叫</span>Sleepable,<span style="font-family:宋体">这是一个牛</span><span style="font-family:Calibri">X</span><span style="font-family:宋体">的接口</span><span style="font-family:Calibri">,</span><span style="font-family:宋体">所有具有睡觉能力的东西都可以实现该接口（不光生物，包括关机选项里面的休眠）</span><br><br><br><br>package test.spring.aop.bean<br><br>public interface Sleepable{<br><br>&nbsp;&nbsp;&nbsp; void sleep();&nbsp;<br><br>}</p><br><p align="left"><span style="font-family:宋体">然后写一个</span>Human<span style="font-family:宋体">类，他实现了这个接口</span><br><br>package test.spring.aop.bean<br><br>public Human implements Sleepable{<br><br>&nbsp;&nbsp; /<em><span style="font-family:宋体">这人莫非跟寡人差不多？</span><br><br>&nbsp;&nbsp;&nbsp; </em><span style="font-family:宋体">除了睡觉睡的比较好之外其余的什么也不会做？</span><span style="font-family:Calibri"><em>/</em></span><br><br>&nbsp;&nbsp; public void sleep(){<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; System.out.println(&quot;<span style="font-family:宋体">睡觉了！梦中自有颜如玉！</span><span style="font-family:Calibri">&quot;);</span><br><br>&nbsp;&nbsp; }<br><br>}<br><br><br><br><br><br><span style="font-family:宋体">好了，这是主角，不过睡觉前后要做些辅助工作的，最基本的是脱穿衣服，失眠的人还要吃安眠药什么的</span>,<span style="font-family:宋体">但是这些动作与纯粹的睡觉这一</span><span style="font-family:Calibri">“</span><span style="font-family:宋体">业务逻辑</span><span style="font-family:Calibri">”</span><span style="font-family:宋体">是不相干的，如果把</span><br><br><br><br><span style="font-family:宋体">这些代码全部加入到</span>sleep<span style="font-family:宋体">方法中，是不是有违单一职责呢？，这时候我们就需要</span><span style="font-family:Calibri">AOP</span><span style="font-family:宋体">了。</span><br><br><br><br><span style="font-family:宋体">编写一个</span>SleepHelper<span style="font-family:宋体">类，它里面包含了睡觉的辅助工作</span><span style="font-family:Calibri">,</span><span style="font-family:宋体">用</span><span style="font-family:Calibri">AOP</span><span style="font-family:宋体">术语来说它就应该是通知了，我们需要实现上面的接口</span><br><br><br><br>package test.spring.aop.bean;<br><br>import <a target="_blank" href="http://lib.csdn.net/base/javaee" title="Java EE知识库"><br><strong><u><span style="color:#df3434">Java</span></u></strong></a>.lang.reflect.Method;<br><br>import org.springframework.aop.AfterReturningAdvice;<br><br>import org.springframework.aop.MethodBeforeAdvice;<br><br>public class SleepHelper implements MethodBeforeAdvice,AfterReturningAdvice{<br><br>&nbsp;&nbsp;&nbsp; public void before(Method mtd, Object[] arg1, Object arg2)<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; throws Throwable {<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; System.out.println(&quot;<span style="font-family:宋体">通常情况下睡觉之前要脱衣服！</span><span style="font-family:Calibri">&quot;);</span><br><br>&nbsp;&nbsp;&nbsp; }<br><br>&nbsp;&nbsp;&nbsp; public void afterReturning(Object arg0, Method arg1, Object[] arg2,<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; Object arg3) throws Throwable {<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; System.out.println(&quot;<span style="font-family:宋体">起床后要先穿衣服！</span><span style="font-family:Calibri">&quot;);</span><br><br>&nbsp;&nbsp;&nbsp; }<br><br>}<br><br><span style="font-family:宋体; color:#009900">然后在</span><span style="color:#009900">spring<span style="font-family:宋体">配置文件中进行配置</span><span style="font-family:Calibri">:</span></span><br><br>&lt;bean id=&quot;sleepHelper&quot; class=&quot;test.spring.aop.bean.SleepHelper&quot;&gt;<br><br>&lt;/bean&gt;<br><br><span style="color:#009900">OK!<span style="font-family:宋体">现在创建通知的工作就完成了</span><span style="font-family:Calibri">.</span><br><br><span style="font-family:宋体">第二步是进行配置，这是很令人蛋疼的操作，尤其是这么热的天，</span>Spring<span style="font-family:宋体">又把东西的名字起的见&#39740;的长！它为啥不能像</span><span style="font-family:Calibri">usr</span><span style="font-family:宋体">这种风&#26684;呢？</span><br><br><span style="font-family:宋体">首先要做的是配置一个切点</span>,<span style="font-family:宋体">据说切点的表示方式在</span><span style="font-family:Calibri">Spring</span><span style="font-family:宋体">中有好几种，但是常用的只有两种：</span><span style="font-family:Calibri">1.</span><span style="font-family:宋体">使用正则表达式</span><span style="font-family:Calibri">2.</span><span style="font-family:宋体">使用</span><span style="font-family:Calibri">AspectJ</span><span style="font-family:宋体">表达式</span><span style="font-family:Calibri">AspectJ</span><span style="font-family:宋体">我不是很熟悉</span><span style="font-family:Calibri">(</span><span style="font-family:宋体">我也是熟悉</span><br><br><span style="font-family:宋体">党</span> or <span style="font-family:宋体">精通党？</span><span style="font-family:Calibri">),</span><span style="font-family:宋体">我还是习惯用正则表达式</span></span><br><br>Spring<span style="font-family:宋体">使用</span><span style="font-family:Calibri">org.springframework.aop.support.JdkRegexpMethodPointcut</span><span style="font-family:宋体">来定义正则表达式切点</span><br><br>&lt;bean id=&quot;spleepPointcut&quot; class=&quot;org.springframework.aop.support.JdkRegexpMethodPointcut&quot;&gt;<br><br>&nbsp; &lt;property name=&quot;pattern&quot; value=&quot;.sleep&quot;/&gt;<br><br>&lt;/bean&gt;<br><br>pattern<span style="font-family:宋体">属性指定了正则表达式，它匹配所有的</span><span style="font-family:Calibri">sleep</span><span style="font-family:宋体">方法</span><br><br><span style="font-family:宋体">切点仅仅是定义了故事发生的地点，还有故事发生的时间以及最重要的故事的内容</span>,<span style="font-family:宋体">就是通知了，我们需要把通知跟切点结合起来，我们要使用的通知者是</span><span style="font-family:Calibri">:</span><br><br>org.springframework.aop.support.DefaultPointcutAdvisor<br><br>&lt;bean id=&quot;sleepHelperAdvisor&quot; class=&quot;org.springframework.aop.support.DefaultPointcutAdvisor&quot;&gt;<br><br>&nbsp;&nbsp;&nbsp;&nbsp; &lt;property name=&quot;advice&quot; ref=&quot;sleepHelper&quot;/&gt;<br><br>&nbsp;&nbsp;&nbsp;&nbsp; &lt;property name=&quot;pointcut&quot; ref=&quot;sleepPointcut&quot;/&gt;<br><br>&lt;/bean&gt;<br><br><span style="font-family:宋体">切入点和通知都配置完成，接下来该调用</span>ProxyFactoryBean<span style="font-family:宋体">产生代理对象了</span><br><br>&lt;bean id=&quot;humanProxy&quot; class=&quot;org.springframework.aop.framework.ProxyFactoryBean&quot;&gt;<br><br>&nbsp;&nbsp;&nbsp;&nbsp; &lt;property name=&quot;target&quot; ref=&quot;human&quot;/&gt;<br><br>&nbsp;&nbsp;&nbsp;&nbsp; &lt;property name=&quot;interceptorNames&quot; value=&quot;sleepHelperAdvisor&quot; /&gt;<br><br>&nbsp;&nbsp;&nbsp;&nbsp; &lt;property name=&quot;proxyInterfaces&quot; value=&quot;test.spring.aop.bean.Sleepable&quot; /&gt;<br><br>&lt;/bean&gt;<br><br>ProxyFactoryBean<span style="font-family:宋体">是一个代理，我们可以把它转换为</span><span style="font-family:Calibri">proxyInterfaces</span><span style="font-family:宋体">中指定的实现该</span><span style="font-family:Calibri">interface</span><span style="font-family:宋体">的代理对象</span><span style="font-family:Calibri">:</span><br><br>import org.springframework.aop.framework.ProxyFactoryBean;<br><br>import org.springframework.context.ApplicationContext;<br><br>import org.springframework.context.support.ClassPathXmlApplicationContext;<br><br>import test.spring.aop.bean.Sleepable;<br><br>public class Test {<br><br>&nbsp;&nbsp;&nbsp; public static void main(String[] args){<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; ApplicationContext appCtx = new ClassPathXmlApplicationContext(&quot;applicationContext.xml&quot;);<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; Sleepable sleeper = (Sleepable)appCtx.getBean(&quot;humanProxy&quot;);<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; sleeper.sleep();<br><br>&nbsp;&nbsp;&nbsp; }<br><br>}<br><br><span style="font-family:宋体">程序运行产生结果：</span><br><br><span style="font-family:宋体">通常情况下睡觉之前要脱衣服！</span><br><br><span style="font-family:宋体">睡觉啦</span>~<span style="font-family:宋体">梦中自有颜如玉</span><span style="font-family:Calibri">!</span><br><br><span style="font-family:宋体">起床后要先穿衣服！</span><br><br>OK!<span style="font-family:宋体">这是我们想要的结果，但是上面这个过程貌&#20284;有点复杂，尤其是配置切点跟通知</span><span style="font-family:Calibri">,Spring</span><span style="font-family:宋体">提供了一种自动代理的功能，能让切点跟通知自动进行匹配，修改配置文件如下</span><span style="font-family:Calibri">:</span><br><br>&nbsp;&lt;bean id=&quot;sleepHelper&quot; class=&quot;test.spring.aop.bean.SleepHelper&quot;&gt;<br><br>&nbsp; &lt;/bean&gt;<br><br>&nbsp; &lt;bean id=&quot;sleepAdvisor&quot; class=&quot;org.springframework.aop.support.RegexpMethodPointcutAdvisor&quot;&gt;<br><br>&nbsp;&nbsp;&nbsp; &lt;property name=&quot;advice&quot; ref=&quot;sleepHelper&quot;/&gt;<br><br>&nbsp;&nbsp;&nbsp; &lt;property name=&quot;pattern&quot; value=&quot;.<em>sleep&quot;/&gt;<br><br>&nbsp; &lt;/bean&gt;<br><br>&nbsp; &lt;bean id=&quot;human&quot; class=&quot;test.spring.aop.bean.Human&quot;&gt;<br><br>&nbsp; &lt;/bean&gt;<br><br>&nbsp; &lt;bean class=&quot;org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator&quot;/&gt;<br><br><span style="font-family:宋体">执行程序：</span><br><br>public class Test {<br><br>&nbsp;&nbsp;&nbsp; public static void main(String[] args){<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; ApplicationContext appCtx = new ClassPathXmlApplicationContext(&quot;applicationContext.xml&quot;);<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; Sleepable sleeper = (Sleepable)appCtx.getBean(&quot;human&quot;);<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; sleeper.sleep();<br><br>&nbsp;&nbsp;&nbsp; }<br><br>}<br><br><span style="font-family:宋体">成功输出结果跟前面一样</span>!<br><br><span style="font-family:宋体">只要我们声明了</span>org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator(<span style="font-family:宋体">我勒个去的，名太长了</span><span style="font-family:Calibri">)</span><span style="font-family:宋体">就能为方法匹配的</span><span style="font-family:Calibri">bean</span><span style="font-family:宋体">自动创建代理！</span><br><br><span style="font-family:宋体">但是这样还是要有很多工作要做</span>,<span style="font-family:宋体">有更简单的方式吗</span><span style="font-family:Calibri">?</span><span style="font-family:宋体">有！</span><br><br><span style="font-family:宋体">一种方式是使用</span>AspectJ<span style="font-family:宋体">提供的注解</span><span style="font-family:Calibri">:</span><br><br>package test.mine.spring.bean;<br><br>import org.aspectj.lang.annotation.AfterReturning;<br><br>import org.aspectj.lang.annotation.Aspect;<br><br>import org.aspectj.lang.annotation.Before;<br><br>import org.aspectj.lang.annotation.Pointcut;<br><br>@Aspect<br><br>public class SleepHelper {<br><br>&nbsp;&nbsp;&nbsp; public SleepHelper(){<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;<br><br>&nbsp;&nbsp;&nbsp; }<br><br>&nbsp;&nbsp;&nbsp; @Pointcut(&quot;execution(</em> <em>.sleep())&quot;)<br><br>&nbsp;&nbsp;&nbsp; public void sleeppoint(){}<br><br>&nbsp;&nbsp;&nbsp;&nbsp;<br><br>&nbsp;&nbsp;&nbsp; @Before(&quot;sleeppoint()&quot;)<br><br>&nbsp;&nbsp;&nbsp; public void beforeSleep(){<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; System.out.println(&quot;<span style="font-family:宋体">睡觉前要脱衣服</span><span style="font-family:Calibri">!&quot;);</span><br><br>&nbsp;&nbsp;&nbsp; }&nbsp;&nbsp;&nbsp; <br><br>&nbsp;&nbsp;&nbsp; @AfterReturning(&quot;sleeppoint()&quot;)<br><br>&nbsp;&nbsp;&nbsp; public void afterSleep(){<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; System.out.println(&quot;<span style="font-family:宋体">睡醒了要穿衣服！</span><span style="font-family:Calibri">&quot;);</span><br><br>&nbsp;&nbsp;&nbsp; }&nbsp;&nbsp;&nbsp; <br><br>}<br><br><span style="font-family:宋体; color:#009900">用</span><span style="color:#009900">@Aspect<span style="font-family:宋体">的注解来标识切面</span><span style="font-family:Calibri">,</span><span style="font-family:宋体">注意不要把它漏了，否则</span><span style="font-family:Calibri">Spring</span><span style="font-family:宋体">创建代理的时候会找不到它</span><span style="font-family:Calibri">,@Pointcut</span><span style="font-family:宋体">注解指定了切点，</span><span style="font-family:Calibri">@Before</span><span style="font-family:宋体">和</span><span style="font-family:Calibri">@AfterReturning</span><span style="font-family:宋体">指定了运行时的通知，注</span><span style="font-family:宋体">意的是要在注解中传入切点的名称</span><br><br><span style="font-family:宋体">然后我们在</span>Spring<span style="font-family:宋体">配置文件上下点功夫</span><span style="font-family:Calibri">,</span><span style="font-family:宋体">首先是增加</span><span style="font-family:Calibri">AOP</span><span style="font-family:宋体">的</span><span style="font-family:Calibri">XML</span><span style="font-family:宋体">命名空间和声明相关</span><span style="font-family:Calibri">schema</span><br><br><span style="font-family:宋体">命名空间</span>:</span><br><br>xmlns:aop=&quot;<a href="http://www.springframework.org/schema/aop&amp;quot" target="_blank" rel="external">http://www.springframework.org/schema/aop&amp;quot</a>;<br><br>schema<span style="font-family:宋体">声明</span><span style="font-family:Calibri">:</span><br><br><a href="http://www.springframework.org/schema/aop" target="_blank" rel="external">http://www.springframework.org/schema/aop</a><br><br><a href="http://www.springframework.org/schema/aop/spring-aop-2.0.xsd" target="_blank" rel="external">http://www.springframework.org/schema/aop/spring-aop-2.0.xsd</a><br><br><br><br><span style="font-family:宋体">然后加上这个标签</span>:<br><br>&lt;aop:aspectj-autoproxy/&gt; <span style="font-family:宋体">有了这个</span><span style="font-family:Calibri">Spring</span><span style="font-family:宋体">就能够自动扫描被</span><span style="font-family:Calibri">@Aspect</span><span style="font-family:宋体">标注的切面了</span><br><br><br><br><span style="font-family:宋体">最后是运行，很简单方便了：</span><br><br>public class Test {<br><br><br><br>&nbsp;&nbsp;&nbsp; public static void main(String[] args){<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; ApplicationContext appCtx = new ClassPathXmlApplicationContext(&quot;applicationContext.xml&quot;);<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; Sleepable human = (Sleepable)appCtx.getBean(&quot;human&quot;);<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; human.sleep();<br><br>&nbsp;&nbsp;&nbsp; }<br><br>}<br><br><span style="font-family:宋体">下面我们来看最后一种常用的实现</span>AOP<span style="font-family:宋体">的方式</span><span style="font-family:Calibri">:</span><span style="font-family:宋体">使用</span><span style="font-family:Calibri">Spring</span><span style="font-family:宋体">来定义纯粹的</span><span style="font-family:Calibri">POJO</span><span style="font-family:宋体">切面</span><br><br><span style="font-family:宋体">前面我们用到了</span>&lt;aop:aspectj-autoproxy/&gt;<span style="font-family:宋体">标签</span><span style="font-family:Calibri">,Spring</span><span style="font-family:宋体">在</span><span style="font-family:Calibri">aop</span><span style="font-family:宋体">的命名空间里面还提供了其他的配置元素</span><span style="font-family:Calibri">:</span><br><br>&lt;aop:advisor&gt; <span style="font-family:宋体">定义一个</span><span style="font-family:Calibri">AOP</span><span style="font-family:宋体">通知者</span><br><br>&lt;aop:after&gt; <span style="font-family:宋体">后通知</span><br><br>&lt;aop:after-returning&gt; <span style="font-family:宋体">返回后通知</span><br><br>&lt;aop:after-throwing&gt; <span style="font-family:宋体">抛出后通知</span><br><br>&lt;aop:around&gt; <span style="font-family:宋体">周围通知</span><br><br>&lt;aop:aspect&gt;<span style="font-family:宋体">定义一个切面</span><br><br>&lt;aop:before&gt;<span style="font-family:宋体">前通知</span><br><br>&lt;aop:config&gt;<span style="font-family:宋体">顶级配置元素，类&#20284;于</span><span style="font-family:Calibri">&lt;beans&gt;</span><span style="font-family:宋体">这种东西</span><br><br>&lt;aop:pointcut&gt;<span style="font-family:宋体">定义一个切点</span><br><br><span style="font-family:宋体">我们用</span>AOP<span style="font-family:宋体">标签来实现睡觉这个过程</span><span style="font-family:Calibri">:</span><br><br><span style="font-family:宋体">代码不变，只是修改配置文件</span>,<span style="font-family:宋体">加入</span><span style="font-family:Calibri">AOP</span><span style="font-family:宋体">配置即可</span><span style="font-family:Calibri">:</span><br><br>&lt;aop:config&gt;<br><br>&nbsp;&nbsp;&nbsp; &lt;aop:aspect ref=&quot;sleepHelper&quot;&gt;<br><br>&nbsp;&nbsp;&nbsp; &lt;aop:before method=&quot;beforeSleep&quot; pointcut=&quot;execution(</em> <em>.sleep(..))&quot;/&gt;<br><br>&nbsp;&nbsp;&nbsp; &lt;aop:after method=&quot;afterSleep&quot; pointcut=&quot;execution(</em> <em>.sleep(..))&quot;/&gt;<br><br>&nbsp;&nbsp;&nbsp; &lt;/aop:aspect&gt;<br><br>&lt;/aop:config&gt;</em></p><br><strong>spring<span style="font-family:宋体">对</span><span style="font-family:Calibri">AOP</span><span style="font-family:宋体">的支持</span><span style="font-family:Calibri">2:</span></strong><br><p align="left"><strong>1<span style="font-family:宋体">、如果目标对象实现了接口，默认情况下会采用</span><span style="font-family:Calibri">JDK</span><span style="font-family:宋体">的动态代理实现</span><span style="font-family:Calibri">AOP</span><br><br>2<span style="font-family:宋体">、如果目标对象实现了接口，可以强制使用</span><span style="font-family:Calibri">CGLIB</span><span style="font-family:宋体">实现</span><span style="font-family:Calibri">AOP</span><br><br>3<span style="font-family:宋体">、如果目标对象没有实现了接口，必须采用</span><span style="font-family:Calibri">CGLIB</span><span style="font-family:宋体">库，</span><span style="font-family:Calibri">spring</span><span style="font-family:宋体">会自动在</span><span style="font-family:Calibri">JDK</span><span style="font-family:宋体">动态代理和</span><span style="font-family:Calibri">CGLIB</span><span style="font-family:宋体">之间转换</span></strong></p><br><p align="left"><strong><br><br><span style="font-family:宋体">在实现接口的情况下</span>,<span style="font-family:宋体">如何强制使用</span><span style="font-family:Calibri">CGLIB</span><span style="font-family:宋体">实现</span><span style="font-family:Calibri">AOP</span><span style="font-family:宋体">？</span><br><br>&nbsp; <span style="font-family:宋体">添加</span><span style="font-family:Calibri">CGLIB</span><span style="font-family:宋体">库，</span><span style="font-family:Calibri">SPRING_HOME/cglib/<em>.jar</em></span><br><br>&nbsp; <span style="font-family:宋体">在</span><span style="font-family:Calibri">spring</span><span style="font-family:宋体">配置文件中加入</span><span style="font-family:Calibri">&lt;aop:aspectj-autoproxy proxy-target-class=&quot;true&quot;/&gt;</span><br><br>&nbsp;<br><br>JDK<span style="font-family:宋体">动态代理和</span><span style="font-family:Calibri">CGLIB</span><span style="font-family:宋体">字节码生成的区别？</span><br><br>&nbsp;<em> JDK<span style="font-family:宋体">动态代理只能对实现了接口的类生成代理，而不能针对类</span><br><br>&nbsp;</em> CGLIB<span style="font-family:宋体">是针对类实现代理，主要是对指定的类生成一个子类，覆盖其中的方法</span><br><br>&nbsp;&nbsp; <span style="font-family:宋体">因为是继承，所以该类或方法最好不要声明成</span><span style="font-family:Calibri">final&nbsp;</span></strong></p><br><p align="left">&nbsp;源码下篇</p><br><p align="left">&nbsp;</p><br></blockquote><br><br></div>
-
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/07/31/aop-03/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="XueCheng">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="XueCheng Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/07/31/aop-03/" itemprop="url">转载：Spring AOP手动控制事务范例</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Veröffentlicht am</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-07-31T15:49:17+08:00">
-                2017-07-31
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <pre><code>&lt;div id=&quot;cnblogs_post_body&quot;&gt;&lt;div class=&quot;cnblogs_code&quot;&gt;
-</code></pre><p><pre><span style="color: #0000ff;">public</span> <span style="color: #0000ff;">boolean</span> testDelete(String jobCode) <span style="color: #0000ff;">throws</span><span style="color: #000000;"> Exception {<br>      </span><span style="color: #0000ff;">boolean</span> flag = <span style="color: #0000ff;">false</span><span style="color: #000000;">;<br>      </span><span style="color: #008000;">//</span><span style="color: #008000;">1.获取事务控制管理器</span><br>      DataSourceTransactionManager transactionManager =<span style="color: #000000;"> HqznContext.getBean(<br>           </span>“transactionManager”, DataSourceTransactionManager.<span style="color: #0000ff;">class</span><span style="color: #000000;">);//这里是spring手动注入bean,也可以使用自动注入 HqznContext是一个工具类:主要用于简化spring手动注入代码<br>      </span><span style="color: #008000;">//</span><span style="color: #008000;">2.获取事务定义</span><br>      DefaultTransactionDefinition def = <span style="color: #0000ff;">new</span><span style="color: #000000;"> DefaultTransactionDefinition();<br>      </span><span style="color: #008000;">//</span><span style="color: #008000;">3.设置事务隔离级别，开启新事务</span><br><span style="color: #000000;">      def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);<br>      </span><span style="color: #008000;">//</span><span style="color: #008000;">4.获得事务状态</span><br>      TransactionStatus status =<span style="color: #000000;"> transactionManager.getTransaction(def);<br>      </span><span style="color: #0000ff;">try</span><span style="color: #000000;"> {<br>        </span><span style="color: #008000;">//</span><span style="color: #008000;">5.具体的数据库操作（多个）</span><br>        BOBaseJob r = <span style="color: #0000ff;">new</span><span style="color: #000000;"> BOBaseJob();<br>        r.setJobCode(</span>“SW001”<span style="color: #000000;">);<br>        r.setJobName(</span>“事务001”<span style="color: #000000;">);<br>        BOBaseJobMapper.deleteByPrimaryKey(jobCode);<br>        BOBaseJobMapper.insert(r);<br>        flag </span>= <span style="color: #0000ff;">true</span><span style="color: #000000;">;<br>        transactionManager.commit(status);<br>      } </span><span style="color: #0000ff;">catch</span><span style="color: #000000;"> (Exception e) {<br>        transactionManager.rollback(status);<br>      }<br>      </span><span style="color: #0000ff;">return</span><span style="color: #000000;"> flag;<br>   }</span></pre><br></p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -1082,7 +1087,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">51</span>
+                <span class="site-state-item-count">53</span>
                 <span class="site-state-item-name">Artikel</span>
               </a>
             </div>

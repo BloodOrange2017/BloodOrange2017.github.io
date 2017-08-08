@@ -1,0 +1,643 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="&amp;lt;div class=&amp;quot;tag&amp;quot;&amp;gt;     &amp;lt;span&amp;gt;&amp;lt;a href=&amp;quot;http://www.csdn.net/tag/activeMq java spring&amp;quot; target=&amp;quot;_blank&amp;quot;&amp;gt;activeMq java spring&amp;lt;/a&amp;gt;&amp;lt;/span&amp;gt; &amp;lt;/d">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ActiveMQ 整合Spring 事务配置">
+<meta property="og:url" content="https://bloodorange2017.github.io/archives/2017/08/08/activeMq-05/index.html">
+<meta property="og:site_name" content="XueCheng Notes">
+<meta property="og:description" content="&amp;lt;div class=&amp;quot;tag&amp;quot;&amp;gt;     &amp;lt;span&amp;gt;&amp;lt;a href=&amp;quot;http://www.csdn.net/tag/activeMq java spring&amp;quot; target=&amp;quot;_blank&amp;quot;&amp;gt;activeMq java spring&amp;lt;/a&amp;gt;&amp;lt;/span&amp;gt; &amp;lt;/d">
+<meta property="og:updated_time" content="2017-08-08T09:19:01.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ActiveMQ 整合Spring 事务配置">
+<meta name="twitter:description" content="&amp;lt;div class=&amp;quot;tag&amp;quot;&amp;gt;     &amp;lt;span&amp;gt;&amp;lt;a href=&amp;quot;http://www.csdn.net/tag/activeMq java spring&amp;quot; target=&amp;quot;_blank&amp;quot;&amp;gt;activeMq java spring&amp;lt;/a&amp;gt;&amp;lt;/span&amp;gt; &amp;lt;/d">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://bloodorange2017.github.io/archives/2017/08/08/activeMq-05/"/>
+
+
+
+
+
+  <title>ActiveMQ 整合Spring 事务配置 | XueCheng Notes</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">XueCheng Notes</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Where there is a will, there is a way.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Startseite
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archiv
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/08/08/activeMq-05/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="XueCheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XueCheng Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">ActiveMQ 整合Spring 事务配置</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-08T17:18:00+08:00">
+                2017-08-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+         <div class="post_body">
+
+<pre><code>&lt;div class=&quot;tag&quot;&gt;
+    &lt;span&gt;&lt;a href=&quot;http://www.csdn.net/tag/activeMq java spring&quot; target=&quot;_blank&quot;&gt;activeMq java spring&lt;/a&gt;&lt;/span&gt;
+&lt;/div&gt;
+    &lt;pre class=&quot;brush: java&quot;&gt;&amp;lt;?xml&amp;nbsp;version=&quot;1.0&quot;&amp;nbsp;encoding=&quot;UTF-8&quot;?&amp;gt;&lt;br /&gt;
+</code></pre><p>&lt;!–&nbsp;查找最新的schemaLocation&nbsp;访问&nbsp;<a href="http://www.springframework.org/schema/&nbsp;--&amp;gt" target="_blank" rel="external">http://www.springframework.org/schema/&nbsp;--&amp;gt</a>;<br><br>&lt;beans&nbsp;xmlns=”<a href="http://www.springframework.org/schema/beans" target="_blank" rel="external">http://www.springframework.org/schema/beans</a>“<br><br>    xmlns:xsi=”<a href="http://www.w3.org/2001/XMLSchema-instance&quot;&nbsp;xmlns:amq=&quot;http://activemq.apache.org/schema/core" target="_blank" rel="external">http://www.w3.org/2001/XMLSchema-instance&quot;&nbsp;xmlns:amq=&quot;http://activemq.apache.org/schema/core</a>“<br><br>    xmlns:jms=”<a href="http://www.springframework.org/schema/jms" target="_blank" rel="external">http://www.springframework.org/schema/jms</a>“<br><br>    xmlns:tx=”<a href="http://www.springframework.org/schema/tx" target="_blank" rel="external">http://www.springframework.org/schema/tx</a>“<br><br>    xsi:schemaLocation=”<a href="http://www.springframework.org/schema/beans&nbsp;&nbsp;&amp;nbsp" target="_blank" rel="external">http://www.springframework.org/schema/beans&nbsp;&nbsp;&amp;nbsp</a>;<br><br>        <a href="http://www.springframework.org/schema/beans/spring-beans-3.2.xsd" target="_blank" rel="external">http://www.springframework.org/schema/beans/spring-beans-3.2.xsd</a><br><br>        <a href="http://www.springframework.org/schema/jms" target="_blank" rel="external">http://www.springframework.org/schema/jms</a><br><br>        <a href="http://www.springframework.org/schema/jms/spring-jms-4.1.xsd" target="_blank" rel="external">http://www.springframework.org/schema/jms/spring-jms-4.1.xsd</a><br><br>        <a href="http://activemq.apache.org/schema/core" target="_blank" rel="external">http://activemq.apache.org/schema/core</a><br><br>        <a href="http://activemq.apache.org/schema/core/activemq-core-5.8.0.xsd" target="_blank" rel="external">http://activemq.apache.org/schema/core/activemq-core-5.8.0.xsd</a><br><br>        <a href="http://www.springframework.org/schema/tx&amp;nbsp" target="_blank" rel="external">http://www.springframework.org/schema/tx&amp;nbsp</a>;<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.springframework.org/schema/tx/spring-tx-4.1.xsd&quot;&amp;gt" target="_blank" rel="external">http://www.springframework.org/schema/tx/spring-tx-4.1.xsd&quot;&amp;gt</a>;<br><br><br><br>    &lt;!–&nbsp;ActiveMQ&nbsp;连接工厂&nbsp;–&gt;<br><br>    &lt;!–&nbsp;真正可以产生Connection的ConnectionFactory，由对应的&nbsp;JMS服务厂商提供&nbsp;–&gt;<br><br>    &lt;!–&nbsp;如果连接网络：tcp://ip:61616；未连接网络：tcp://localhost:61616&nbsp;以及用户名，密码&nbsp;–&gt;<br><br>    &lt;bean&nbsp;id=”targetConnectionFactory”&nbsp;class=”org.apache.activemq.ActiveMQConnectionFactory”&gt;<br><br>        &lt;property&nbsp;name=”brokerURL”&nbsp;value=”tcp://localhost:61616”&nbsp;/&gt;<br><br>    &lt;/bean&gt;<br><br>    &lt;!–&nbsp;Spring&nbsp;Caching连接工厂&nbsp;–&gt;<br><br>    &lt;!–&nbsp;Spring用于管理真正的ConnectionFactory的ConnectionFactory&nbsp;–&gt;<br><br>    &lt;bean&nbsp;id=”connectionFactory”&nbsp;class=”org.apache.activemq.pool.PooledConnectionFactory”&gt;<br><br>        &lt;!–&nbsp;目标ConnectionFactory对应真实的可以产生JMS&nbsp;Connection的ConnectionFactory&nbsp;–&gt;<br><br>        &lt;property&nbsp;name=”connectionFactory”&nbsp;ref=”targetConnectionFactory”&gt;&lt;/property&gt;<br><br>        &lt;!–&nbsp;线程池&nbsp;–&gt;<br><br>        &lt;property&nbsp;name=”maxConnections”&nbsp;value=”10”/&gt;<br><br>    &lt;/bean&gt;<br><br><br><br>    &lt;!–&nbsp;Spring&nbsp;JmsTemplate&nbsp;的消息生产者&nbsp;start&nbsp;–&gt;<br><br><br><br>    &lt;!–&nbsp;定义JmsTemplate的Queue类型&nbsp;–&gt;<br><br>    &lt;bean&nbsp;id=”jmsQueueTemplate”&nbsp;class=”org.springframework.jms.core.JmsTemplate”&gt;<br><br>        &lt;!–&nbsp;这个connectionFactory对应的是我们定义的Spring提供的那个ConnectionFactory对象&nbsp;–&gt;<br><br>        &lt;constructor-arg&nbsp;ref=”connectionFactory”&nbsp;/&gt;<br><br>        &lt;!–&nbsp;非pub/sub模型（发布/订阅），即队列模式&nbsp;–&gt;<br><br>        &lt;!–&nbsp;&lt;property&nbsp;name=”pubSubDomain”&nbsp;value=”false”&nbsp;/&gt;&nbsp;–&gt;<br><br>        &lt;property&nbsp;name=”defaultDestination”&nbsp;ref=”destination”/&gt;<br><br>        &lt;property&nbsp;name=”deliveryMode”&nbsp;value=”2”/&gt;<br><br>    &lt;/bean&gt;<br><br>    &lt;!–&nbsp;定义目标队列主题&nbsp;与类型&nbsp;：队列&nbsp;–&gt;<br><br>    &lt;bean&nbsp;id=”destination”&nbsp;class=”org.apache.activemq.command.ActiveMQQueue”&gt;<br><br>        &lt;constructor-arg&nbsp;index=”0”&nbsp;value=”MyQueue”&nbsp;/&gt;<br><br>    &lt;/bean&gt;<br><br>    <br><br>    &lt;!–&nbsp;消息消费者&nbsp;start&nbsp;–&gt;<br><br>    &lt;bean&nbsp;id=”queueReceiver1”&nbsp;class=”com.dtb.member.activemq.QueueReceiver1”/&gt;<br><br>    &lt;!–&nbsp;定义Queue监听器&nbsp;–&gt;<br><br>    &lt;bean&nbsp;id=”listenerContainer”&nbsp;class=”org.springframework.jms.listener.DefaultMessageListenerContainer”&gt;<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;property&nbsp;name=”connectionFactory”&nbsp;ref=”connectionFactory”&nbsp;/&gt;<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;property&nbsp;name=”messageListener”&nbsp;ref=”queueReceiver1”&nbsp;/&gt;<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;property&nbsp;name=”destination”&nbsp;ref=”destination”&nbsp;/&gt;<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;property&nbsp;name=”sessionTransacted”&nbsp;value=”true”&nbsp;/&gt;<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;property&nbsp;name=”transactionManager”&nbsp;ref=”jmsTransactionManager”&nbsp;/&gt;<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&lt;/bean&gt;<br><br>    &lt;!–&nbsp;定义Topic监听器&nbsp;–&gt;<br><br>    &lt;!–&nbsp;&lt;jms:listener-container&nbsp;destination-type=”topic”&nbsp;container-type=”default”&nbsp;<br><br>        connection-factory=”connectionFactory”&nbsp;acknowledge=”auto”&gt;&nbsp;&lt;jms:listener&nbsp;<br><br>        destination=”test.topic”&nbsp;ref=”topicReceiver1”/&gt;&nbsp;&lt;jms:listener&nbsp;destination=”test.topic”&nbsp;<br><br>        ref=”topicReceiver2”/&gt;&nbsp;&lt;/jms:listener-container&gt;&nbsp;–&gt;<br><br>    &lt;!–&nbsp;消息消费者&nbsp;end&nbsp;–&gt;<br><br><br><br><br><br>    &lt;!–&nbsp;事务配置&nbsp;–&gt;<br><br>    &lt;bean&nbsp;id=”jmsTransactionManager”&nbsp;&nbsp;&nbsp;class=”org.springframework.jms.connection.JmsTransactionManager”&gt;&nbsp;&nbsp;<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;property&nbsp;name=”connectionFactory”&nbsp;ref=”connectionFactory”&nbsp;/&gt;&nbsp;&nbsp;<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&lt;/bean&gt;&nbsp;&nbsp;<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&lt;tx:annotation-driven&nbsp;transaction-manager=”jmsTransactionManager”&nbsp;/&gt;&nbsp;&nbsp;<br><br>&lt;/beans&gt;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+</div>
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/08/08/activeMq-04/" rel="next" title="activeMq-04">
+                <i class="fa fa-chevron-left"></i> activeMq-04
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2099/09/07/download-file/" rel="prev" title="框架软件-下载页">
+                框架软件-下载页 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://bloodorange2017.github.io/images/img_head_001.jpg"
+               alt="XueCheng" />
+          <p class="site-author-name" itemprop="name">XueCheng</p>
+           
+              <p class="site-description motion-element" itemprop="description">Do one thing at a time, and do well.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">53</span>
+                <span class="site-state-item-name">Artikel</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">XueCheng</span>
+</div>
+
+
+<div class="powered-by">
+  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+<script type="text/javascript"
+color="160,160,233" opacity='0.4' zIndex="-2" count="16" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,663 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="1.为什么要用事务？&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;消息事务是在生产者producer到broker或broker到consumer过程中同一个session中发生的，保证几条消息在发送过程中的原子性。&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;可以在connection的createSession方法中指定一个布尔&amp;#20540;开启，如果消息确认机制是事务确认，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="activeMq-04">
+<meta property="og:url" content="https://bloodorange2017.github.io/archives/2017/08/08/activeMq-04/index.html">
+<meta property="og:site_name" content="XueCheng Notes">
+<meta property="og:description" content="1.为什么要用事务？&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;消息事务是在生产者producer到broker或broker到consumer过程中同一个session中发生的，保证几条消息在发送过程中的原子性。&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;可以在connection的createSession方法中指定一个布尔&amp;#20540;开启，如果消息确认机制是事务确认，">
+<meta property="og:updated_time" content="2017-08-08T06:33:12.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="activeMq-04">
+<meta name="twitter:description" content="1.为什么要用事务？&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;消息事务是在生产者producer到broker或broker到consumer过程中同一个session中发生的，保证几条消息在发送过程中的原子性。&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;可以在connection的createSession方法中指定一个布尔&amp;#20540;开启，如果消息确认机制是事务确认，">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://bloodorange2017.github.io/archives/2017/08/08/activeMq-04/"/>
+
+
+
+
+
+  <title>activeMq-04 | XueCheng Notes</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">XueCheng Notes</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Where there is a will, there is a way.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Startseite
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archiv
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/08/08/activeMq-04/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="XueCheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XueCheng Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">activeMq-04</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-08T14:32:03+08:00">
+                2017-08-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <div id="article_content" class="article_content tracking-ad" data-mod="popu_307" data-dsm="post"><br><br><h3><span style="font-family:Microsoft YaHei; font-size:14px">1.为什么要用事务？</span></h3><br><p></p><br><div><span style="font-family:Microsoft YaHei; font-size:14px">&nbsp; &nbsp; &nbsp; &nbsp;消息事务是在生产者producer到broker或broker到consumer过程中同一个session中发生的，保证几条消息在发送过程中的原子性。</span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px">&nbsp; &nbsp; &nbsp; &nbsp;可以在connection的createSession方法中指定一个布尔&#20540;开启，如果消息确认机制是事务确认，那么在发送message的过程中session就会开启事务（实际上broker的），不用用户显示调用 beginTransaction，这时所有通过session发送的消息都被缓存下来，用户调用session.commit时会发送所有消息，当发送出现异常时用户可以调用rollback进行回滚操作，只有在开启事务状态下有效。</span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px">&nbsp;</span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px"></span><br><p>为什么commit之后，不会有持久的消息重新传送呢?</p><br><p>&nbsp; &nbsp; &nbsp; &nbsp;原因在于commit操作会自动将为签收确认的消息进行签收确认，如果是当前接收但未签收确认的消息，都会被确认处理。因而在commit之后不会有持久化的消息出现。</p><br><br><br></div><br><h3><span style="font-family:Microsoft YaHei; font-size:14px">2.activeMQ支持的事务：</span></h3><br><div><span style="font-family:Microsoft YaHei; font-size:14px"></span><br><p style="font-family:verdana,arial,helvetica,sans-serif; margin-top:3px; line-height:24px"><br>ActiveMQ有支持两种事务，</p><br><ul style="font-family:verdana,arial,helvetica,sans-serif; margin-left:15px; margin-top:5px; margin-bottom:5px; line-height:24px"><br><li>JMS transactions - the commit() / rollback() methods on a Session (which is like doing commit() / rollback() on a JDBC connection)</li><li>XA Transactions - where the&nbsp;<a target="_blank" href="http://activemq.apache.org/maven/activemq-core/apidocs/org/apache/activemq/ActiveMQXASession.html" class="external-link" style="color:#880055">XASession</a>&nbsp;acts as an&nbsp;<a target="_blank" href="http://java.sun.com/j2ee/1.4/docs/api/javax/transaction/xa/XAResource.html" class="external-link" style="color:#880055">XAResource</a>&nbsp;by<br> communicating with the Message Broker, rather like a JDBC Connection takes place in an XA transaction by communicating with the database.</li></ul><br><p style="margin-top:10px; line-height:24px">在支持事务的session中，producer发送message时在message中带有transaction ID。broker收到message后判断是否有transaction ID，如果有就把message保存在transaction store中，等待commit或者rollback消息。所以<span style="line-height:1.5">ActiveMq的事务是针对broker而不是producer的，不管session是否commit，broker都会收到message。</span></p><br><p style="margin-top:10px; line-height:24px"><span style="line-height:1.5em">如果producer发送模式选择了persistent，那么message过期后会进入死亡队列。在message进入死亡队列之前，ActiveMQ会删除message中的transaction ID，这样过期的message就不在事务中了，不会保存在</span><span style="line-height:1.5em">transaction store中，会直接进入死亡队列。具体删除transaction<br> ID的地方是在：</span><span style="line-height:1.5em">org.apache.activemq.util.</span><span style="line-height:1.5em">BrokerSupport的doResend，将transaction ID保存在了originalTransactionID中，删除了transaction ID。</span></p><br><p style="margin-top:10px; line-height:24px"><span style="line-height:1.5em">&nbsp; &nbsp; &nbsp; &nbsp;在下面的介绍中我用的是<span style="font-family:verdana,arial,helvetica,sans-serif; font-size:14px">JMS transactions.</span></span></p><br><p style="margin-top:10px; line-height:24px"><span style="font-family:verdana,arial,helvetica,sans-serif; font-size:14px">JMS transactions事务的配置：</span><br><br></p><br><p style="margin-top:10px; line-height:24px"><span style="font-family:verdana,arial,helvetica,sans-serif; font-size:14px">&nbsp; &nbsp; &nbsp; ①建立JMS事务，并引入关联链接事务。</span></p><br><p style="margin-top:10px; line-height:24px">&nbsp; &nbsp; &nbsp; &nbsp;<span style="font-size:14px"> &nbsp;②.设置一个jmsTamplat，并关联监听容器。</span></p><br><p style="margin-top:10px; line-height:24px"><pre name="code" class="html">&lt;!– jms事务 –&gt;<br>    &lt;bean id=&quot;jmsTransactionManager&quot;<br>        class=&quot;org.springframework.jms.connection.JmsTransactionManager&quot;&gt;<br>        &lt;property name=&quot;connectionFactory&quot; ref=&quot;connectionFactory&quot; /&gt;<br>    &lt;/bean&gt;<br>    &lt;tx:annotation-driven transaction-manager=&quot;jmsTransactionManager&quot; /&gt;<br><br><br>&lt;!– 消息监听容器 消息接收监听器用于异步接收消息 –&gt;<br>    &lt;bean id=&quot;jmsContainerOne&quot; class=&quot;org.springframework.jms.listener.DefaultMessageListenerContainer&quot;&gt;<br>        &lt;property name=&quot;connectionFactory&quot; ref=&quot;connectionFactory&quot; /&gt;<br>        &lt;property name=&quot;destination&quot; ref=&quot;destinationOne&quot; /&gt;<br>        &lt;property name=&quot;messageListener&quot; ref=&quot;consumerMessageListenerOfOne&quot; /&gt;<br>        &lt;!– &lt;property name=&quot;sessionTransacted&quot; value=&quot;true&quot;/&gt; –&gt;  &lt;!– 给listener添加事务，只负责接收消息的回滚 （有了transactionManager就不用这个了，这个功能不全） 设置后好像并没有起作用 不知道为啥 –&gt;<br>        &lt;!– &lt;property name=&quot;transactionManager&quot; ref=&quot;jtaTransactionManager&quot;/&gt; –&gt; &lt;!– 接收消息和数据库访问处于同一事务中 jta –&gt;<br>        &lt;property name=&quot;transactionManager&quot; ref=&quot;jmsTransactionManager&quot; /&gt; &lt;!–jms事务 –&gt;<br>        &lt;property name=&quot;sessionAcknowledgeMode&quot; value=&quot;4&quot;&gt;&lt;/property&gt;   &lt;!– 应答模式是 INDIVIDUAL_ACKNOWLEDGE <a href="http://blog.csdn.net/yueding_h/article/details/54944254" target="_blank" rel="external">http://blog.csdn.net/yueding_h/article/details/54944254</a> –&gt;<br>        &lt;!– ActiveMQ:设置多个并行的消费者 –&gt;<br>        &lt;property name=&quot;concurrency&quot; value=&quot;2-3&quot; /&gt;<br>    &lt;/bean&gt;</pre><br><br></p><br></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px">上面配置文件配置完成后，在接收着那边接受消息失败后，进行事务回滚。</span><pre name="code" class="html">session.rollback();</pre></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px">&nbsp; &nbsp;具体实现：</span><pre name="code" class="html"> public void onMessage(Message message, Session session) {<br>          TextMessage textMsg = (TextMessage) message;<br>            try {<br>                    System.out.println(1);<br>                    String endStr = textMsg.getText();<br>                    Integer endInt = Integer.parseInt(endStr);<br>                    System.out.println(&quot;消息：===&quot;+endInt);<br>                    //只要被确认后   就会出队，接受失败没有确认成功，会在原队列里面<br>                        textMsg.acknowledge();<br><br>            } catch (Exception e) {<br>                try {<br>                    session.rollback();<br>                    System.out.println(&quot;测试回滚&quot;);<br>                                      e.printStackTrace();<br>                                 System.out.println(&quot;异常信息是：===：&quot; + e.getMessage());<br>                      }<br>        }<br><br></pre>&nbsp; 这就介绍完了。</div><br><div><span style="font-family:Microsoft YaHei; font-size:14px">&nbsp; 另外，activeMQ还有一种JtaTransactionManager 事务控制。</span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px">&nbsp;&nbsp;事务控制： （这里让接收消息和数据库访问处于同一事务中）我们就可以配置一个外部的事务管理同时配置一个支持外部事务管理的消息监听容器（如DefaultMessageListenerContainer）&nbsp;。要配置这样一个参与分布式事务管理的消息监听容器，我们可以配置一个JtaTransactionManager，当然底层的JMS ConnectionFactory需要能够支持分布式事务管理，&nbsp;并正确地注册我们的JtaTransactionManager。这样消息监听器进行消息接收和对应的数据库访问就会处于同一数据库控制下，当消息接收失败或数据库访问失败都会进行事务回滚操作。&nbsp;</span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px">&nbsp; &nbsp;这种事务控制，我在配置的时候，失败了，所以选用了JMS事务控制。<br><br>&nbsp; &nbsp;待我详细了解<span style="font-family:&quot;Microsoft YaHei&quot;; font-size:14px">JtaTransactionManager 后，再说吧。</span></span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px"><br><br></span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px"><br><br></span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px"><br><br></span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px"><br><br></span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px"><br><br></span></div><br><p></p><br><br></div>
+
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/08/02/truncation-03/" rel="next" title="转载:Atomikos事务框架">
+                <i class="fa fa-chevron-left"></i> 转载:Atomikos事务框架
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/08/activeMq-05/" rel="prev" title="ActiveMQ 整合Spring 事务配置">
+                ActiveMQ 整合Spring 事务配置 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Inhaltsverzeichnis
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Übersicht
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://bloodorange2017.github.io/images/img_head_001.jpg"
+               alt="XueCheng" />
+          <p class="site-author-name" itemprop="name">XueCheng</p>
+           
+              <p class="site-description motion-element" itemprop="description">Do one thing at a time, and do well.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">53</span>
+                <span class="site-state-item-name">Artikel</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text">1.为什么要用事务？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#undefined"><span class="nav-number">2.</span> <span class="nav-text">2.activeMQ支持的事务：</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">XueCheng</span>
+</div>
+
+
+<div class="powered-by">
+  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+<script type="text/javascript"
+color="160,160,233" opacity='0.4' zIndex="-2" count="16" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+</body>
+</html>
