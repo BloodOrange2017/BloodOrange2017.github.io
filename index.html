@@ -660,96 +660,11 @@
           
             <p></p><h3>配置文件</h3><br>                  <pre class="brush: java">&lt;?xml&nbsp;version=”1.0”&nbsp;encoding=”UTF-8”?&gt;<br><br>&lt;!–&nbsp;查找最新的schemaLocation&nbsp;访问&nbsp;<a href="http://www.springframework.org/schema/&nbsp;--&amp;gt" target="_blank" rel="external">http://www.springframework.org/schema/&nbsp;--&amp;gt</a>;<br><br>&lt;beans&nbsp;xmlns=”<a href="http://www.springframework.org/schema/beans" target="_blank" rel="external">http://www.springframework.org/schema/beans</a>“<br><br>    xmlns:xsi=”<a href="http://www.w3.org/2001/XMLSchema-instance&quot;&nbsp;xmlns:amq=&quot;http://activemq.apache.org/schema/core" target="_blank" rel="external">http://www.w3.org/2001/XMLSchema-instance&quot;&nbsp;xmlns:amq=&quot;http://activemq.apache.org/schema/core</a>“<br><br>    xmlns:jms=”<a href="http://www.springframework.org/schema/jms" target="_blank" rel="external">http://www.springframework.org/schema/jms</a>“<br><br>    xmlns:tx=”<a href="http://www.springframework.org/schema/tx" target="_blank" rel="external">http://www.springframework.org/schema/tx</a>“<br><br>    xsi:schemaLocation=”<a href="http://www.springframework.org/schema/beans&nbsp;&nbsp;&amp;nbsp" target="_blank" rel="external">http://www.springframework.org/schema/beans&nbsp;&nbsp;&amp;nbsp</a>;<br><br>        <a href="http://www.springframework.org/schema/beans/spring-beans-3.2.xsd" target="_blank" rel="external">http://www.springframework.org/schema/beans/spring-beans-3.2.xsd</a><br><br>        <a href="http://www.springframework.org/schema/jms" target="_blank" rel="external">http://www.springframework.org/schema/jms</a><br><br>        <a href="http://www.springframework.org/schema/jms/spring-jms-4.1.xsd" target="_blank" rel="external">http://www.springframework.org/schema/jms/spring-jms-4.1.xsd</a><br><br>        <a href="http://activemq.apache.org/schema/core" target="_blank" rel="external">http://activemq.apache.org/schema/core</a><br><br>        <a href="http://activemq.apache.org/schema/core/activemq-core-5.8.0.xsd" target="_blank" rel="external">http://activemq.apache.org/schema/core/activemq-core-5.8.0.xsd</a><br><br>        <a href="http://www.springframework.org/schema/tx&amp;nbsp" target="_blank" rel="external">http://www.springframework.org/schema/tx&amp;nbsp</a>;<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.springframework.org/schema/tx/spring-tx-4.1.xsd&quot;&amp;gt" target="_blank" rel="external">http://www.springframework.org/schema/tx/spring-tx-4.1.xsd&quot;&amp;gt</a>;<br><br><br><br>    &lt;!–&nbsp;ActiveMQ&nbsp;连接工厂&nbsp;–&gt;<br><br>    &lt;!–&nbsp;真正可以产生Connection的ConnectionFactory，由对应的&nbsp;JMS服务厂商提供&nbsp;–&gt;<br><br>    &lt;!–&nbsp;如果连接网络：tcp://ip:61616；未连接网络：tcp://localhost:61616&nbsp;以及用户名，密码&nbsp;–&gt;<br><br>    &lt;bean&nbsp;id=”targetConnectionFactory”&nbsp;class=”org.apache.activemq.ActiveMQConnectionFactory”&gt;<br><br>        &lt;property&nbsp;name=”brokerURL”&nbsp;value=”tcp://localhost:61616”&nbsp;/&gt;<br><br>    &lt;/bean&gt;<br><br>    &lt;!–&nbsp;Spring&nbsp;Caching连接工厂&nbsp;–&gt;<br><br>    &lt;!–&nbsp;Spring用于管理真正的ConnectionFactory的ConnectionFactory&nbsp;–&gt;<br><br>    &lt;bean&nbsp;id=”connectionFactory”&nbsp;class=”org.apache.activemq.pool.PooledConnectionFactory”&gt;<br><br>        &lt;!–&nbsp;目标ConnectionFactory对应真实的可以产生JMS&nbsp;Connection的ConnectionFactory&nbsp;–&gt;<br><br>        &lt;property&nbsp;name=”connectionFactory”&nbsp;ref=”targetConnectionFactory”&gt;&lt;/property&gt;<br><br>        &lt;!–&nbsp;线程池&nbsp;–&gt;<br><br>        &lt;property&nbsp;name=”maxConnections”&nbsp;value=”10”/&gt;<br><br>    &lt;/bean&gt;<br><br><br><br>    &lt;!–&nbsp;Spring&nbsp;JmsTemplate&nbsp;的消息生产者&nbsp;start&nbsp;–&gt;<br><br><br><br>    &lt;!–&nbsp;定义JmsTemplate的Queue类型&nbsp;–&gt;<br><br>    &lt;bean&nbsp;id=”jmsQueueTemplate”&nbsp;class=”org.springframework.jms.core.JmsTemplate”&gt;<br><br>        &lt;!–&nbsp;这个connectionFactory对应的是我们定义的Spring提供的那个ConnectionFactory对象&nbsp;–&gt;<br><br>        &lt;constructor-arg&nbsp;ref=”connectionFactory”&nbsp;/&gt;<br><br>        &lt;!–&nbsp;非pub/sub模型（发布/订阅），即队列模式&nbsp;–&gt;<br><br>        &lt;!–&nbsp;&lt;property&nbsp;name=”pubSubDomain”&nbsp;value=”false”&nbsp;/&gt;&nbsp;–&gt;<br><br>        &lt;property&nbsp;name=”defaultDestination”&nbsp;ref=”destination”/&gt;<br><br>        &lt;property&nbsp;name=”deliveryMode”&nbsp;value=”2”/&gt;<br><br>    &lt;/bean&gt;<br><br>    &lt;!–&nbsp;定义目标队列主题&nbsp;与类型&nbsp;：队列&nbsp;–&gt;<br><br>    &lt;bean&nbsp;id=”destination”&nbsp;class=”org.apache.activemq.command.ActiveMQQueue”&gt;<br><br>        &lt;constructor-arg&nbsp;index=”0”&nbsp;value=”MyQueue”&nbsp;/&gt;<br><br>    &lt;/bean&gt;<br><br>    <br><br>    &lt;!–&nbsp;消息消费者&nbsp;start&nbsp;–&gt;<br><br>    &lt;bean&nbsp;id=”queueReceiver1”&nbsp;class=”com.dtb.member.activemq.QueueReceiver1”/&gt;<br><br>    &lt;!–&nbsp;定义Queue监听器&nbsp;–&gt;<br><br>    &lt;bean&nbsp;id=”listenerContainer”&nbsp;class=”org.springframework.jms.listener.DefaultMessageListenerContainer”&gt;<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;property&nbsp;name=”connectionFactory”&nbsp;ref=”connectionFactory”&nbsp;/&gt;<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;property&nbsp;name=”messageListener”&nbsp;ref=”queueReceiver1”&nbsp;/&gt;<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;property&nbsp;name=”destination”&nbsp;ref=”destination”&nbsp;/&gt;<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;property&nbsp;name=”sessionTransacted”&nbsp;value=”true”&nbsp;/&gt;<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;property&nbsp;name=”transactionManager”&nbsp;ref=”jmsTransactionManager”&nbsp;/&gt;<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&lt;/bean&gt;<br><br>    &lt;!–&nbsp;定义Topic监听器&nbsp;–&gt;<br><br>    &lt;!–&nbsp;&lt;jms:listener-container&nbsp;destination-type=”topic”&nbsp;container-type=”default”&nbsp;<br><br>        connection-factory=”connectionFactory”&nbsp;acknowledge=”auto”&gt;&nbsp;&lt;jms:listener&nbsp;<br><br>        destination=”test.topic”&nbsp;ref=”topicReceiver1”/&gt;&nbsp;&lt;jms:listener&nbsp;destination=”test.topic”&nbsp;<br><br>        ref=”topicReceiver2”/&gt;&nbsp;&lt;/jms:listener-container&gt;&nbsp;–&gt;<br><br>    &lt;!–&nbsp;消息消费者&nbsp;end&nbsp;–&gt;<br><br><br><br><br><br>    &lt;!–&nbsp;事务配置&nbsp;–&gt;<br><br>    &lt;bean&nbsp;id=”jmsTransactionManager”&nbsp;&nbsp;&nbsp;class=”org.springframework.jms.connection.JmsTransactionManager”&gt;&nbsp;&nbsp;<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;property&nbsp;name=”connectionFactory”&nbsp;ref=”connectionFactory”&nbsp;/&gt;&nbsp;&nbsp;<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&lt;/bean&gt;&nbsp;&nbsp;<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&lt;tx:annotation-driven&nbsp;transaction-manager=”jmsTransactionManager”&nbsp;/&gt;&nbsp;&nbsp;<br><br>&lt;/beans&gt;&nbsp;&nbsp;&nbsp;&nbsp;</pre><p></p>
 <p></p><h3>发送方(生产者)</h3><p></p>
-<pre class="brush: java">package&nbsp;com.dtb.member.activemq;<br>
-<br>
-import&nbsp;java.util.HashMap;<br>
-import&nbsp;java.util.Map;<br>
-<br>
-import&nbsp;javax.jms.JMSException;<br>
-import&nbsp;javax.jms.Message;<br>
-import&nbsp;javax.jms.Session;<br>
-<br>
-import&nbsp;org.apache.activemq.command.ActiveMQTextMessage;<br>
-import&nbsp;org.springframework.beans.factory.annotation.Autowired;<br>
-import&nbsp;org.springframework.beans.factory.annotation.Qualifier;<br>
-import&nbsp;org.springframework.jms.core.JmsTemplate;<br>
-import&nbsp;org.springframework.jms.core.MessageCreator;<br>
-import&nbsp;org.springframework.stereotype.Component;<br>
-<br>
-/**<br>
-&nbsp;*&nbsp;ActiveMQ的消息队列模式&nbsp;Description:&nbsp;&lt;br/&gt;<br>
-&nbsp;*&nbsp;队列消息的生产者，发哦是哪个消息到队列<br>
-&nbsp;*&nbsp;<br>
-&nbsp;*&nbsp;@author&nbsp;xuecheng<br>
-&nbsp;*&nbsp;@date&nbsp;2016年4月25日&nbsp;上午10:20:20<br>
-&nbsp;**/<br>
-@Component("queueSender")<br>
-public&nbsp;class&nbsp;QueueSender1&nbsp;{<br>
-<br>
-    @Autowired<br>
-    @Qualifier("jmsQueueTemplate")<br>
-    private&nbsp;JmsTemplate&nbsp;jmsTemplate;<br>
-    /**<br>
-    &nbsp;*&nbsp;发送消息到指定的队列(目标)<br>
-    &nbsp;*&nbsp;@param&nbsp;queueName&nbsp;队列名称<br>
-    &nbsp;*&nbsp;@param&nbsp;message&nbsp;消息内容<br>
-    &nbsp;*/<br>
-    public&nbsp;void&nbsp;send(String&nbsp;queueName,&nbsp;final&nbsp;String&nbsp;message)&nbsp;{<br>
-        final&nbsp;Map&lt;String,Object&gt;&nbsp;params&nbsp;=&nbsp;new&nbsp;HashMap&lt;&gt;();//仅用于输出<br>
-        jmsTemplate.send(queueName,&nbsp;new&nbsp;MessageCreator()&nbsp;{<br>
-            @Override<br>
-            public&nbsp;Message&nbsp;createMessage(Session&nbsp;session)&nbsp;throws&nbsp;JMSException&nbsp;{<br>
-                ActiveMQTextMessage&nbsp;createTextMessage&nbsp;=&nbsp;null;<br>
-                try&nbsp;{<br>
-                    createTextMessage&nbsp;=&nbsp;(ActiveMQTextMessage)&nbsp;session.createTextMessage(message);<br>
-                    createTextMessage.setResponseRequired(true);<br>
-                    int&nbsp;ret&nbsp;=&nbsp;session.getAcknowledgeMode();<br>
-                    System.out.println("此次操作插入queue条数:"+ret);<br>
-                    params.put("createTextMessage",createTextMessage);<br>
-                }&nbsp;catch&nbsp;(Exception&nbsp;e)&nbsp;{<br>
-                    e.printStackTrace();<br>
-                }<br>
-                return&nbsp;createTextMessage;<br>
-            }<br>
-        });<br>
-        System.out.println("强行将成功生成的Message进行输出:"+params.get("createTextMessage"));<br>
-    }<br>
-}<br>
-</pre>
-<h3>接收方(消费者)</h3>
-<pre class="brush: java">package&nbsp;com.dtb.member.activemq;<br>
-<br>
-import&nbsp;javax.jms.JMSException;<br>
-import&nbsp;javax.jms.Session;<br>
-<br>
-import&nbsp;org.apache.activemq.command.ActiveMQTextMessage;<br>
-import&nbsp;org.springframework.jms.listener.SessionAwareMessageListener;<br>
-import&nbsp;org.springframework.stereotype.Component;<br>
-<br>
-/**<br>
-&nbsp;*&nbsp;Description:&nbsp;&lt;br/&gt;<br>
-&nbsp;*&nbsp;消息队列监听器<br>
-&nbsp;*&nbsp;<br>
-&nbsp;*&nbsp;@author&nbsp;xuecheng<br>
-&nbsp;*&nbsp;@date&nbsp;2016年4月25日&nbsp;上午10:32:14<br>
-&nbsp;**/<br>
-@Component("queueReceiver1")<br>
-public&nbsp;class&nbsp;QueueReceiver1&nbsp;implements&nbsp;SessionAwareMessageListener&lt;ActiveMQTextMessage&gt;{<br>
-<br>
-    @Override<br>
-    public&nbsp;void&nbsp;onMessage(ActiveMQTextMessage&nbsp;message,&nbsp;Session&nbsp;session)&nbsp;throws&nbsp;JMSException&nbsp;{<br>
-        try&nbsp;{<br>
-            System.out.println("QueueReceiver1接收到消息："&nbsp;+&nbsp;message.getText());<br>
-            //throw&nbsp;new&nbsp;Exception();//回滚测试<br>
-        }&nbsp;catch&nbsp;(Exception&nbsp;e)&nbsp;{<br>
-            session.rollback();<br>
-            e.printStackTrace();<br>
-        }<br>
-        session.commit();<br>
-    }<br>
-<br>
-}<br>
-</pre>
+<p><pre class="brush: java">package&nbsp;com.dtb.member.activemq;<br><br><br><br>import&nbsp;java.util.HashMap;<br><br>import&nbsp;java.util.Map;<br><br><br><br>import&nbsp;javax.jms.JMSException;<br><br>import&nbsp;javax.jms.Message;<br><br>import&nbsp;javax.jms.Session;<br><br><br><br>import&nbsp;org.apache.activemq.command.ActiveMQTextMessage;<br><br>import&nbsp;org.springframework.beans.factory.annotation.Autowired;<br><br>import&nbsp;org.springframework.beans.factory.annotation.Qualifier;<br><br>import&nbsp;org.springframework.jms.core.JmsTemplate;<br><br>import&nbsp;org.springframework.jms.core.MessageCreator;<br><br>import&nbsp;org.springframework.stereotype.Component;<br><br><br><br>/<strong><br><br>&nbsp;<em>&nbsp;ActiveMQ的消息队列模式&nbsp;Description:&nbsp;&lt;br/&gt;<br><br>&nbsp;</em>&nbsp;队列消息的生产者，发哦是哪个消息到队列<br><br>&nbsp;<em>&nbsp;<br><br>&nbsp;</em>&nbsp;@author&nbsp;xuecheng<br><br>&nbsp;*&nbsp;@date&nbsp;2016年4月25日&nbsp;上午10:20:20<br><br>&nbsp;</strong>/<br><br>@Component(“queueSender”)<br><br>public&nbsp;class&nbsp;QueueSender1&nbsp;{<br><br><br><br>    @Autowired<br><br>    @Qualifier(“jmsQueueTemplate”)<br><br>    private&nbsp;JmsTemplate&nbsp;jmsTemplate;<br><br>    /<em>*<br><br>    &nbsp;</em>&nbsp;发送消息到指定的队列(目标)<br><br>    &nbsp;<em>&nbsp;@param&nbsp;queueName&nbsp;队列名称<br><br>    &nbsp;</em>&nbsp;@param&nbsp;message&nbsp;消息内容<br><br>    &nbsp;*/<br><br>    public&nbsp;void&nbsp;send(String&nbsp;queueName,&nbsp;final&nbsp;String&nbsp;message)&nbsp;{<br><br>        final&nbsp;Map&lt;String,Object&gt;&nbsp;params&nbsp;=&nbsp;new&nbsp;HashMap&lt;&gt;();//仅用于输出<br><br>        jmsTemplate.send(queueName,&nbsp;new&nbsp;MessageCreator()&nbsp;{<br><br>            @Override<br><br>            public&nbsp;Message&nbsp;createMessage(Session&nbsp;session)&nbsp;throws&nbsp;JMSException&nbsp;{<br><br>                ActiveMQTextMessage&nbsp;createTextMessage&nbsp;=&nbsp;null;<br><br>                try&nbsp;{<br><br>                    createTextMessage&nbsp;=&nbsp;(ActiveMQTextMessage)&nbsp;session.createTextMessage(message);<br><br>                    createTextMessage.setResponseRequired(true);<br><br>                    int&nbsp;ret&nbsp;=&nbsp;session.getAcknowledgeMode();<br><br>                    System.out.println(“此次操作插入queue条数:”+ret);<br><br>                    params.put(“createTextMessage”,createTextMessage);<br><br>                }&nbsp;catch&nbsp;(Exception&nbsp;e)&nbsp;{<br><br>                    e.printStackTrace();<br><br>                }<br><br>                return&nbsp;createTextMessage;<br><br>            }<br><br>        });<br><br>        System.out.println(“强行将成功生成的Message进行输出:”+params.get(“createTextMessage”));<br><br>    }<br><br>}<br><br></pre></p>
+<p></p><h3>接收方(消费者)</h3><p></p>
+<p><pre class="brush: java">package&nbsp;com.dtb.member.activemq;<br><br><br><br>import&nbsp;javax.jms.JMSException;<br><br>import&nbsp;javax.jms.Session;<br><br><br><br>import&nbsp;org.apache.activemq.command.ActiveMQTextMessage;<br><br>import&nbsp;org.springframework.jms.listener.SessionAwareMessageListener;<br><br>import&nbsp;org.springframework.stereotype.Component;<br><br><br><br>/<strong><br><br>&nbsp;<em>&nbsp;Description:&nbsp;&lt;br/&gt;<br><br>&nbsp;</em>&nbsp;消息队列监听器<br><br>&nbsp;<em>&nbsp;<br><br>&nbsp;</em>&nbsp;@author&nbsp;xuecheng<br><br>&nbsp;*&nbsp;@date&nbsp;2016年4月25日&nbsp;上午10:32:14<br><br>&nbsp;</strong>/<br><br>@Component(“queueReceiver1”)<br><br>public&nbsp;class&nbsp;QueueReceiver1&nbsp;implements&nbsp;SessionAwareMessageListener&lt;ActiveMQTextMessage&gt;{<br><br><br><br>    @Override<br><br>    public&nbsp;void&nbsp;onMessage(ActiveMQTextMessage&nbsp;message,&nbsp;Session&nbsp;session)&nbsp;throws&nbsp;JMSException&nbsp;{<br><br>        try&nbsp;{<br><br>            System.out.println(“QueueReceiver1接收到消息：”&nbsp;+&nbsp;message.getText());<br><br>            //throw&nbsp;new&nbsp;Exception();//回滚测试<br><br>        }&nbsp;catch&nbsp;(Exception&nbsp;e)&nbsp;{<br><br>            session.rollback();<br><br>            e.printStackTrace();<br><br>        }<br><br>        session.commit();<br><br>    }<br><br><br><br>}<br><br></pre></p>
+<p></p><h3>ActiveMQ依赖</h3><br> <pre class="brush: java">&lt;!–ActiveMQ依赖&nbsp;–&gt;<br><br>        &lt;dependency&gt;<br><br>            &lt;groupId&gt;org.apache.activemq&lt;/groupId&gt;<br><br>            &lt;artifactId&gt;activemq-all&lt;/artifactId&gt;<br><br>            &lt;version&gt;5.14.3&lt;/version&gt;<br><br>        &lt;/dependency&gt;<br><br>        &lt;!–&nbsp;Spring整合ActiveMQ所需依赖&nbsp;–&gt;<br><br>        &lt;dependency&gt;<br><br>            &lt;groupId&gt;org.springframework&lt;/groupId&gt;<br><br>            &lt;artifactId&gt;spring-jms&lt;/artifactId&gt;<br><br>            &lt;version&gt;4.1.4.RELEASE&lt;/version&gt;<br><br>        &lt;/dependency&gt;<br><br>        &lt;dependency&gt;<br><br>            &lt;groupId&gt;org.springframework&lt;/groupId&gt;<br><br>            &lt;artifactId&gt;spring-messaging&lt;/artifactId&gt;<br><br>            &lt;version&gt;4.1.4.RELEASE&lt;/version&gt;<br><br>        &lt;/dependency&gt;</pre><p></p>
+<p></p><h3>事务所需jar</h3><br><a href="https://bloodorange2017.github.io//software/activeMQ事务jar.zip">点击下载</a><p></p>
 
           
         
