@@ -200,7 +200,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
-            Startseite
+            Home
           </a>
         </li>
       
@@ -210,7 +210,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
-            Archiv
+            Archives
           </a>
         </li>
       
@@ -282,7 +282,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2099-09-09T12:00:00+08:00">
                 2099-09-09
@@ -395,7 +395,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2099-09-08T15:56:57+08:00">
                 2099-09-08
@@ -507,7 +507,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2099-09-07T11:45:53+08:00">
                 2099-09-07
@@ -619,7 +619,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-09T11:19:51+08:00">
                 2017-08-09
@@ -732,7 +732,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-08T17:18:00+08:00">
                 2017-08-08
@@ -778,7 +778,7 @@
 <p></p><h3>接收方(消费者)</h3><p></p>
 <p><pre class="brush: java">package&nbsp;com.dtb.member.activemq;<br><br><br><br>import&nbsp;javax.jms.JMSException;<br><br>import&nbsp;javax.jms.Session;<br><br><br><br>import&nbsp;org.apache.activemq.command.ActiveMQTextMessage;<br><br>import&nbsp;org.springframework.jms.listener.SessionAwareMessageListener;<br><br>import&nbsp;org.springframework.stereotype.Component;<br><br><br><br>/<strong><br><br>&nbsp;<em>&nbsp;Description:&nbsp;&lt;br/&gt;<br><br>&nbsp;</em>&nbsp;消息队列监听器<br><br>&nbsp;<em>&nbsp;<br><br>&nbsp;</em>&nbsp;@author&nbsp;xuecheng<br><br>&nbsp;*&nbsp;@date&nbsp;2016年4月25日&nbsp;上午10:32:14<br><br>&nbsp;</strong>/<br><br>@Component(“queueReceiver1”)<br><br>public&nbsp;class&nbsp;QueueReceiver1&nbsp;implements&nbsp;SessionAwareMessageListener&lt;ActiveMQTextMessage&gt;{<br><br><br><br>    @Override<br><br>    public&nbsp;void&nbsp;onMessage(ActiveMQTextMessage&nbsp;message,&nbsp;Session&nbsp;session)&nbsp;throws&nbsp;JMSException&nbsp;{<br><br>        try&nbsp;{<br><br>            System.out.println(“QueueReceiver1接收到消息：”&nbsp;+&nbsp;message.getText());<br><br>            //throw&nbsp;new&nbsp;Exception();//回滚测试<br><br>        }&nbsp;catch&nbsp;(Exception&nbsp;e)&nbsp;{<br><br>            session.rollback();<br><br>            e.printStackTrace();<br><br>        }<br><br>        session.commit();<br><br>    }<br><br><br><br>}<br><br></pre></p>
 <p></p><h3>ActiveMQ依赖</h3><br> <pre class="brush: java">&lt;!–ActiveMQ依赖&nbsp;–&gt;<br><br>        &lt;dependency&gt;<br><br>            &lt;groupId&gt;org.apache.activemq&lt;/groupId&gt;<br><br>            &lt;artifactId&gt;activemq-all&lt;/artifactId&gt;<br><br>            &lt;version&gt;5.14.3&lt;/version&gt;<br><br>        &lt;/dependency&gt;<br><br>        &lt;!–&nbsp;Spring整合ActiveMQ所需依赖&nbsp;–&gt;<br><br>        &lt;dependency&gt;<br><br>            &lt;groupId&gt;org.springframework&lt;/groupId&gt;<br><br>            &lt;artifactId&gt;spring-jms&lt;/artifactId&gt;<br><br>            &lt;version&gt;4.1.4.RELEASE&lt;/version&gt;<br><br>        &lt;/dependency&gt;<br><br>        &lt;dependency&gt;<br><br>            &lt;groupId&gt;org.springframework&lt;/groupId&gt;<br><br>            &lt;artifactId&gt;spring-messaging&lt;/artifactId&gt;<br><br>            &lt;version&gt;4.1.4.RELEASE&lt;/version&gt;<br><br>        &lt;/dependency&gt;</pre><p></p>
-<p></p><h3>事务所需jar</h3><br><a href="https://bloodorange2017.github.io//software/activeMQ事务jar.zip">点击下载</a><p></p>
+<p></p><h3>事务所需jar</h3><br><a href="https://bloodorange2017.github.io//software/activeMQ事务jar.zip">Jar下载</a><br><a href="https://bloodorange2017.github.io//software/ActiveMQ代码.zip">测试代码下载</a><p></p>
 
           
         
@@ -851,7 +851,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-08T14:32:03+08:00">
                 2017-08-08
@@ -964,7 +964,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-02T09:49:47+08:00">
                 2017-08-02
@@ -1088,7 +1088,7 @@
             <div class="site-state-item site-state-posts">
               <a href="/archives">
                 <span class="site-state-item-count">54</span>
-                <span class="site-state-item-name">Artikel</span>
+                <span class="site-state-item-name">posts</span>
               </a>
             </div>
           
@@ -1142,7 +1142,7 @@
 
 
 <div class="powered-by">
-  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
 </div>
 
 <div class="theme-info">
