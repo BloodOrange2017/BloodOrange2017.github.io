@@ -253,6 +253,120 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/05/09/innoDB-01/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="XueCheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XueCheng Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/05/09/innoDB-01/" itemprop="url">转载:Mysql技术内幕InnoDB存储引擎——InnoDB存储引擎</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-09T15:51:17+08:00">
+                2017-05-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <div id="article_content" class="article_content"><br>    <h1>一．mysql体系结构和存储引擎</h1><br>    <h2>1.1、数据库和实例的区别</h2><br>    <p></p><br>    <p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>数据库：物理操作系统或其他形式文件类型的集合。在mysql下数据库文件可以是frm，myd，myi，ibd结尾的文件。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 数据库实例：由数据库后台进程/线程以及一个共享内存区组成。数据库实例才是真正用来操作数据库文件的。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mysql数据库是单进程多线程的程序，与sql server比较类&#20284;。也就是说，Mysql数据库实例在系统上的表现就是一个进程。</p><br>    <h2>1.2、mysql的体系结构</h2><br>    <p style="text-align:center"><strong><img src="http://img.my.csdn.net/uploads/201212/07/1354848770_3087.jpg" alt=""><br><br>    </strong></p><br>    <p></p><br>    <p>mysql由连接池组件、管理服务和工具组件、sql接口组建、查询分析器组件、优化器组件、缓存组件、插件是存储引擎、物理文件。</p><br>    <h2>1.3、mysql存储引擎</h2><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.3.1、innodb存储引擎，特点支持外键、行锁、非锁定读(默认情况下读取不会产生锁)、mysql-4.1开始支持每个innodb引擎的表单独放到一个表空间里。innodb通过使用MVCC来获取高并发性，并且实现sql标准的4种隔离级别，同时使用一种被称成next-key locking的策略来避免换读(phantom)现象。除此之外innodb引擎还提供了插入缓存(insert buffer)、二次写(double write)、自适应哈西索引(adaptive hash index)、预读(read<br>    ahead)等高性能技术。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.3.2、myisam存储引擎，myisam特点是不支持事物，适合olap应用，myisam表由MYD和MYI组成。mysql-5.0版本之前，myisam默认支持的表大小为4G，从mysql-5.0以后，myisam默认支持256T的表单数据。myisam只缓存索引数据。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.3.3、NDB存储引擎，特点是数据放在内存中，mysql-5.1版本开始可以将非索引数据放到磁盘上。NDB之前的缺陷是join查询是mysql数据库层完成的，而不是存储引擎完成的，复杂的join查询需要巨大的网络开销，速度很慢。当前mysql cluster7.2版本中已经解决此问题，join查询效率提高了70倍。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.3.4、memeory存储引擎，将数据放到内存中，默认使用hash索引，不支持text和blob类型，varchara是按照char的方式来存储的。mysql数据库使用memory存储引擎作为临时表还存储中间结果集(intermediate result)，如果中间集结果大于memorg表的容量设置，又或者中间结果集包含text和blog列类型字段，则mysql会把他们转换到myisam存储引擎表而放到磁盘上，会对查询产生性能影响。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.3.5、archive存储引擎，压缩能力较强，主要用于归档存储。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.3.6、federated存储引擎，不存储数据，他指向一台远程mysql数据库上的表。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.3.7、maria存储引擎，myisam的后续版本,支持缓存数据和索引，行锁设计，支持mvcc，支持事务和非事务安全的选项，以及更好的BLOG字符类型的处理性能。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.3.8、其他存储引擎，sphinx用于全文索引，infobright用于数据仓库。</p><br>    <h2>1.4连接Mysql</h2><br>    <p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>1.4.1、TCP/IP：基于网络的连接，连接进行权限检查。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.4.2、命名管道和共享内存：Windows系统上同一服务器上的两进程可通过命名管道连接，需在配置文件中启用–enable-named-pipe选项。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.4.3、Unix套接字：客户端与服务端位于同一服务器时才可使用，可以在my.cnf中指定-socket=/tmp/mysql.sock，连接时指定./mysql -S/tmp/mysql.sock。</p><br>    <h1>二．InnoDB存储引擎</h1><br>    <h2>2.2、innodb引擎架构</h2><br>    <p>&nbsp; &nbsp; &nbsp; &nbsp;InnoDB的多个内存块组成了内存池，负责如下工作：</p><br>    <p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>1)<strong>.</strong>维护所有进程/线程需要访问的多个内部数据结构。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2).缓存磁盘上的数据，方便快速的读取，并且在对磁盘文件的数据进行修改之前在这里缓存。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3).重做日志缓存。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 后台线程的主要作用是负责刷新内存池中的数据，保证缓冲池中的内存缓存是最近的数据，此外、将已经修改的数据文件刷新到磁盘文件</p><br>    <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.2.1、后台线程</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; innodb存储引擎后台有7个线程，—–4个IO线程(insert buffer thread,log thread,read thread,write thread)，1个master thread，一个lock监控线程，一个错误监控线程。</p><br>    <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.2.2、内存</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; innodb存储引擎内存由以下三个部分组成：缓冲池(buffer pool),重做日志缓存(redo log buffer),额外的内存池(additional memory pool)。可以使用 show engine innodb status来查看innodb_buffer_pool的使用情况。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; innodb_buffer_pool_size：具体看，缓冲池中的数据库类型有：索引页、数据库页、undo页、插入缓存页(insert buffer)、自适应hash(adaptive hashindex)、innodb存储的锁信息(lock info)、数据字典信息(data dictionary)。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; InnoDB工作方式：将数据文件按页(每页16K)读入InnoDBbuffer pool，然后按最近最少使用算法(LRU)保留缓存数据，最后通过一定频率将脏页刷新到文件。</p><br>    <p style="text-align:center"><img src="http://img.my.csdn.net/uploads/201212/07/1354848800_2688.jpg" alt=""><br><br>    </p><br>    <p></p><br>    <h2>2.3、master thread</h2><br>    <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.3.1、master thread源码分析</h3><br>    <p style="text-align:center"><img src="http://img.my.csdn.net/uploads/201212/07/1354848808_4628.jpg" alt=""><br><br>    </p><br>    <p></p><br>    <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.3.2、master thread的潜在问题</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1、由于硬件的发展，现在的硬件性能已经提高了很多，如果innodb每秒最大刷新100个脏页，那么效率会很低，为了解决这个问题，innodb plugin提供了一个参数innodb_io_capacity，用来表示磁盘IO的吞吐量，默认&#20540;是200，规则如下：在合并插入缓存时，合并插入缓存的数量为innodb_io_capacity的5%；在从缓冲区刷新脏页时，啥新脏页的数量为innodb_io_capacity。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2、关于innodb_max_dirty_pages_pct&#20540;的争议，如果&#20540;过大，内存也很大或者服务器压力很大，那么效率很降低，如果设置的&#20540;过小，那么硬盘的压力会增加，建议是在75-80.并且innodb plugin引进了innodb_adaptive_flushng(自适应的刷新)，该&#20540;影响每秒刷新脏页的数量。</p><br>    <h2>2.4、关键特性,为innodb提高性能的技术</h2><br>    <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.4.1、插入缓存</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 当一个表有非聚集索引时，对于非聚集索引的叶子节点的插入不是顺序的，这时候需要离散的访问非聚集索引页，性能就在这里降低了，这是由于b&#43;树的原理导致的。插入缓存就是用来解决这个问题的。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 对于非聚集索引的插入和更新操作，不是每一次都直接插入索引页，而是先判断插入的非聚集索引页是否在缓存中，如果在就直接插入，如果不在就放入到一个插入缓冲区中，好&#20284;欺骗数据库这个非聚集索引已经插入到叶子节点了。然后再以一定的频率插入缓存和非聚集索引页字节点的合并操作。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 插入缓存的使用需要满足以下两个条件(也就是非唯一的辅助索引)：索引是辅助索引；索引不是唯一的。</p><br>    <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.4.2、两次写</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 两次写给innodb带来的是可靠性，主要用来解决部分写失败(partial page write)。在应用重做日之前，我们需要一个页的副本，当写入失效发生时，先通过页的副本来还原该页，再进行重做，这就是doublewrite。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; doublewrite有两部分组成，一部分是内存中的doublewrite buffer，大小为2M，另外一部分就是物理磁盘上的共享表空间中联系的128个页，即两个区，大小同样为2M。当缓冲池的张也刷新时，并不直接写硬盘，而是回通过memcpy函数将脏页先拷贝到内存中的doublewrite buffer，之后通过doublewrite buffer再分两次写，每次写入1M到共享表空间的物理磁盘上，然后马上调用fsync函数，同步磁盘。</p><br>    <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.4.3、自适应哈西索引</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 由于innodb不支持hash索引，但是在某些情况下hash索引的效率很高，于是出现了 adaptive hash index功能，innodb存储引擎会监控对表上索引的查找，如果观察到建立hash索引可以提高性能的时候，则自动建立hash索引。</p><br>    <h2>2.5、启动、关闭、恢复</h2><br>    <p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>innodb_fast_shutdown影响InnoDB表关闭。该参数有0、1、2三个参数。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0 MySQL关闭时&nbsp; 完成所有的full purge和merge insertbuffer操作</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1默认&#20540; 只将缓冲池内的一些脏页刷新至磁盘</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2将日志都写入日志文件不会有任何事务丢失但下次启动时会进行recovery</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; innodb_force_recovery影响整个innodb存储引擎的恢复状况，该&#20540;默认为0，表示当需要恢复时，需要执行所有的恢复操作，当不能进行有效恢复时，如数据页发生了corruption，mysql数据库可能宕机，并把错误写入错误日志中。</p><br>    <h1>三．文件</h1><br>    <h2>3.1参数文件</h2><br>    <p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mysql实例可以不需要参数文件，这是所有的参数&#20540;取决于编译Mysql时指定的默认&#20540;和源代码中指定参数的默认&#20540;。其参数文件是Mysql.cnf。</strong></p><br>    <h3>3.1.1、什么是参数</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 参数是一个键/&#20540;对。可以使用show variables like命令查看，也可以通过information_schema的GLOBAL_VARIABLES视图来查找。</p><br>    <h3>3.1.2、参数类型</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 参数文件分为两类：动态参数和静态参数。动态参数意味着你可以在Mysql实例运行中进行更改；静态参数说明在整个实例生命周期内都不得进行更改，好像是只读的。对于动态参数，又可以分为global和session关键字，表明该参数的修改是基于当前会话还是真&#26684;实例的生命周期。有些动态参数只能在会话中进行修改，如autocommit；有些参数修改完后，在整个实例生命周期中都会生效，如binlog_cache_size；而有些参数既可以在会话又可以在整个实例的生命周期内生效，如read_buffer_size。</p><br>    <h2>3.2、日志文件</h2><br>    <h3>3.2.1、错误日志</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 错误日志对Mysql的启动、运行、关闭过程进行了记录。出现Mysql不能正常启动时，第一个必须查找的文件应该就是错误日志文件。使用show variables like ‘log_error’来定位文件。</p><br>    <h3>3.2.2、慢查询日志</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 慢查询能为SQL语句的优化带来很好的帮助。设定一个阀&#20540;，将运行时间超过该&#20540;的所有SQL语句都记录到慢查询日志文件中。用参数long_query_time来设置。另一个参数log_queries_not_using_indexes，若运行的SQL语句没有使用索引，则这条SQL语句会被记录下来。</p><br>    <h3>3.2.3、查询日志</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 查询日志记录了所有对Mysql请求的信息，不论这些请求是否得到正确的执行。默认文件名为：主机名.log。</p><br>    <h3>3.2.4、二进制日志</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 二进制记录了对数据库执行更改的所有操作，但是不包括SELECT和SHOW操作，还包括了执行时间和更改操作时间。可用来恢复某些数据，同时也可以用来复制同步远程数据库。将binlog_format设置成row，可以支持事务隔离级别为READ COMMITTED，以获得更好的并发性。在使用MIXED&#26684;式下，mysql采用STATEMENT&#26684;式进行二进制日志文件的记录，但是有一些情况下会使用ROW&#26684;式，可能的情况如下：</p><br>    <p>1、表的存储引擎为NDB，这个时候DML操作都会以ROW&#26684;式记录。</p><br>    <p>2、使用了uuid()、user(),current_user(),found_rows(),row_count(),等不确定函数。</p><br>    <p>3、使用了insert delay语句</p><br>    <p>4、使用了用户定于的函数(UDF)</p><br>    <p>5、使用了临时表(temporary table)</p><br>    <p>注意：针对系统库mysql里面的表发生变化的处理规则如下：</p><br>    <p>1、 如果采用insert，update，delete直接操作表，则日志根据binlog_format设定的&#26684;式记录。</p><br>    <p>2、 如果使用grant，revoke，set password等DCL语句，那么无论如何都会使用SBR模式记录。</p><br>    <p>3、 blockhole引擎不支持row&#26684;式，ndb引擎不支持statement&#26684;式。</p><br>    <h2>3.3、套件字文件</h2><br>    <p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>&nbsp;Unix系统下本地连接Mysql可以采用Unix套接字方法，需要一个套接字文件，可以使用show variableslike ‘socket’查询。</p><br>    <h2>3.4、pid文件和表结构定义文件</h2><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pid文件是实例启动是记录自己进程ID号的文件，表结构定义文件是以frm为后缀名的文件，还可以用来存放视图的定义。</p><br>    <h3>3.5、innodb引擎文件</h3><br>    <h3>3.5.1、表空间文件</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 默认表空间文件为ibdata1文件innodb_data_file_path存储数据，innodb_file_per_table可以按表分别产生一个表空间.db文件，但仅存该表的数据索引和插入缓冲等信息，其他信息如undo信息，系统事务信息，double write buffer等还是存放在默认表空间(ibdata1或表空间组)里。</p><br>    <h3>3.5.2、重做日志文件</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; redo log是在实例或者介质失败的时候，用来保证数据完整性。每个innodb存储引擎至少有一个重做日志组,每个重做日志文件组下至少又2个重做日志文件，如默认的ib_logfile0、ib_logfile1.为了得到更高的可靠性，你可以设置多个重做镜像日志组。</p><br>    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 因为重做日志条目先被写到日志缓冲中，然后根据一定条件刷新到磁盘重做日志文件中。与redo log相关的就是innodb_flush_log_at_trx_commit的&#20540;，对innodb的性能影响很大。他有0，1，2三个&#20540;，0代表提交事务时，并不同步写redo log，而是等master threas每秒写。1代表commit的时候就将redo log缓存写入磁盘，2代表commit的时候将redo log缓存异步的写入磁盘。<br>    <p></p><br><br>    </div> 
+
+
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/05/09/Mysql-db-02/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1103,119 +1217,6 @@ for (int i = 0; i &amp;lt; this.segments.length; ++i)
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/05/07/Mysql-db-01/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="XueCheng">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="XueCheng Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/05/07/Mysql-db-01/" itemprop="url">转载:MySQL中的存储引擎讲解（InnoDB,MyISAM,Memory等各存储引擎对比）</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Veröffentlicht am</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-07T17:17:06+08:00">
-                2017-05-07
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <div id="article_content" class="article_content"><br><br><p><span style="font-size:18px; color:#009900"><strong>MySQL中的存储引擎：</strong></span></p><br><p><span style="color:rgb(0,153,0)"><span style="font-size:14px">1、存储引擎的概念</span></span></p><br><p><span style="color:rgb(0,153,0)"><span style="font-size:14px">2、查看MySQL所支持的存储引擎</span></span></p><br><p><span style="color:rgb(0,153,0)"><span style="font-size:14px">3、MySQL中几种常用存储引擎的特点</span></span></p><br><p><span style="color:rgb(0,153,0)"><span style="font-size:14px">4、存储引擎之间的相互转化</span></span></p><br><p><span style="font-size:18px"><strong><span style="color:#ff6600">一、存储引擎</span></strong></span></p><br><p><span style="font-size:14px; color:#009900">1、存储引擎其实就是如何实现存储数据，如何为存储的数据建立索引以及如何更新，查询数据等技术实现的方法。</span></p><br><p><span style="font-size:14px; color:#009900">2、MySQL中的数据用各种不同的技术存储在文件（或内存）中，这些技术中的每一种技术都使用不同的存储机制，索引技巧，锁定水平并且最终提供广泛的不同功能和能力。在MySQL中将这些不同的技术及配套的相关功能称为存储引擎。</span></p><br><p><span style="font-size:18px"><span style="color:#ff6600"><strong>二、MySQL 中查看引擎</strong></span></span></p><br><p><span style="color:rgb(0,153,0)"><span style="font-size:14px">1、show&nbsp; engines;&nbsp;&nbsp; // 查看mysql所支持的存储引擎，以及从中得到mysql默认的存储引擎。</span></span></p><br><p><span style="color:rgb(0,153,0)"><span style="font-size:14px">2、show&nbsp; variables&nbsp; like ‘% storage_engine’;&nbsp;&nbsp;&nbsp; //&nbsp;&nbsp;&nbsp;&nbsp;查看mysql&nbsp;默认的存储引擎</span></span></p><br><p><img src="http://img.blog.csdn.net/20150106223151155?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvUUhfSkFWQQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="" height="135" width="570"><br><br></p><br><p><span style="font-size:18px; color:#009900">3、show&nbsp;&nbsp;create&nbsp;&nbsp; table&nbsp; tablename ;&nbsp;&nbsp; //&nbsp;&nbsp;&nbsp;&nbsp;查看具体某一个表所使用的存储引擎，这个默认存储引擎<span style="font-size:18px; color:#009900">被修改了！</span><br><br></span></p><br><p><span style="font-size:18px; color:#009900"><img src="http://img.blog.csdn.net/20150106222921332?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvUUhfSkFWQQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="" height="291" width="646"></span></p><br><p><br><br></p><br><p><span style="font-size:18px; color:#009900">4、show&nbsp; table&nbsp;&nbsp; status&nbsp; from&nbsp; database&nbsp; where&nbsp; name=&quot;tablename&quot;</span></p><br><p><span style="font-size:18px; color:#009900">//准确查看某个数据库中的某一表所使用的存储引擎</span></p><br><p><span style="font-size:18px; color:#009900"><img src="http://img.blog.csdn.net/20150106224114456?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvUUhfSkFWQQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="" height="198" width="907"><br><br></span></p><br><p><span style="font-size:18px"><span style="color:#ff6600"><strong>三、MySQL中常用的几种存储引擎：innoDB、myisam、memory、<span style="font-size:18px">BlackHole</span>以及这几个引擎的讲解</strong></span></span></p><br><p><span style="font-size:18px">innoDB存储引擎<br><br></span></p><br><p><span style="font-size:18px; color:#009900">（1） innodb存储引擎的mysql表提供了事务，回滚以及系统崩溃修复能力和多版本迸发控制的事务的安全。</span></p><br><p><span style="font-size:18px; color:#009900">（2）innodb支持自增长列（auto_increment）,自增长列的&#20540;不能为空，如果在使用的时候为空的话怎会进行自动存现有的&#20540;开始增&#20540;，如果有但是比现在的还大，则就保存这个&#20540;。</span></p><br><p><span style="font-size:18px; color:#009900">（3）innodb存储引擎支持外键（foreign key） ,外键所在的表称为子表而所依赖的表称为父表。</span></p><br><p><span style="font-size:18px; color:#009900">（4）innodb存储引擎最重要的是支持事务，以及事务相关联功能。</span></p><br><p><span style="font-size:18px; color:#009900">（5）innodb存储引擎支持mvcc的行级锁。</span></p><br><p><span style="color:#009900"><span style="font-size:18px">（6）innodb存储引擎索引使用的是B&#43;Tree</span></span></p><br><p><span style="font-size:18px; color:#009900">&nbsp; &nbsp;mvcc类&#20284;于java中的读锁具体介绍可以看这篇文章：<a href="http://blog.csdn.net/chosen0ne/article/details/18093187" target="_blank" rel="external">http://blog.csdn.net/chosen0ne/article/details/18093187</a></span></p><br><p><span style="font-size:18px">MyISAM存储引擎</span></p><br><p><span style="font-size:18px; color:#009900">1、MyISAM&nbsp;&nbsp; 这种存储引擎不支持事务，不支持行级锁，</span><span style="font-size:18px"><span style="color:#cc0000">只支持并发插入的表锁</span></span><span style="font-size:18px; color:#009900">，主要用于高负载的select。</span></p><br><p><span style="font-size:18px; color:#009900">2、<span style="color:rgb(0,153,0); font-size:18px">MyISAM&nbsp;&nbsp;&nbsp;</span>类型的表支持三种不同的存储结构：静态型、动态型、压缩型。</span></p><br><p><span style="font-size:18px; color:#009900">（1）静态型：就是定义的表列的大小是固定（即不含有：xblob、xtext、varchar等长度可变的数据类型），这样mysql就会自动使用静态myisam&#26684;式。</span></p><br><p><span style="font-size:18px; color:#009900">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 使用静态&#26684;式的表的性能比较高，因为在维护和访问的时候以预定&#26684;式存储数据时需要的开销很低。但是这高性能是有空间换来的，因为在定义的时候是固定的，所以不管列中的&#20540;有多大，都会以最大&#20540;为准，占据了整个空间。</span></p><br><p><span style="font-size:18px; color:#009900">（2）动态型：如果列（即使只有一列）定义为动态的（xblob, xtext, varchar等数据类型），这时myisam就自动使用动态型，虽然动态型的表占用了比静态型表较少的空间，但带来了性能的降低，因为如果某个字段的内容发生改变则其位置很可能需要移动，这样就会导致碎片的产生。随着数据变化的怎多，碎片就会增加，数据访问性能就会相应的降低。</span></p><br><p><span style="font-size:18px; color:#009900">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 对于因为碎片的原因而降低数据访问性，有两种解决办法：</span></p><br><p><span style="font-size:18px; color:#009900">&nbsp;&nbsp;&nbsp;&nbsp; @1、尽可能使用静态数据类型</span></p><br><p><span style="font-size:18px; color:#009900">&nbsp;&nbsp;&nbsp;&nbsp; @2、经常使用optimize&nbsp;&nbsp; table语句，他会整理表的碎片，恢复由于表的更新和删除导致的空间丢失。</span></p><br><p><span style="font-size:18px; color:#009900">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (如果存储引擎不支持&nbsp;optimize&nbsp; table&nbsp;&nbsp;&nbsp; 则可以转储并重新加载数据，这样也可以减少碎片)</span></p><br><p><span style="font-size:18px; color:#009900">（3）压缩型：如果在这个数据库中创建的是在整个生命周期内只读的表，则这种情况就是用myisam的压缩型表来减少空间的占用。</span></p><br><p><span style="font-size:18px; color:#009900">3、<span style="color:rgb(0,153,0); font-size:18px">MyISAM也是使用B&#43;tree索引但是和Innodb的在具体实现上有些不同。</span></span></p><br><p><span style="font-size:18px">MEMORY存储引擎</span></p><br><p><span style="font-size:18px; color:#009900">（1）memory存储引擎相比前面的一些存储引擎，有点不一样，其使用存储在内从中的数据来创建表，而且所有的数据也都存储在内存中。</span></p><br><p><span style="font-size:18px; color:#009900">（2）每个基于memory存储引擎的表实际对应一个磁盘文件，该文件的文件名和表名是相同的，类型为.frm。该文件只存储表的结构，而其数据文件，都是存储在内存中，这样有利于对数据的快速处理，提高整个表的处理能力。</span></p><br><p><span style="font-size:18px; color:#009900">（3）memory存储引擎默认使用哈希（HASH）索引，其速度比使用B-&#43;Tree型要快，如果读者希望使用B树型，则在创建的时候可以引用。</span></p><br><p><span style="font-size:18px; color:#009900">（4）memory存储引擎文件数据都存储在内存中，如果mysqld进程发生异常，重启或关闭机器这些数据都会消失。所以memory存储引擎中的表的生命周期很短，一般只使用一次。</span></p><br><p><span style="font-size:18px">BlackHole存储引擎（黑洞引擎）</span></p><br><p><span style="font-size:18px; color:#009900">（1）支持事务，而且支持mvcc的行级锁，主要用于日志记录或同步归档，这个存储引擎除非有特别目的，否则不适合使用！</span></p><br><p><span style="font-size:18px"><span style="color:#ff6600"><strong>四、各存储引擎相互转化</strong></span></span></p><br><p><span style="font-size:18px; color:#009900">1、alter&nbsp; table&nbsp; tablename&nbsp; engine = INnodb /MyISAM/Memory&nbsp;&nbsp;&nbsp; //&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 修改了这个表的存储引擎<br><br></span></p><br><p><span style="font-size:18px; color:#009900">优点：简单，而且适合所有的引擎。</span></p><br><p><span style="font-size:18px; color:#009900">缺点：（1）、这种转化方式需要大量的时间&nbsp;和I/O，mysql要执行从旧表&nbsp;到新表的一行一行的复制所以效率比较低</span></p><br><p><span style="font-size:18px; color:#009900">（2）、在转化这期间源表加了读锁</span></p><br><p><span style="font-size:18px; color:#009900">（3）、从一种引擎到另一种引擎做表转化，所有属于原始引擎的专用特性都会丢失，比如从innodb到&nbsp;myisam&nbsp;则&nbsp;innodb的索引会丢失！</span></p><br><p><span style="font-size:18px; color:#009900">2、使用dump（转储）&nbsp;import（导入）</span></p><br><p><span style="font-size:18px; color:#009900">优点：使用mysqldump这个工具将修改的数据导出后会以 .sql&nbsp;的文件保存，你可以对这个文件进行操作，所以你有更多更好的控制，&nbsp;如修改表名，修改存储引擎等！</span></p><br><p><span style="font-size:18px; color:#009900">看看导出的一个表：</span></p><br><p><span style="font-size:18px; color:#009900"><img src="http://img.blog.csdn.net/20150106232647565?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvUUhfSkFWQQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="" height="90" width="600"></span></p><br><p><span style="font-size:18px; color:#009900"><img src="http://img.blog.csdn.net/20150106232849355?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvUUhfSkFWQQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""></span></p><br><p><span style="font-size:18px; color:#009900"><img src="http://img.blog.csdn.net/20150106232845781?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvUUhfSkFWQQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt=""></span></p><br><p><span style="font-size:18px; color:#009900">以上就是使用mysqldump&nbsp;导出来的表&nbsp;即&nbsp;一个 .sql&nbsp;文件&nbsp;你可以按照需求编写这个文件，在将这个文件导入就ok!</span></p><br><p><span style="font-size:18px; color:#009900">3、第一种方式简便，第二种方式安全，这第三种方式就算是前两种方式的折中吧，&nbsp;create&nbsp; select:</span></p><br><p><span style="font-size:18px; color:#009900">(1)、&nbsp;create&nbsp;&nbsp;table&nbsp;&nbsp; newtable&nbsp; like&nbsp; oldtable;</span></p><br><p><span style="font-size:18px; color:#009900">(2)、alter&nbsp; table&nbsp; newtable engine= innodb/ myisam / memory<br><br></span></p><br><p><span style="font-size:18px; color:#009900">(3)、insert&nbsp; into&nbsp; newtable&nbsp; select <em> from&nbsp; oldtable;</em></span></p><br><p><span style="font-size:18px; color:#009900">如果数据量不大的话这种方式还是挺好的！</span></p><br><p><span style="font-size:18px; color:#009900">还有更高效的办法就是&nbsp;增量填充，在填充完每个增量数据块之后提交一次事务，这样就不会导致撤销日志文件过大；</span></p><br><p><span style="font-size:18px; color:#009900">（1）start&nbsp; transaction</span></p><br><p><span style="font-size:18px; color:#009900">（2）insert&nbsp;into&nbsp;newtable&nbsp;&nbsp;select &nbsp;&nbsp;from&nbsp;oldtable&nbsp; where&nbsp; id(主键)&nbsp;between x and y;</span></p><br><p><span style="font-size:18px; color:#009900">（3）&nbsp;commit</span></p><br><p><span style="font-size:18px; color:#009900">这样等数据填充之后有了需要的新表，旧表也存在，不需要的haunt可以删除，很方便！<br><br></span></p><br><p><br><br></p><br><br></div>
-
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -1265,7 +1266,7 @@ for (int i = 0; i &amp;lt; this.segments.length; ++i)
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">53</span>
+                <span class="site-state-item-count">54</span>
                 <span class="site-state-item-name">Artikel</span>
               </a>
             </div>
