@@ -200,7 +200,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
-            Home
+            Startseite
           </a>
         </li>
       
@@ -210,7 +210,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
-            Archives
+            Archiv
           </a>
         </li>
       
@@ -253,6 +253,119 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/07/17/thread-pool-01/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="XueCheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XueCheng Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/07/17/thread-pool-01/" itemprop="url">转载:线程池原理及实现</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-07-17T15:06:49+08:00">
+                2017-07-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <div id="article_content" class="article_content tracking-ad" data-mod="popu_307" data-dsm="post"><br><br><p><span style="font-size:16px"><span style="color:#ff0000"><strong>1、线程池简介：</strong></span><br><br>&nbsp;&nbsp;&nbsp; 多线程技术主要解决处理器单元内多个线程执行的问题，它可以显著减少处理器单元的闲置时间，增加处理器单元的吞吐能力。&nbsp;&nbsp;&nbsp; <br><br>&nbsp;&nbsp;&nbsp; 假设一个服务器完成一项任务所需时间为：T1 创建线程时间，T2 在线程中执行任务的时间，T3 销毁线程时间。<br><br><br><br>&nbsp;&nbsp;&nbsp; 如果：T1 &#43; T3 远大于 T2，则可以采用线程池，以提高服务器性能。<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 一个线程池包括以下四个基本组成部分：<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1、线程池管理器（ThreadPool）：用于创建并管理线程池，包括 创建线程池，销毁线程池，添加新任务；<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2、工作线程（PoolWorker）：线程池中线程，在没有任务时处于等待状态，可以循环的执行任务；<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3、任务接口（Task）：每个任务必须实现的接口，以供工作线程调度任务的执行，它主要规定了任务的入口，任务执行完后的收尾工作，任务的执行状态等；<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4、任务队列（taskQueue）：用于存放没有处理的任务。提供一种缓冲机制。<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br><br>&nbsp;&nbsp;&nbsp; 线程池技术正是关注如何缩短或调整T1,T3时间的技术，从而提高服务器程序性能的。它把T1，T3分别安排在服务器程序的启动和结束的时间段或者一些空闲的时间段，这样在服务器程序处理客户请求时，不会有T1，T3的开销了。<br><br>&nbsp;&nbsp;&nbsp; 线程池不仅调整T1,T3产生的时间段，而且它还显著减少了创建线程的数目，看一个例子：<br><br>&nbsp;&nbsp;&nbsp; 假设一个服务器一天要处理50000个请求，并且每个请求需要一个单独的线程完成。在线程池中，线程数一般是固定的，所以产生线程总数不会超过线程池中线程的数目，而如果服务器不利用线程池来处理这些请求则线程总数为50000。一般线程池大小是远小于50000。所以利用线程池的服务器程序不会为了创建50000而在处理请求时浪费时间，从而提高效率。<br><br></span></p><br><p><span style="font-size:16px">&nbsp;&nbsp;&nbsp; 代码实现中并没有实现任务接口，而是把Runnable对象加入到线程池管理器（ThreadPool），然后剩下的事情就由线程池管理器（ThreadPool）来完成了</span></p><br><p><span style="font-size:16px"></span>&nbsp;</p><br><span style="font-size:16px"></span><br><div class="dp-highlighter bg_java"><br><div class="bar"><br><div class="tools"><strong>[java]</strong> <a href="http://blog.csdn.net/touch_2011/article/details/6914468#" class="ViewSource" title="view plain" target="_blank" rel="external"><br>view plain</a><a href="http://blog.csdn.net/touch_2011/article/details/6914468#" class="CopyToClipboard" title="copy" target="_blank" rel="external">copy</a></div><br></div><br><ol class="dp-j" start="1"><br><li class="alt"><span><span class="keyword">package</span><span>&nbsp;mine.util.thread;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="keyword">import</span><span>&nbsp;java.util.LinkedList;&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">import</span><span>&nbsp;java.util.List;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li><span><span class="comment">/<strong></strong></span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;<em>&nbsp;线程池类，线程管理器：创建线程，执行任务，销毁线程，获取线程基本信息</em></span>&nbsp;</span></li><li><span><span class="comment">&nbsp;/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span><span class="keyword">public</span><span>&nbsp;</span><span class="keyword">final</span><span>&nbsp;</span><span class="keyword">class</span><span>&nbsp;ThreadPool&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;线程池中默认线程的个数为5</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">private</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">int</span><span>&nbsp;worker_num&nbsp;=&nbsp;</span><span class="number">5</span><span>;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;工作线程</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">private</span><span>&nbsp;WorkThread[]&nbsp;workThrads;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;未处理的任务</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">private</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">volatile</span><span>&nbsp;</span><span class="keyword">int</span><span>&nbsp;finished_task&nbsp;=&nbsp;</span><span class="number">0</span><span>;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;任务队列，作为一个缓冲,List线程不安全</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">private</span><span>&nbsp;List&lt;Runnable&gt;&nbsp;taskQueue&nbsp;=&nbsp;</span><span class="keyword">new</span><span>&nbsp;LinkedList&lt;Runnable&gt;();&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">private</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;ThreadPool&nbsp;threadPool;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;创建具有默认线程个数的线程池</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">private</span><span>&nbsp;ThreadPool()&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">this</span><span>(</span><span class="number">5</span><span>);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;创建线程池,worker_num为线程池中工作线程的个数</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">private</span><span>&nbsp;ThreadPool(</span><span class="keyword">int</span><span>&nbsp;worker_num)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ThreadPool.worker_num&nbsp;=&nbsp;worker_num;&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;workThrads&nbsp;=&nbsp;<span class="keyword">new</span><span>&nbsp;WorkThread[worker_num];&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span><span>&nbsp;(</span><span class="keyword">int</span><span>&nbsp;i&nbsp;=&nbsp;</span><span class="number">0</span><span>;&nbsp;i&nbsp;&lt;&nbsp;worker_num;&nbsp;i&#43;&#43;)&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;workThrads[i]&nbsp;=&nbsp;<span class="keyword">new</span><span>&nbsp;WorkThread();&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;workThrads[i].start();<span class="comment">//&nbsp;开启线程池中的线程</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;单态模式，获得一个默认线程个数的线程池</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;ThreadPool&nbsp;getThreadPool()&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;getThreadPool(ThreadPool.worker_num);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;单态模式，获得一个指定线程个数的线程池,worker_num(&gt;0)为线程池中工作线程的个数</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;worker_num&lt;=0创建默认的工作线程个数</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;ThreadPool&nbsp;getThreadPool(</span><span class="keyword">int</span><span>&nbsp;worker_num1)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(worker_num1&nbsp;&lt;=&nbsp;</span><span class="number">0</span><span>)&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;worker_num1&nbsp;=&nbsp;ThreadPool.worker_num;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(threadPool&nbsp;==&nbsp;</span><span class="keyword">null</span><span>)&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;threadPool&nbsp;=&nbsp;<span class="keyword">new</span><span>&nbsp;ThreadPool(worker_num1);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;threadPool;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;执行任务,其实只是把任务加入任务队列，什么时候执行有线程池管理器觉定</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;execute(Runnable&nbsp;task)&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">synchronized</span><span>&nbsp;(taskQueue)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;taskQueue.add(task);&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;taskQueue.notify();&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;批量执行任务,其实只是把任务加入任务队列，什么时候执行有线程池管理器觉定</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;execute(Runnable[]&nbsp;task)&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">synchronized</span><span>&nbsp;(taskQueue)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span><span>&nbsp;(Runnable&nbsp;t&nbsp;:&nbsp;task)&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;taskQueue.add(t);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;taskQueue.notify();&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;批量执行任务,其实只是把任务加入任务队列，什么时候执行有线程池管理器觉定</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;execute(List&lt;Runnable&gt;&nbsp;task)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">synchronized</span><span>&nbsp;(taskQueue)&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span><span>&nbsp;(Runnable&nbsp;t&nbsp;:&nbsp;task)&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;taskQueue.add(t);&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;taskQueue.notify();&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;销毁线程池,该方法保证在所有任务都完成的情况下才销毁所有线程，否则等待任务完成才销毁</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;destroy()&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">while</span><span>&nbsp;(!taskQueue.isEmpty())&nbsp;{</span><span class="comment">//&nbsp;如果还有任务没执行完成，就先睡会吧</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">try</span><span>&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Thread.sleep(<span class="number">10</span><span>);&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;<span class="keyword">catch</span><span>&nbsp;(InterruptedException&nbsp;e)&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;工作线程停止工作，且置为null</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span><span>&nbsp;(</span><span class="keyword">int</span><span>&nbsp;i&nbsp;=&nbsp;</span><span class="number">0</span><span>;&nbsp;i&nbsp;&lt;&nbsp;worker_num;&nbsp;i&#43;&#43;)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;workThrads[i].stopWorker();&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;workThrads[i]&nbsp;=&nbsp;<span class="keyword">null</span><span>;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;threadPool=<span class="keyword">null</span><span>;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;taskQueue.clear();<span class="comment">//&nbsp;清空任务队列</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;返回工作线程的个数</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;</span><span class="keyword">int</span><span>&nbsp;getWorkThreadNumber()&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;worker_num;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;返回已完成任务的个数,这里的已完成是只出了任务队列的任务个数，可能该任务并没有实际执行完成</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;</span><span class="keyword">int</span><span>&nbsp;getFinishedTasknumber()&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;finished_task;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;返回任务队列的长度，即还没处理的任务个数</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;</span><span class="keyword">int</span><span>&nbsp;getWaitTasknumber()&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;taskQueue.size();&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;覆盖toString方法，返回线程池信息：工作线程个数和已完成任务个数</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="annotation">@Override</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;String&nbsp;toString()&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><span>&nbsp;</span><span class="string">&quot;WorkThread&nbsp;number:&quot;</span><span>&nbsp;&#43;&nbsp;worker_num&nbsp;&#43;&nbsp;</span><span class="string">&quot;&nbsp;&nbsp;finished&nbsp;task&nbsp;number:&quot;</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#43;&nbsp;finished_task&nbsp;&#43;&nbsp;<span class="string">&quot;&nbsp;&nbsp;wait&nbsp;task&nbsp;number:&quot;</span><span>&nbsp;&#43;&nbsp;getWaitTasknumber();&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>&nbsp;内部类，工作线程</em></span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">private</span><span>&nbsp;</span><span class="keyword">class</span><span>&nbsp;WorkThread&nbsp;</span><span class="keyword">extends</span><span>&nbsp;Thread&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;该工作线程是否有效，用于结束该工作线程</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">private</span><span>&nbsp;</span><span class="keyword">boolean</span><span>&nbsp;isRunning&nbsp;=&nbsp;</span><span class="keyword">true</span><span>;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">/<em></em></span>&nbsp;</span></li><li><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;关键所在啊，如果任务队列不空，则取出任务执行，若任务队列空，则等待</span>&nbsp;</span></li><li class="alt"><span><span class="comment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="annotation">@Override</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;run()&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Runnable&nbsp;r&nbsp;=&nbsp;<span class="keyword">null</span><span>;&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">while</span><span>&nbsp;(isRunning)&nbsp;{</span><span class="comment">//&nbsp;注意，若线程无效则自然结束run方法，该线程就没用了</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">synchronized</span><span>&nbsp;(taskQueue)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">while</span><span>&nbsp;(isRunning&nbsp;&amp;&amp;&nbsp;taskQueue.isEmpty())&nbsp;{</span><span class="comment">//&nbsp;队列为空</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">try</span><span>&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;taskQueue.wait(<span class="number">20</span><span>);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;<span class="keyword">catch</span><span>&nbsp;(InterruptedException&nbsp;e)&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(!taskQueue.isEmpty())&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;r&nbsp;=&nbsp;taskQueue.remove(<span class="number">0</span><span>);</span><span class="comment">//&nbsp;取出任务</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span>&nbsp;(r&nbsp;!=&nbsp;</span><span class="keyword">null</span><span>)&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;r.run();<span class="comment">//&nbsp;执行任务</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;finished_task&#43;&#43;;&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;r&nbsp;=&nbsp;<span class="keyword">null</span><span>;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;停止工作，让该线程自然执行完run方法，自然结束</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;stopWorker()&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;isRunning&nbsp;=&nbsp;<span class="keyword">false</span><span>;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>}&nbsp;&nbsp;</span></li></ol><br></div><br><p>&nbsp;</p><br><p>测试代码：</p><br><div class="dp-highlighter bg_java"><br><div class="bar"><br><div class="tools"><strong>[java]</strong> <a href="http://blog.csdn.net/touch_2011/article/details/6914468#" class="ViewSource" title="view plain" target="_blank" rel="external"><br>view plain</a><a href="http://blog.csdn.net/touch_2011/article/details/6914468#" class="CopyToClipboard" title="copy" target="_blank" rel="external">copy</a></div><br></div><br><ol class="dp-j" start="1"><br><li class="alt"><span><span class="keyword">package</span><span>&nbsp;mine.util.thread;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="comment">//测试线程池</span><span>&nbsp;&nbsp;</span></span></li><li><span><span class="keyword">public</span><span>&nbsp;</span><span class="keyword">class</span><span>&nbsp;TestThreadPool&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;main(String[]&nbsp;args)&nbsp;{&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;创建3个线程的线程池</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ThreadPool&nbsp;t&nbsp;=&nbsp;ThreadPool.getThreadPool(<span class="number">3</span><span>);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;t.execute(<span class="keyword">new</span><span>&nbsp;Runnable[]&nbsp;{&nbsp;</span><span class="keyword">new</span><span>&nbsp;Task(),&nbsp;</span><span class="keyword">new</span><span>&nbsp;Task(),&nbsp;</span><span class="keyword">new</span><span>&nbsp;Task()&nbsp;});&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;t.execute(<span class="keyword">new</span><span>&nbsp;Runnable[]&nbsp;{&nbsp;</span><span class="keyword">new</span><span>&nbsp;Task(),&nbsp;</span><span class="keyword">new</span><span>&nbsp;Task(),&nbsp;</span><span class="keyword">new</span><span>&nbsp;Task()&nbsp;});&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(t);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;t.destroy();<span class="comment">//&nbsp;所有线程都执行完成才destory</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(t);&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">//&nbsp;任务类</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">static</span><span>&nbsp;</span><span class="keyword">class</span><span>&nbsp;Task&nbsp;</span><span class="keyword">implements</span><span>&nbsp;Runnable&nbsp;{&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">private</span><span>&nbsp;</span><span class="keyword">static</span><span>&nbsp;</span><span class="keyword">volatile</span><span>&nbsp;</span><span class="keyword">int</span><span>&nbsp;i&nbsp;=&nbsp;</span><span class="number">1</span><span>;&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="annotation">@Override</span><span>&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">public</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;run()&nbsp;{</span><span class="comment">//&nbsp;执行任务</span><span>&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(<span class="string">&quot;任务&nbsp;&quot;</span><span>&nbsp;&#43;&nbsp;(i&#43;&#43;)&nbsp;&#43;&nbsp;</span><span class="string">&quot;&nbsp;完成&quot;</span><span>);&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;</span></li><li><span>}&nbsp;&nbsp;</span></li></ol><br></div><br><p><br><br>&nbsp;</p><br><p><span style="font-size:16px">运行结果：</span></p><br><p><span style="font-size:16px">WorkThread number:3&nbsp; finished task number:0&nbsp; wait task number:6<br><br>任务 1 完成<br><br>任务 2 完成<br><br>任务 3 完成<br><br>任务 4 完成<br><br>任务 5 完成<br><br>任务 6 完成<br><br>WorkThread number:3&nbsp; finished task number:6&nbsp; wait task number:0<br><br></span></p><br><p><span style="font-size:16px">分析：由于并没有任务接口，传入的可以是自定义的任何任务，所以线程池并不能准确的判断该任务是否真正的已经完成（真正完成该任务是这个任务的run方法执行完毕），只能知道该任务已经出了任务队列，正在执行或者已经完成。</span></p><br><p><span style="font-size:16px"></span></p><br><p><span style="color:#ff0000; font-size:16px"><strong>2、java类库中提供的线程池简介：</strong></span></p><br><p><span style="color:#000000"><span style="font-size:16px"><strong>&nbsp;&nbsp;&nbsp;&nbsp; java提供的线程池更加强大，相信理解线程池的工作原理，看类库中的线程池就不会感到陌生了。</strong><br><br></span></span></p><br><p><span style="font-size:16px"><img alt="" src="http://hi.csdn.net/attachment/201110/28/0_1319784225fRSR.gif"></span></p><br><p><span style="font-size:16px"><img alt="" src="http://hi.csdn.net/attachment/201110/28/0_1319784243mu5f.gif"></span></p><br><br></div>
+
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/07/04/redBlackTree-01/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -282,7 +395,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-07-04T10:49:40+08:00">
                 2017-07-04
@@ -395,7 +508,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-06-26T15:58:28+08:00">
                 2017-06-26
@@ -508,7 +621,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-06-22T14:40:36+08:00">
                 2017-06-22
@@ -1329,7 +1442,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-06-22T14:24:27+08:00">
                 2017-06-22
@@ -1644,7 +1757,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-06-16T17:13:23+08:00">
                 2017-06-16
@@ -1763,7 +1876,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-06-15T14:08:06+08:00">
                 2017-06-15
@@ -1873,230 +1986,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/06/14/activemq-02/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="XueCheng">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="XueCheng Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/06/14/activemq-02/" itemprop="url">Spring整合ActiveMQ 事务管理</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-06-14T15:58:38+08:00">
-                2017-06-14
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p> <div id="blog_content" class="blog_content"><br>    <div class="iteye-blog-content-contain" style="font-size: 14px;"></div></div></p>
-<p></p><h2 class="iteye-blog-content-contain" style="margin: 13pt 0cm 13pt 28.8pt;"> </h2><p></p>
-<p></p><p class="MsoNormal" style="text-indent: 21pt; margin: 0cm 0cm 0pt;"><span style="font-size: medium;"><span><span style="font-family: Calibri;">Spring</span></span><span style="font-family: 宋体;">提供了一个</span><span><span style="font-family: Calibri;">JmsTransactionManager</span></span><span style="font-family: 宋体;">用于对</span><span><span style="font-family: Calibri;">JMS ConnectionFactory</span></span><span style="font-family: 宋体;">做事务管理。这将允许</span><span><span style="font-family: Calibri;">JMS</span></span><span style="font-family: 宋体;">应用利用</span><span><span style="font-family: Calibri;">Spring</span></span><span style="font-family: 宋体;">的事务管理特性。</span><span><span style="font-family: Calibri;">JmsTransactionManager</span></span><span style="font-family: 宋体;">在执行本地资源事务管理时将从指定的</span><span><span style="font-family: Calibri;">ConnectionFactory</span></span><span style="font-family: 宋体;">绑定一个</span><span><span style="font-family: Calibri;">ConnectionFactory/Session</span></span><span style="font-family: 宋体;">这样的配对到线程中。</span><span><span style="font-family: Calibri;">JmsTemplate</span></span><span style="font-family: 宋体;">会自动检测这样的事务资源，并对它们进行相应操作。</span></span></p><p></p>
-<p></p><p class="MsoNormal" style="text-indent: 21pt; margin: 0cm 0cm 0pt;"><span style="font-size: medium;"><span style="font-family: 宋体;">在</span><span><span style="font-family: Calibri;">Java EE</span></span><span style="font-family: 宋体;">环境中，</span><span><span style="font-family: Calibri;">ConnectionFactory</span></span><span style="font-family: 宋体;">会池化</span><span><span style="font-family: Calibri;">Connection</span></span><span style="font-family: 宋体;">和</span><span><span style="font-family: Calibri;">Session</span></span><span style="font-family: 宋体;">，这样这些资源将会在整个事务中被有效地重复利用。在一个独立的环境中，使用</span><span><span style="font-family: Calibri;">Spring</span></span><span style="font-family: 宋体;">的</span><span><span style="font-family: Calibri;">SingleConnectionFactory</span></span><span style="font-family: 宋体;">时所有的事务将公用一个</span><span><span style="font-family: Calibri;">Connection</span></span><span style="font-family: 宋体;">，但是每个事务将保留自己独立的</span><span><span style="font-family: Calibri;">Session</span></span><span style="font-family: 宋体;">。</span></span></p><p></p>
-<p></p><p class="MsoNormal" style="text-indent: 21pt; margin: 0cm 0cm 0pt;"><span style="font-size: medium;"><span><span style="font-family: Calibri;">JmsTemplate</span></span><span style="font-family: 宋体;">可以利用</span><span><span style="font-family: Calibri;">JtaTransactionManager</span></span><span style="font-family: 宋体;">和能够进行分布式的</span><span><span style="font-family: Calibri;"> JMS ConnectionFactory</span></span><span style="font-family: 宋体;">处理分布式事务。</span></span></p><p></p>
-<p></p><p class="MsoNormal" style="margin: 0cm 0cm 0pt;"><span style="font-size: medium;"><span><span><span style="font-family: Calibri;">       </span></span></span><span style="font-family: 宋体;">在</span><span><span style="font-family: Calibri;">Spring</span></span><span style="font-family: 宋体;">整合</span><span><span style="font-family: Calibri;">JMS</span></span><span style="font-family: 宋体;">的应用中，如果我们要进行本地的事务管理的话非常简单，只需要在定义对应的消息监听容器时指定其</span><span><span style="font-family: Calibri;">sessionTransacted</span></span><span style="font-family: 宋体;">属性为</span><span><span style="font-family: Calibri;">true</span></span><span style="font-family: 宋体;">，如：</span></span></p><p></p>
-<p></p><p class="MsoNormal" style="text-align: left; margin: 0cm 0cm 0pt;"> </p><p></p>
-<p><div class="iteye-blog-content-contain" style="font-size: 14px;"></div></p>
-<p><pre class="xml" name="code">    &lt;bean id=”jmsContainer”<br>        class=”org.springframework.jms.listener.DefaultMessageListenerContainer”&gt;<br>        &lt;property name=”connectionFactory” ref=”connectionFactory” /&gt;<br>        &lt;property name=”destination” ref=”queueDestination” /&gt;<br>        &lt;property name=”messageListener” ref=”consumerMessageListener” /&gt;<br>        &lt;property name=”sessionTransacted” value=”true”/&gt;<br>    &lt;/bean&gt;<br></pre><br></p>
-<p></p><p class="MsoNormal" style="text-align: left; margin: 0cm 0cm 0pt;"> </p><p></p>
-<p></p><p class="MsoNormal" style="margin: 0cm 0cm 0pt;"><span style="font-size: medium;"><span><span><span style="font-family: Calibri;">       </span></span></span><span style="font-family: 宋体;">该属性值默认为</span><span><span style="font-family: Calibri;">false</span></span><span style="font-family: 宋体;">，这样</span><span><span style="font-family: Calibri;">JMS</span></span><span style="font-family: 宋体;">在进行消息监听的时候就会进行事务控制，当在接收消息时监听器执行失败时</span><span><span style="font-family: Calibri;">JMS</span></span><span style="font-family: 宋体;">就会对接收到的消息进行回滚，对于</span><span><span style="font-family: Calibri;">SessionAwareMessageListener</span></span><span style="font-family: 宋体;">在接收到消息后发送一个返回消息时也处于同一事务下，但是对于其他操作如数据库访问等将不属于该事务控制。</span></span></p><p></p>
-<p></p><p class="MsoNormal" style="margin: 0cm 0cm 0pt;"><span style="font-size: medium;"><span style="font-family: 宋体;">这里我们可以来做一个这样的测试：我们如上配置监听在</span><span><span style="font-family: Calibri;">queueDestination</span></span><span style="font-family: 宋体;">的消息监听容器的</span><span><span style="font-family: Calibri;">sessionTransacted</span></span><span style="font-family: 宋体;">属性为</span><span><span style="font-family: Calibri;">true</span></span><span style="font-family: 宋体;">，然后把我们前面提到的消息监听器</span><span><span style="font-family: Calibri;">ConsumerMessageListener</span></span><span style="font-family: 宋体;">改成这样：</span></span></p><p></p>
-<p></p><p class="MsoNormal" style="text-align: left; margin: 0cm 0cm 0pt;"> </p><p></p>
-<p><div class="iteye-blog-content-contain" style="font-size: 14px;"></div></p>
-<p><pre class="java" name="code">public class ConsumerMessageListener implements MessageListener {</pre></p>
-<pre><code>public void onMessage(Message message) {
-        //这里我们知道生产者发送的就是一个纯文本消息，所以这里可以直接进行强制转换，或者直接把onMessage方法的参数改成Message的子类TextMessage
-        TextMessage textMsg = (TextMessage) message;
-        System.out.println(&quot;接收到一个纯文本消息。&quot;);
-        try {
-            System.out.println(&quot;消息内容是：&quot; + textMsg.getText());
-            if (1 == 1) {
-                throw new RuntimeException(&quot;Error&quot;);
-            }
-        } catch (JMSException e) {
-            e.printStackTrace();
-        }
-}
-</code></pre><p>}<br><br></p>
-<p></p><p class="MsoNormal" style="text-align: left; margin: 0cm 0cm 0pt;">        </p><p></p>
-<p></p><p class="MsoNormal" style="text-align: left; margin: 0cm 0cm 0pt;"><span style="font-size: medium;"><span style="font-family: 宋体;">我们可以看到在上述代码中我们的</span><span><span style="font-family: Calibri;">ConsumerMessageListener</span></span><span style="font-family: 宋体;">在进行消息接收的时候抛出了一个</span><span><span style="font-family: Calibri;">RuntimeException</span></span><span style="font-family: 宋体;">，根据我们上面说的，因为我们已经在对应的监听容器上定义了其</span><span><span style="font-family: Calibri;">sessionTransacted</span></span><span style="font-family: 宋体;">属性为</span><span><span style="font-family: Calibri;">true</span></span><span style="font-family: 宋体;">，所以当这里抛出异常的时候</span><span><span style="font-family: Calibri;">JMS</span></span><span style="font-family: 宋体;">将对接收到的消息进行回滚，即下次进行消息接收的时候该消息仍然能够被接收到。为了验证这一点，我们先执行一遍测试代码，往</span><span><span style="font-family: Calibri;">queueDestination</span></span><span style="font-family: 宋体;">发送一个文本消息，这个时候</span><span><span style="font-family: Calibri;">ConsumerMessageListener</span></span><span style="font-family: 宋体;">在进行接收的时候将会抛出一个</span><span><span style="font-family: Calibri;">RuntimeException</span></span><span style="font-family: 宋体;">，已经接收到的纯文本消息将进行回滚；接着我们去掉上面代码中抛出异常的语句，即</span><span><span style="font-family: Calibri;">ConsumerMessageListener</span></span><span style="font-family: 宋体;">能够正常的进行消息接收，这个时候我们再运行一次测试代码，往</span><span><span style="font-family: Calibri;">ConsumerMessageListener</span></span><span style="font-family: 宋体;">监听的</span><span><span style="font-family: Calibri;">queueDestination</span></span><span style="font-family: 宋体;">发送一条消息。如果之前在接手时抛出了异常的那条消息已经回滚了的话，那么这个时候将能够接收到两条消息，控制台将输出接收到的两条消息的内容。具体结果有兴趣的朋友可以自己验证一下。</span></span></p><p></p>
-<p></p><p class="MsoNormal" style="margin: 0cm 0cm 0pt;"><span style="font-size: medium;"><span><span><span style="font-family: Calibri;">       </span></span></span><span style="font-family: 宋体;">如果想接收消息和数据库访问处于同一事务中，那么我们就可以配置一个外部的事务管理同时配置一个支持外部事务管理的消息监听容器（如</span><span><span style="font-family: Calibri;">DefaultMessageListenerContainer</span></span><span style="font-family: 宋体;">）。要配置这样一个参与分布式事务管理的消息监听容器，我们可以配置一个</span><span><span style="font-family: Calibri;">JtaTransactionManager</span></span><span style="font-family: 宋体;">，当然底层的</span><span><span style="font-family: Calibri;">JMS ConnectionFactory</span></span><span style="font-family: 宋体;">需要能够支持分布式事务管理，并正确地注册我们的</span><span><span style="font-family: Calibri;">JtaTransactionManager</span></span><span style="font-family: 宋体;">。这样消息监听器进行消息接收和对应的数据库访问就会处于同一数据库控制下，当消息接收失败或数据库访问失败都会进行事务回滚操作。</span></span></p><p></p>
-<p></p><p class="MsoNormal" style="text-align: left; margin: 0cm 0cm 0pt;"> </p><p></p>
-<p><div class="iteye-blog-content-contain" style="font-size: 14px;"></div></p>
-<p><pre class="xml" name="code">    &lt;bean id=”jmsContainer”<br>        class=”org.springframework.jms.listener.DefaultMessageListenerContainer”&gt;<br>        &lt;property name=”connectionFactory” ref=”connectionFactory” /&gt;<br>        &lt;property name=”destination” ref=”queueDestination” /&gt;<br>        &lt;property name=”messageListener” ref=”consumerMessageListener” /&gt;<br>        &lt;property name=”transactionManager” ref=”jtaTransactionManager”/&gt;<br>    &lt;/bean&gt;</pre></p>
-<pre><code>&amp;lt;bean id=&quot;jtaTransactionManager&quot; class=&quot;org.springframework.transaction.jta.JtaTransactionManager&quot;/&amp;gt;
-</code></pre><p><br></p>
-<p></p><p class="MsoNormal" style="text-align: left; margin: 0cm 0cm 0pt;">        </p><p></p>
-<p></p><p class="MsoNormal" style="text-align: left; margin: 0cm 0cm 0pt;"><span style="font-size: medium;"><span style="font-family: 宋体;">当给消息监听容器指定了</span><span><span style="font-family: Calibri;">transactionManager</span></span><span style="font-family: 宋体;">时，消息监听容器将忽略</span><span><span style="font-family: Calibri;">sessionTransacted</span></span><span style="font-family: 宋体;">的值。</span></span><span><span style="font-family: Calibri; font-size: medium;"> </span></span></p><p></p>
-<p></p><p class="MsoNormal" style="margin: 0cm 0cm 0pt;"><span style="font-size: medium;"><span><span><span style="font-family: Calibri;">       </span></span></span><span style="font-family: 宋体;">关于使用</span><span><span style="font-family: Calibri;">JtaTransactionManager</span></span><span style="font-family: 宋体;">来管理上述分布式事务，我们这里也可以来做一个试验。</span></span></p><p></p>
-<p></p><p class="MsoNormal" style="margin: 0cm 0cm 0pt;"><span style="font-size: medium;"><span><span><span style="font-family: Calibri;">       </span></span></span><span style="font-family: 宋体;">首先：往</span><span><span style="font-family: Calibri;">Spring</span></span><span style="font-family: 宋体;">配置文件</span><span><span style="font-family: Calibri;">applicationContext.xml</span></span><span style="font-family: 宋体;">中添加如下配置：</span></span></p><p></p>
-<p></p><p class="MsoNormal" style="text-align: left; margin: 0cm 0cm 0pt;"><span style="font-family: Consolas; color: black; font-size: 10pt;"><span>    </span></span></p><p></p>
-<p><div class="iteye-blog-content-contain" style="font-size: 14px;"></div></p>
-<p><pre class="xml" name="code">    &lt;bean id=”jdbcTemplate” class=”org.springframework.jdbc.core.JdbcTemplate”&gt;<br>        &lt;property name=”dataSource” ref=”dataSource”/&gt;<br>    &lt;/bean&gt;</pre></p>
-<pre><code>&amp;lt;jee:jndi-lookup jndi-name=&quot;jdbc/mysql&quot; id=&quot;dataSource&quot;/&amp;gt;
-&amp;lt;bean id=&quot;jtaTransactionManager&quot; class=&quot;org.springframework.transaction.jta.JtaTransactionManager&quot;/&amp;gt;
-
-&amp;lt;tx:annotation-driven transaction-manager=&quot;jtaTransactionManager&quot;/&amp;gt;
-</code></pre><p><br></p>
-<p></p><p class="MsoNormal" style="text-align: left; margin: 0cm 0cm 0pt;">  </p><p></p>
-<p></p><p class="MsoNormal" style="text-align: left; margin: 0cm 0cm 0pt;"><span style="font-size: medium;"><span><span><span style="font-family: Calibri;">       </span></span></span><span style="font-family: 宋体;">我们可以看到，在这里我们引入了一个</span><span><span style="font-family: Calibri;">jndi</span></span><span style="font-family: 宋体;">数据源，定义了一个</span><span><span style="font-family: Calibri;">JtaTransactionManager</span></span><span style="font-family: 宋体;">，定义了</span><span><span style="font-family: Calibri;">Spring</span></span><span style="font-family: 宋体;">基于注解的声明式事务管理，定义了一个</span><span><span style="font-family: Calibri;">Spring</span></span><span style="font-family: 宋体;">提供的进行</span><span><span style="font-family: Calibri;">Jdbc</span></span><span style="font-family: 宋体;">操作的工具类</span><span><span style="font-family: Calibri;">jdbcTemplate</span></span><span style="font-family: 宋体;">。</span></span></p><p></p>
-<p></p><p class="iteye-blog-content-contain" style="font-size: 14px;"> </p><p></p>
-<p></p><p class="MsoNormal" style="margin: 0cm 0cm 0pt;"><span style="font-size: medium;"><span><span><span style="font-family: Calibri;">       </span></span></span><span style="font-family: 宋体;">接下来把我们的</span><span><span style="font-family: Calibri;">ConsumerMessageListener</span></span><span style="font-family: 宋体;">改为如下形式：</span></span></p><p></p>
-<p><div class="iteye-blog-content-contain" style="font-size: 14px;"></div></p>
-<p><pre class="java" name="code">public class ConsumerMessageListener implements MessageListener {</pre></p>
-<pre><code>@Autowired
-private TestDao testDao;
-
-private int count = 0;
-
-public void onMessage(Message message) {
-        //这里我们知道生产者发送的就是一个纯文本消息，所以这里可以直接进行强制转换，或者直接把onMessage方法的参数改成Message的子类TextMessage
-        TextMessage textMsg = (TextMessage) message;
-        System.out.println(new Date().toLocaleString() + &quot;接收到一个纯文本消息。&quot;);
-        try {
-            String text = textMsg.getText();
-            System.out.println(&quot;消息内容是：&quot; + text);
-            System.out.println(&quot;当前count的值是：&quot; + count);
-            testDao.insert(text + count);
-            if (count == 0) {
-                count ++;
-                throw new RuntimeException(&quot;Error! 出错啦！&quot;);
-            }
-        } catch (JMSException e) {
-            e.printStackTrace();
-        }
-}
-</code></pre><p>}<br><br></p>
-<p></p><p class="MsoNormal" style="text-align: left; margin: 0cm 0cm 0pt;"> </p><p></p>
-<p></p><p class="MsoNormal" style="margin: 0cm 0cm 0pt;"><span style="font-size: medium;"><span><span><span style="font-family: Calibri;">       </span></span></span><span style="font-family: 宋体;">我们可以看到，在</span><span><span style="font-family: Calibri;">ConsumerMessageListener</span></span><span style="font-family: 宋体;">中我们定义了一个实例变量</span><span><span style="font-family: Calibri;">count</span></span><span style="font-family: 宋体;">，其初始值为</span><span><span style="font-family: Calibri;">0</span></span><span style="font-family: 宋体;">；在</span><span><span style="font-family: Calibri;">onMessage</span></span><span style="font-family: 宋体;">里面，我们可以看到我们把接收到的消息内容作为参数调用了</span><span><span style="font-family: Calibri;">testDao</span></span><span style="font-family: 宋体;">的</span><span><span style="font-family: Calibri;">insert</span></span><span style="font-family: 宋体;">方法；当</span><span><span style="font-family: Calibri;">count</span></span><span style="font-family: 宋体;">值为</span><span><span style="font-family: Calibri;">0</span></span><span style="font-family: 宋体;">，也就是进行第一次消息接收的时候会将</span><span><span style="font-family: Calibri;">count</span></span><span style="font-family: 宋体;">的值加</span><span><span style="font-family: Calibri;">1</span></span><span style="font-family: 宋体;">，同时抛出一个运行时异常。那么我们这里要测试的就是进行第一次接收的时候</span><span><span style="font-family: Calibri;">testDao</span></span><span style="font-family: 宋体;">已经把相关内容插入数据库了，接着在</span><span><span style="font-family: Calibri;">onMessage</span></span><span style="font-family: 宋体;">里面抛出了一个异常同时</span><span><span style="font-family: Calibri;">count</span></span><span style="font-family: 宋体;">加</span><span><span style="font-family: Calibri;">1</span></span><span style="font-family: 宋体;">，我们预期的结果应该是此时数据库进行回滚，同时</span><span><span style="font-family: Calibri;">JMS</span></span><span style="font-family: 宋体;">也回滚，这样</span><span><span style="font-family: Calibri;">JMS</span></span><span style="font-family: 宋体;">将继续尝试接收该消息，此时同样会调用</span><span><span style="font-family: Calibri;">testDao</span></span><span style="font-family: 宋体;">的</span><span><span style="font-family: Calibri;">insert</span></span><span style="font-family: 宋体;">方法将内容插入数据库，再接着</span><span><span style="font-family: Calibri;">count</span></span><span style="font-family: 宋体;">已经不为</span><span><span style="font-family: Calibri;">0</span></span><span style="font-family: 宋体;">了，所以此时将不再抛出异常，</span><span><span style="font-family: Calibri;">JMS</span></span><span style="font-family: 宋体;">成功进行消息的接收，</span><span><span style="font-family: Calibri;">testDao</span></span><span style="font-family: 宋体;">也成功的将消息内容插入到了数据库。要证明这个预期我们除了看数据库中插入的数据外，还可以看控制台的输出，正常情况控制台将输出两次消息接收的内容，且第一次时</span><span><span style="font-family: Calibri;">count</span></span><span style="font-family: 宋体;">为</span><span><span style="font-family: Calibri;">0</span></span><span style="font-family: 宋体;">，第二次</span><span><span style="font-family: Calibri;">count</span></span><span style="font-family: 宋体;">为</span><span><span style="font-family: Calibri;">1</span></span><span style="font-family: 宋体;">。</span></span></p><p></p>
-<p></p><p class="MsoNormal" style="margin: 0cm 0cm 0pt;"><span style="font-size: medium;"><span><span style="font-family: Calibri;"><span>       </span>TestDao</span></span><span style="font-family: 宋体;">是一个接口，其</span><span><span style="font-family: Calibri;">TestDaoImpl</span></span><span style="font-family: 宋体;">对</span><span><span style="font-family: Calibri;">insert</span></span><span style="font-family: 宋体;">的方法实现如下：</span></span> </p><p></p>
-<p></p><p class="MsoNormal" style="text-align: left; margin: 0cm 0cm 0pt;"> </p><p></p>
-<p><div class="iteye-blog-content-contain" style="font-size: 14px;"></div></p>
-<p><pre class="java" name="code">    @Transactional(readOnly=false)<br>    public void insert(final String name) {</pre></p>
-<pre><code>    jdbcTemplate.update(&quot;insert into test(name) values(?)&quot;, name);
-
-}
-</code></pre><p><br></p>
-<p></p><p class="MsoNormal" style="text-align: left; margin: 0cm 0cm 0pt;">       </p><p></p>
-<p></p><p class="MsoNormal" style="text-align: left; margin: 0cm 0cm 0pt;"><span style="font-size: medium;"><span style="font-family: 宋体;">这里我们使用支持</span><span><span style="font-family: Calibri;">JtaTransactionManager</span></span><span style="font-family: 宋体;">的</span><span><span style="font-family: Calibri;">Weblogic</span></span><span style="font-family: 宋体;">来进行测试，因为是</span><span><span style="font-family: Calibri;">Web</span></span><span style="font-family: 宋体;">容器，所以我们这里定义了一个</span><span><span style="font-family: Calibri;">Controller</span></span><span style="font-family: 宋体;">来进行消息的发送，具体代码如下：</span></span></p><p></p>
-<p></p><p class="MsoNormal" style="text-align: left; margin: 0cm 0cm 0pt;"> </p><p></p>
-<p><div class="iteye-blog-content-contain" style="font-size: 14px;"></div></p>
-<p><pre class="java" name="code">@Controller<br>@RequestMapping(“test”)<br>public class TestController {</pre></p>
-<pre><code>@Autowired
-@Qualifier(&quot;queueDestination&quot;)
-private Destination destination;
-
-@Autowired
-private ProducerService producerService;
-
-@RequestMapping(&quot;first&quot;)
-public String first() {
-    producerService.sendMessage(destination, &quot;你好，现在是：&quot; + new Date().toLocaleString());
-    return &quot;/test/first&quot;;
-}
-</code></pre><p>}<br><br></p>
-<p></p><p class="MsoNormal" style="text-align: left; margin: 0cm 0cm 0pt;">      </p><p></p>
-<p></p><p class="MsoNormal" style="text-align: left; margin: 0cm 0cm 0pt;"><span style="font-size: medium;"><span style="font-family: 宋体;">接下来就是启用</span><span><span style="font-family: Calibri;">Weblogic</span></span><span style="font-family: 宋体;">服务器，进入其控制台，定义一个名叫“</span><span><span style="font-family: Calibri;">jdbc/mysql</span></span><span style="font-family: 宋体;">”的</span><span><span style="font-family: Calibri;">JNDI</span></span><span style="font-family: 宋体;">数据源，然后把该项目部署到</span><span><span style="font-family: Calibri;">Weblogic</span></span><span style="font-family: 宋体;">服务器上并进行启动。接下来我们就可以访问</span><span><span style="font-family: Calibri;">/test/first.do</span></span><span style="font-family: 宋体;">访问到上述</span><span><span style="font-family: Calibri;">first</span></span><span style="font-family: 宋体;">方法。之后控制台会输出如下信息：</span></span></p><p></p>
-<p></p><p class="MsoNormal" style="margin: 0cm 0cm 0pt;"><span style="font-size: medium;"><span><span><span style="font-family: Calibri;"><br><img alt="" src="http://dl2.iteye.com/upload/attachment/0091/7448/655db0fd-c363-3ebb-9165-9e3c59515307.png"><br>        </span></span></span><span style="font-family: 宋体;">我们可以看到当</span><span><span style="font-family: Calibri;">count</span></span><span style="font-family: 宋体;">为</span><span><span style="font-family: Calibri;">0</span></span><span style="font-family: 宋体;">时接收了一次，并随后抛出了异常，之后</span><span><span style="font-family: Calibri;">count</span></span><span style="font-family: 宋体;">为</span><span><span style="font-family: Calibri;">1</span></span><span style="font-family: 宋体;">又接收了一次，这说明在</span><span><span style="font-family: Calibri;">count</span></span><span style="font-family: 宋体;">为</span><span><span style="font-family: Calibri;">0</span></span><span style="font-family: 宋体;">时抛出异常后我们的</span><span><span style="font-family: Calibri;">JMS</span></span><span style="font-family: 宋体;">进行回滚了，那么我们的数据库是否有进行回滚呢？接着我们来看数据库中的内容：</span></span></p><p></p>
-<p></p><p class="iteye-blog-content-contain" style="font-size: 14px;"><span><span><br><img alt="" src="http://dl2.iteye.com/upload/attachment/0091/7450/7196d8b4-8947-3ca9-aee2-c0831cc15061.png"><br>        </span></span><span style="font-family: 宋体; font-size: 12pt;">我们可以看到数据库表中只有一条记录，而且最后一位表示</span><span>count</span><span style="font-family: 宋体; font-size: 12pt;">的值的为</span><span>1</span><span style="font-family: 宋体; font-size: 12pt;">，这说明在</span><span>JMS</span><span style="font-family: 宋体; font-size: 12pt;">进行消息接收抛出异常时我们的数据库也回滚了。关于使用</span><span>JtaTransactionManager</span><span style="font-family: 宋体; font-size: 12pt;">进行分布式事务管理的问题就说到这里了，有兴趣的朋友可以自己试验一下。</span></p><p></p>
-<p></p><p class="iteye-blog-content-contain" style="font-size: 14px;"> </p><p></p>
-<div class="iteye-blog-content-contain" style="font-size: 14px;">
-
-</div>
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -2146,8 +2035,8 @@ public String first() {
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">54</span>
-                <span class="site-state-item-name">posts</span>
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">Artikel</span>
               </a>
             </div>
           
@@ -2201,7 +2090,7 @@ public String first() {
 
 
 <div class="powered-by">
-  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
 </div>
 
 <div class="theme-info">
