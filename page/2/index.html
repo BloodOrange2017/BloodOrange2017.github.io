@@ -253,6 +253,119 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/08/08/activeMq-04/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="XueCheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XueCheng Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/08/08/activeMq-04/" itemprop="url">转载:ActiveMQ -JMS事务与XA事务</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-08T14:32:03+08:00">
+                2017-08-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <div id="article_content" class="article_content tracking-ad" data-mod="popu_307" data-dsm="post"><br><br><h3><span style="font-family:Microsoft YaHei; font-size:14px">1.为什么要用事务？</span></h3><br><p></p><br><div><span style="font-family:Microsoft YaHei; font-size:14px">&nbsp; &nbsp; &nbsp; &nbsp;消息事务是在生产者producer到broker或broker到consumer过程中同一个session中发生的，保证几条消息在发送过程中的原子性。</span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px">&nbsp; &nbsp; &nbsp; &nbsp;可以在connection的createSession方法中指定一个布尔&#20540;开启，如果消息确认机制是事务确认，那么在发送message的过程中session就会开启事务（实际上broker的），不用用户显示调用 beginTransaction，这时所有通过session发送的消息都被缓存下来，用户调用session.commit时会发送所有消息，当发送出现异常时用户可以调用rollback进行回滚操作，只有在开启事务状态下有效。</span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px">&nbsp;</span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px"></span><br><p>为什么commit之后，不会有持久的消息重新传送呢?</p><br><p>&nbsp; &nbsp; &nbsp; &nbsp;原因在于commit操作会自动将为签收确认的消息进行签收确认，如果是当前接收但未签收确认的消息，都会被确认处理。因而在commit之后不会有持久化的消息出现。</p><br><br><br></div><br><h3><span style="font-family:Microsoft YaHei; font-size:14px">2.activeMQ支持的事务：</span></h3><br><div><span style="font-family:Microsoft YaHei; font-size:14px"></span><br><p style="font-family:verdana,arial,helvetica,sans-serif; margin-top:3px; line-height:24px"><br>ActiveMQ有支持两种事务，</p><br><ul style="font-family:verdana,arial,helvetica,sans-serif; margin-left:15px; margin-top:5px; margin-bottom:5px; line-height:24px"><br><li>JMS transactions - the commit() / rollback() methods on a Session (which is like doing commit() / rollback() on a JDBC connection)</li><li>XA Transactions - where the&nbsp;<a target="_blank" href="http://activemq.apache.org/maven/activemq-core/apidocs/org/apache/activemq/ActiveMQXASession.html" class="external-link" style="color:#880055">XASession</a>&nbsp;acts as an&nbsp;<a target="_blank" href="http://java.sun.com/j2ee/1.4/docs/api/javax/transaction/xa/XAResource.html" class="external-link" style="color:#880055">XAResource</a>&nbsp;by<br> communicating with the Message Broker, rather like a JDBC Connection takes place in an XA transaction by communicating with the database.</li></ul><br><p style="margin-top:10px; line-height:24px">在支持事务的session中，producer发送message时在message中带有transaction ID。broker收到message后判断是否有transaction ID，如果有就把message保存在transaction store中，等待commit或者rollback消息。所以<span style="line-height:1.5">ActiveMq的事务是针对broker而不是producer的，不管session是否commit，broker都会收到message。</span></p><br><p style="margin-top:10px; line-height:24px"><span style="line-height:1.5em">如果producer发送模式选择了persistent，那么message过期后会进入死亡队列。在message进入死亡队列之前，ActiveMQ会删除message中的transaction ID，这样过期的message就不在事务中了，不会保存在</span><span style="line-height:1.5em">transaction store中，会直接进入死亡队列。具体删除transaction<br> ID的地方是在：</span><span style="line-height:1.5em">org.apache.activemq.util.</span><span style="line-height:1.5em">BrokerSupport的doResend，将transaction ID保存在了originalTransactionID中，删除了transaction ID。</span></p><br><p style="margin-top:10px; line-height:24px"><span style="line-height:1.5em">&nbsp; &nbsp; &nbsp; &nbsp;在下面的介绍中我用的是<span style="font-family:verdana,arial,helvetica,sans-serif; font-size:14px">JMS transactions.</span></span></p><br><p style="margin-top:10px; line-height:24px"><span style="font-family:verdana,arial,helvetica,sans-serif; font-size:14px">JMS transactions事务的配置：</span><br><br></p><br><p style="margin-top:10px; line-height:24px"><span style="font-family:verdana,arial,helvetica,sans-serif; font-size:14px">&nbsp; &nbsp; &nbsp; ①建立JMS事务，并引入关联链接事务。</span></p><br><p style="margin-top:10px; line-height:24px">&nbsp; &nbsp; &nbsp; &nbsp;<span style="font-size:14px"> &nbsp;②.设置一个jmsTamplat，并关联监听容器。</span></p><br><p style="margin-top:10px; line-height:24px"><pre name="code" class="html">&lt;!– jms事务 –&gt;<br>    &lt;bean id=&quot;jmsTransactionManager&quot;<br>        class=&quot;org.springframework.jms.connection.JmsTransactionManager&quot;&gt;<br>        &lt;property name=&quot;connectionFactory&quot; ref=&quot;connectionFactory&quot; /&gt;<br>    &lt;/bean&gt;<br>    &lt;tx:annotation-driven transaction-manager=&quot;jmsTransactionManager&quot; /&gt;<br><br><br>&lt;!– 消息监听容器 消息接收监听器用于异步接收消息 –&gt;<br>    &lt;bean id=&quot;jmsContainerOne&quot; class=&quot;org.springframework.jms.listener.DefaultMessageListenerContainer&quot;&gt;<br>        &lt;property name=&quot;connectionFactory&quot; ref=&quot;connectionFactory&quot; /&gt;<br>        &lt;property name=&quot;destination&quot; ref=&quot;destinationOne&quot; /&gt;<br>        &lt;property name=&quot;messageListener&quot; ref=&quot;consumerMessageListenerOfOne&quot; /&gt;<br>        &lt;!– &lt;property name=&quot;sessionTransacted&quot; value=&quot;true&quot;/&gt; –&gt;  &lt;!– 给listener添加事务，只负责接收消息的回滚 （有了transactionManager就不用这个了，这个功能不全） 设置后好像并没有起作用 不知道为啥 –&gt;<br>        &lt;!– &lt;property name=&quot;transactionManager&quot; ref=&quot;jtaTransactionManager&quot;/&gt; –&gt; &lt;!– 接收消息和数据库访问处于同一事务中 jta –&gt;<br>        &lt;property name=&quot;transactionManager&quot; ref=&quot;jmsTransactionManager&quot; /&gt; &lt;!–jms事务 –&gt;<br>        &lt;property name=&quot;sessionAcknowledgeMode&quot; value=&quot;4&quot;&gt;&lt;/property&gt;   &lt;!– 应答模式是 INDIVIDUAL_ACKNOWLEDGE <a href="http://blog.csdn.net/yueding_h/article/details/54944254" target="_blank" rel="external">http://blog.csdn.net/yueding_h/article/details/54944254</a> –&gt;<br>        &lt;!– ActiveMQ:设置多个并行的消费者 –&gt;<br>        &lt;property name=&quot;concurrency&quot; value=&quot;2-3&quot; /&gt;<br>    &lt;/bean&gt;</pre><br><br></p><br></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px">上面配置文件配置完成后，在接收着那边接受消息失败后，进行事务回滚。</span><pre name="code" class="html">session.rollback();</pre></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px">&nbsp; &nbsp;具体实现：</span><pre name="code" class="html"> public void onMessage(Message message, Session session) {<br>          TextMessage textMsg = (TextMessage) message;<br>            try {<br>                    System.out.println(1);<br>                    String endStr = textMsg.getText();<br>                    Integer endInt = Integer.parseInt(endStr);<br>                    System.out.println(&quot;消息：===&quot;+endInt);<br>                    //只要被确认后   就会出队，接受失败没有确认成功，会在原队列里面<br>                        textMsg.acknowledge();<br><br>            } catch (Exception e) {<br>                try {<br>                    session.rollback();<br>                    System.out.println(&quot;测试回滚&quot;);<br>                                      e.printStackTrace();<br>                                 System.out.println(&quot;异常信息是：===：&quot; + e.getMessage());<br>                      }<br>        }<br><br></pre>&nbsp; 这就介绍完了。</div><br><div><span style="font-family:Microsoft YaHei; font-size:14px">&nbsp; 另外，activeMQ还有一种JtaTransactionManager 事务控制。</span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px">&nbsp;&nbsp;事务控制： （这里让接收消息和数据库访问处于同一事务中）我们就可以配置一个外部的事务管理同时配置一个支持外部事务管理的消息监听容器（如DefaultMessageListenerContainer）&nbsp;。要配置这样一个参与分布式事务管理的消息监听容器，我们可以配置一个JtaTransactionManager，当然底层的JMS ConnectionFactory需要能够支持分布式事务管理，&nbsp;并正确地注册我们的JtaTransactionManager。这样消息监听器进行消息接收和对应的数据库访问就会处于同一数据库控制下，当消息接收失败或数据库访问失败都会进行事务回滚操作。&nbsp;</span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px">&nbsp; &nbsp;这种事务控制，我在配置的时候，失败了，所以选用了JMS事务控制。<br><br>&nbsp; &nbsp;待我详细了解<span style="font-family:&quot;Microsoft YaHei&quot;; font-size:14px">JtaTransactionManager 后，再说吧。</span></span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px"><br><br></span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px"><br><br></span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px"><br><br></span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px"><br><br></span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px"><br><br></span></div><br><p></p><br><br></div>
+
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/08/02/truncation-03/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -956,119 +1069,6 @@ http://www.CodeHighlighter.com/<br />
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/07/20/dubbox-01/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="XueCheng">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="XueCheng Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/07/20/dubbox-01/" itemprop="url">转载:dubbox 2.8.4搭建</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Veröffentlicht am</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-07-20T10:27:33+08:00">
-                2017-07-20
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <div class="article_c"><br>        <div class="markdown_views"><p>关于dubbox的核心原理和细节会另开一篇文章来介绍，这篇文章主要是从配置和应用层面来介绍dubbox 2.8.4的使用。</p><br><br><br><br><h3 id="dubbox的服务监控和日志采集httpblogcsdnnetu011282930articledetails52786414"><strong>dubbox的服务监控和日志采集</strong>：<a href="http://blog.csdn.net/u011282930/article/details/52786414" target="_blank" rel="external">http://blog.csdn.net/u011282930/article/details/52786414</a></h3><br><br><h2 id="zookeeper的安装"><strong>zookeeper的安装</strong></h2><br><br><p>1、准备工作</p><br><br><p>-下载zookeeper <br><br>官方地址：<a href="http://apache.fayea.com/zookeeper/zookeeper-3.4.6/" target="_blank" rel="external">http://apache.fayea.com/zookeeper/zookeeper-3.4.6/</a> <br><br>下载版本：zookeeper-3.4.6.tar.gz</p><br><br><p>-下载JDK <br><br>下载地址：<a href="http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html" target="_blank" rel="external">http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html</a> <br><br>下载版本：JDK1.7.X版本，32位或64位看操作系统 <br><br>JDK的安装就跳过了，直接百度一大堆，一定记得设置PATH，classpath，JAVA_HOME环境变量</p><br><br><p>2、解压和安装zookeeper <br><br>zookeeper的目录我是放置在/usr/zookeeper-3.4.6/这个位置，所以： <br><br><code>tar -zxvf ./zookeeper-3.4.6.tar.gz</code> <br><br><code>mv ./zookeeper-3.4.6 /usr/zookeeper-3.4.6/</code></p><br><br><p>同样的，设置全局环境变量： <br><br><code>export PATH=/usr/zookeeper-3.4.6/bin:$PATH</code></p><br><br><p>好的，安装完成了，是不是简单。接下来，我们讲解一下zookeeper的主配置文件。zookeeper的主配置文件所在的地址是：${您的zookeeper安装位置}/conf/zoo.cfg <br><br>但是，解压后的zookeeper并没有这个配置文件，有一个名叫zoo_sample.cfg，所以，我们复制一个zoo.cfg文件： <br><br><code>cp /usr/zookeeper-3.4.6/conf/zoo_sample.cfg /usr/zookeeper-3.4.6/conf/zoo.cfg</code></p><br><br><p>最后，使用zkServer.sh start命令，启动zookeeper：</p><br><br><br><br><pre class="prettyprint"><code class=" hljs r">[root@vm2 ~]<span class="hljs-comment"># zkServer.sh start</span><br>JMX enabled by default<br>Using config: /usr/zookeeper-<span class="hljs-number">3.4</span><span class="hljs-number">.6</span>/bin/../conf/zoo.cfg<br>Starting zookeeper <span class="hljs-keyword">…</span> STARTED</code></pre><br><br><br><br><h1 id="dubbox"><strong>dubbox</strong></h1><br><br><p>1、准备工作 <br><br>下载dubbox的源代码 <br><br>下载地址：<a href="https://github.com/dangdangdotcom/dubbox" target="_blank" rel="external">https://github.com/dangdangdotcom/dubbox</a></p><br><br><p>2、编译源码（此处默认大家会用maven了） <br><br>运行maven命令：mvn clean install -Dmaven.test.skip=true <br><br>将dubbox的源码打包发布到本地仓库，目的是为了获取：dubbo-admin-2.8.4.war和dubbo-monitor.war</p><br><br><br><br><h2 id="dubbox-admin管理端"><strong>dubbox-admin管理端</strong></h2><br><br><p>懒人下载：<a href="http://download.csdn.net/detail/u011282930/9477514" target="_blank" rel="external">http://download.csdn.net/detail/u011282930/9477514</a></p><br><br><p>1、部署dubbo-admin管理端，将dubbo-admin-2.8.4.war放置到准备好的tomcat目录 <br><br>2、修改WEB-INF下dubbo.properties <br><br>主要是修改zookeeper的地址 <br><br><code>dubbo.registry.address=zookeeper://127.0.0.1:2181</code> <br><br>3、运行tomcat <br><br>输入地址：<a href="http://localhost:8080/dubbo-admin-2.8.4" target="_blank" rel="external">http://localhost:8080/dubbo-admin-2.8.4</a> <br><br>默认登录账户和密码均为：root <br><br>4、登录后首页 <br><br><img src="http://img.blog.csdn.net/20160331083357772" alt="这里写图片描述" title=""> <br><br>到此为止，dubbox的后台管理端就配置成功了</p><br><br><br><br><h2 id="dubbox-monitor监控端"><strong>dubbox-monitor监控端</strong></h2><br><br><p>懒人下载：<a href="http://download.csdn.net/detail/u011282930/9477515" target="_blank" rel="external">http://download.csdn.net/detail/u011282930/9477515</a> <br><br>我们对于dubbo的监控用的是改装后的（页面非常好看）</p><br><br><p>下载dubbox-monitor的源代码 <br><br>下载地址：<a href="http://git.oschina.net/handu/dubbo-monitor" target="_blank" rel="external">http://git.oschina.net/handu/dubbo-monitor</a></p><br><br><p>Dubbo-Monitor配置介绍 <br><br>1、创建数据库 首先创建名称为monitor数据库，编码格式UTF-8。然后将项目sql文件夹下面的create.sql导入到数据库，生成dubbo_invoke表代表成功导入。 <br><br>下载地址：<a href="http://download.csdn.net/detail/u011282930/9650381" target="_blank" rel="external">http://download.csdn.net/detail/u011282930/9650381</a></p><br><br><p>2、编辑项目中application.properties，配置如下：</p><br><br><br><br><pre class="prettyprint"><code class=" hljs avrasm"><span class="hljs-preprocessor">####Dubbo Settings</span><br>dubbo<span class="hljs-preprocessor">.application</span><span class="hljs-preprocessor">.name</span>=dubbo-monitor<br>dubbo<span class="hljs-preprocessor">.application</span><span class="hljs-preprocessor">.owner</span>=handu<span class="hljs-preprocessor">.com</span><br>dubbo<span class="hljs-preprocessor">.registry</span><span class="hljs-preprocessor">.address</span>=zookeeper://<span class="hljs-number">127.0</span><span class="hljs-number">.0</span><span class="hljs-number">.1</span>:<span class="hljs-number">2181</span><br>dubbo<span class="hljs-preprocessor">.protocol</span><span class="hljs-preprocessor">.port</span>=<span class="hljs-number">6060</span><br><br><span class="hljs-preprocessor">####Database Settings</span><br>db<span class="hljs-preprocessor">.url</span>=jdbc:mysql://&lt;database_host&gt;:&lt;database_port&gt;/monitor?prepStmtCacheSize=<span class="hljs-number">517</span>&amp;cachePrepStmts=true&amp;autoReconnect=true&amp;characterEncoding=utf-<span class="hljs-number">8</span><br>db<span class="hljs-preprocessor">.username</span>=root<br>db<span class="hljs-preprocessor">.password</span>=root<br>db<span class="hljs-preprocessor">.maxActive</span>=<span class="hljs-number">500</span><br><br><span class="hljs-preprocessor">####System Manager</span><br>manager<span class="hljs-preprocessor">.username</span>=admin<br>manager<span class="hljs-preprocessor">.password</span>=admin</code></pre><br><br><p>3、打包运行项目 执行maven命令：mvn clean package target文件夹下生成的dubbo-monitor.war即为项目部署文件，将其放置到对应服务器目录下，启动服务器即可。例如：tomcat的webapps文件夹下。</p><br><br><p>4、访问项目 启动web服务器后，访问地址：<a href="http://IP:[port]/dubbo-moniotor" target="_blank" rel="external">http://IP:[port]/dubbo-moniotor</a>，采用配置文件中manager.username和manager.password设置值进行登录。 <br><br><img src="http://img.blog.csdn.net/20160331084239712" alt="这里写图片描述" title=""> <br><br>5、透过dubbox服务管理端，我们会发现多了一个monitor的服务 <br><br><img src="http://img.blog.csdn.net/20160331084141868" alt="这里写图片描述" title=""></p><br><br><br><br><h4 id="下文默认大家已经用maven引入相关依赖或者导入相关包了"><strong>下文默认大家已经用maven引入相关依赖或者导入相关包了</strong></h4><br><br><p>具体依赖jar包如下图所示 <br><br><img src="http://img.blog.csdn.net/20160331172455088" alt="这里写图片描述" title=""> <br><br>maven依赖库</p><br><br><br><br><pre class="prettyprint"><code class=" hljs xml"><span class="hljs-tag">&lt;<span class="hljs-title">dependency</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-title">groupId</span>&gt;</span>com.alibaba<span class="hljs-tag">&lt;/<span class="hljs-title">groupId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-title">artifactId</span>&gt;</span>dubbo<span class="hljs-tag">&lt;/<span class="hljs-title">artifactId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-title">version</span>&gt;</span>2.8.4<span class="hljs-tag">&lt;/<span class="hljs-title">version</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-title">dependency</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-title">dependency</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-title">groupId</span>&gt;</span>com.alibaba<span class="hljs-tag">&lt;/<span class="hljs-title">groupId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-title">artifactId</span>&gt;</span>dubbo-rpc-rest<span class="hljs-tag">&lt;/<span class="hljs-title">artifactId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-title">version</span>&gt;</span>2.8.4<span class="hljs-tag">&lt;/<span class="hljs-title">version</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-title">dependency</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-title">dependency</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-title">groupId</span>&gt;</span>com.alibaba<span class="hljs-tag">&lt;/<span class="hljs-title">groupId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-title">artifactId</span>&gt;</span>dubbo-rpc-webservice<span class="hljs-tag">&lt;/<span class="hljs-title">artifactId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-title">version</span>&gt;</span>2.8.4<span class="hljs-tag">&lt;/<span class="hljs-title">version</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-title">dependency</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-title">dependency</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-title">groupId</span>&gt;</span>com.101tec<span class="hljs-tag">&lt;/<span class="hljs-title">groupId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-title">artifactId</span>&gt;</span>zkclient<span class="hljs-tag">&lt;/<span class="hljs-title">artifactId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-title">version</span>&gt;</span>0.2<span class="hljs-tag">&lt;/<span class="hljs-title">version</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-title">dependency</span>&gt;</span><br><br>        <span class="hljs-tag">&lt;<span class="hljs-title">dependency</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-title">groupId</span>&gt;</span>org.apache.zookeeper<span class="hljs-tag">&lt;/<span class="hljs-title">groupId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-title">artifactId</span>&gt;</span>zookeeper<span class="hljs-tag">&lt;/<span class="hljs-title">artifactId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-title">version</span>&gt;</span>3.3.6<span class="hljs-tag">&lt;/<span class="hljs-title">version</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-title">exclusions</span>&gt;</span><br>                <span class="hljs-tag">&lt;<span class="hljs-title">exclusion</span>&gt;</span><br>                    <span class="hljs-tag">&lt;<span class="hljs-title">groupId</span>&gt;</span>log4j<span class="hljs-tag">&lt;/<span class="hljs-title">groupId</span>&gt;</span><br>                    <span class="hljs-tag">&lt;<span class="hljs-title">artifactId</span>&gt;</span>log4j<span class="hljs-tag">&lt;/<span class="hljs-title">artifactId</span>&gt;</span><br>                <span class="hljs-tag">&lt;/<span class="hljs-title">exclusion</span>&gt;</span><br>            <span class="hljs-tag">&lt;/<span class="hljs-title">exclusions</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-title">dependency</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-title">dependency</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-title">groupId</span>&gt;</span>log4j<span class="hljs-tag">&lt;/<span class="hljs-title">groupId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-title">artifactId</span>&gt;</span>log4j<span class="hljs-tag">&lt;/<span class="hljs-title">artifactId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-title">version</span>&gt;</span>1.2.16<span class="hljs-tag">&lt;/<span class="hljs-title">version</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-title">dependency</span>&gt;</span></code></pre><br><br><br><br><h2 id="服务提供者实例开发"><strong>服务提供者实例开发</strong></h2><br><br><p>1、定义一个Service接口和相关实现类 <br><br>定义一个接口，IUserService.java</p><br><br><br><br><pre class="prettyprint"><code class=" hljs cs">package service;<br><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> IUserService {<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">sayHello</span>();<br>}<br></code></pre><br><br><p>实现这个接口，UserService.java</p><br><br><br><br><pre class="prettyprint"><code class=" hljs java"><span class="hljs-keyword">package</span> service;<br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">UserService</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">IUserService</span> {</span><br><br>    <span class="hljs-annotation">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">sayHello</span>() {<br>        System.err.println(<span class="hljs-string">“HELLO WORLD!”</span>);<br>    }<br><br>}<br></code></pre><br><br><p>2、配置这个接口的xml文件，dubbo-provider.xml</p><br><br><br><br><pre class="prettyprint"><code class=" hljs xml"><span class="hljs-pi">&lt;?xml version=”1.1” encoding=”UTF-8”?&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-title">beans</span> <span class="hljs-attribute">xmlns</span>=<span class="hljs-value">“<a href="http://www.springframework.org/schema/beans" target="_blank" rel="external">http://www.springframework.org/schema/beans</a>“</span><br>    <span class="hljs-attribute">xmlns:xsi</span>=<span class="hljs-value">“<a href="http://www.w3.org/2001/XMLSchema-instance" target="_blank" rel="external">http://www.w3.org/2001/XMLSchema-instance</a>“</span> <span class="hljs-attribute">xmlns:dubbo</span>=<span class="hljs-value">“<a href="http://code.alibabatech.com/schema/dubbo" target="_blank" rel="external">http://code.alibabatech.com/schema/dubbo</a>“</span><br>    <span class="hljs-attribute">xsi:schemaLocation</span>=<span class="hljs-value">“<a href="http://www.springframework.org/schema/beans" target="_blank" rel="external">http://www.springframework.org/schema/beans</a><br>       <a href="http://www.springframework.org/schema/beans/spring-beans.xsd" target="_blank" rel="external">http://www.springframework.org/schema/beans/spring-beans.xsd</a><br>       <a href="http://code.alibabatech.com/schema/dubbo" target="_blank" rel="external">http://code.alibabatech.com/schema/dubbo</a><br>       <a href="http://code.alibabatech.com/schema/dubbo/dubbo.xsd" target="_blank" rel="external">http://code.alibabatech.com/schema/dubbo/dubbo.xsd</a>“</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-title">dubbo:application</span> <span class="hljs-attribute">owner</span>=<span class="hljs-value">“whb”</span> <span class="hljs-attribute">name</span>=<span class="hljs-value">“hello-world-app”</span> /&gt;</span><br>    <span class="hljs-comment">&lt;!–zookeeper注册中心 –&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-title">dubbo:registry</span> <span class="hljs-attribute">address</span>=<span class="hljs-value">“zookeeper://172.17.84.84:2181”</span>/&gt;</span><br>    <span class="hljs-comment">&lt;!–使用multicast广播注册中心暴露服务地址 –&gt;</span><br>    <span class="hljs-comment">&lt;!–&lt;dubbo:registry address=”multicast://10.57.41.19:1234” /&gt; –&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-title">dubbo:protocol</span> <span class="hljs-attribute">name</span> =<span class="hljs-value">“dubbo”</span> <span class="hljs-attribute">port</span>=<span class="hljs-value">“20880”</span> /&gt;</span><br>    <span class="hljs-comment">&lt;!– 配置监控的服务地址和IP–&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-title">dubbo:monitor</span> <span class="hljs-attribute">address</span>=<span class="hljs-value">“127.0.0.1:7070”</span>  /&gt;</span><br>    <span class="hljs-comment">&lt;!– 发布这个服务 –&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-title">dubbo:service</span>  <span class="hljs-attribute">protocol</span>=<span class="hljs-value">“dubbo”</span>  <span class="hljs-attribute">timeout</span>=<span class="hljs-value">“2000”</span> <span class="hljs-attribute">connections</span>=<span class="hljs-value">“100”</span> <span class="hljs-attribute">interface</span> =<span class="hljs-value">“service.IUserService”</span> <span class="hljs-attribute">ref</span>=<span class="hljs-value">“userService”</span> /&gt;</span><br>    <span class="hljs-comment">&lt;!– 和本地bean一样实现服务 –&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-title">bean</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">“userService”</span><br>        <span class="hljs-attribute">class</span>=<span class="hljs-value">“service.UserService”</span> /&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-title">beans</span>&gt;</span>  </code></pre><br><br><p>3、运行发布我们的接口，LuncherProvider.java</p><br><br><br><br><pre class="prettyprint"><code class=" hljs cs">package demo;<br>import org.springframework.context.ApplicationContext;<br>import org.springframework.context.support.ClassPathXmlApplicationContext;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> LuncherProvider {<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span>(String[] args) throws InterruptedException {<br>        LuncherProvider luncher = <span class="hljs-keyword">new</span> LuncherProvider();<br>        luncher.start();<br>        Thread.sleep(<span class="hljs-number">1000</span> <em> <span class="hljs-number">60</span> </em> <span class="hljs-number">10</span>);<br>    }<br><br>    <span class="hljs-keyword">void</span> start() {<br>        String configLocation = <span class="hljs-string">“classpath<em>:/dubbo-provider.xml”</em></span>;<br>        ApplicationContext context = <span class="hljs-keyword">new</span> ClassPathXmlApplicationContext(<br>                configLocation);<br>        String[] names = context.getBeanDefinitionNames();<br>        System.<span class="hljs-keyword">out</span>.print(<span class="hljs-string">“Beans:”</span>);<br>        <span class="hljs-keyword">for</span> (String <span class="hljs-keyword">string</span> : names)<br>            System.<span class="hljs-keyword">out</span>.print(<span class="hljs-keyword">string</span> + <span class="hljs-string">“,”</span>);<br>        System.<span class="hljs-keyword">out</span>.println();<br>    }<br>}</code></pre><br><br><p>控制台输出如下内容，为成功 <br><br><img src="http://img.blog.csdn.net/20160331090743347" alt="这里写图片描述" title=""> <br><br>通过dubbox管理端来查看我们的服务，通过下图，我们可以看到我们的服务已经注册到zookeeper了 <br><br><img src="http://img.blog.csdn.net/20160331085207982" alt="这里写图片描述" title=""></p><br><br><br><br><h2 id="消费者实例开发"><strong>消费者实例开发</strong></h2><br><br><p>如何调用我们发布的服务呢？ <br><br>1、定义一个一模一样的接口，IUserService.java</p><br><br><br><br><pre class="prettyprint"><code class=" hljs cs">package service;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> IUserService {<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">sayHello</span>();<br>}<br></code></pre><br><br><p>2、配置这个接口调用信息，</p><br><br><br><br><pre class="prettyprint"><code class=" hljs xml"><span class="hljs-pi">&lt;?xml version=”1.1” encoding=”UTF-8”?&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-title">beans</span> <span class="hljs-attribute">xmlns</span>=<span class="hljs-value">“<a href="http://www.springframework.org/schema/beans" target="_blank" rel="external">http://www.springframework.org/schema/beans</a>“</span><br>    <span class="hljs-attribute">xmlns:xsi</span>=<span class="hljs-value">“<a href="http://www.w3.org/2001/XMLSchema-instance" target="_blank" rel="external">http://www.w3.org/2001/XMLSchema-instance</a>“</span> <span class="hljs-attribute">xmlns:dubbo</span>=<span class="hljs-value">“<a href="http://code.alibabatech.com/schema/dubbo" target="_blank" rel="external">http://code.alibabatech.com/schema/dubbo</a>“</span><br>    <span class="hljs-attribute">xsi:schemaLocation</span>=<span class="hljs-value">“<a href="http://www.springframework.org/schema/beans" target="_blank" rel="external">http://www.springframework.org/schema/beans</a><br>       <a href="http://www.springframework.org/schema/beans/spring-beans.xsd" target="_blank" rel="external">http://www.springframework.org/schema/beans/spring-beans.xsd</a><br>       <a href="http://code.alibabatech.com/schema/dubbo" target="_blank" rel="external">http://code.alibabatech.com/schema/dubbo</a><br>       <a href="http://code.alibabatech.com/schema/dubbo/dubbo.xsd" target="_blank" rel="external">http://code.alibabatech.com/schema/dubbo/dubbo.xsd</a>“</span>&gt;</span><br>         <span class="hljs-comment">&lt;!–消费方应用名，用于计算依赖关系，不是匹配条件，不要与提供方一样 –&gt;</span><br>         <span class="hljs-tag">&lt;<span class="hljs-title">dubbo:application</span> <span class="hljs-attribute">name</span>=<span class="hljs-value">“consumer-of-helloworld-app”</span> /&gt;</span><br>         <span class="hljs-comment">&lt;!–zookeeper注册中心 –&gt;</span><br>         <span class="hljs-tag">&lt;<span class="hljs-title">dubbo:registry</span>  <span class="hljs-attribute">protocol</span>=<span class="hljs-value">“zookeeper”</span> <span class="hljs-attribute">address</span>=<span class="hljs-value">“172.17.84.84:2181”</span> /&gt;</span><br>         <span class="hljs-comment">&lt;!–使用multicast广播注册中心暴露的服务地址 –&gt;</span><br>         <span class="hljs-comment">&lt;!–&lt;dubbo:registryaddress=”multicast://10.57.41.19:1234” /&gt; –&gt;</span><br>          <span class="hljs-comment">&lt;!–         &lt;dubbo:monitor address=”127.0.0.1:7070”  /&gt; –&gt;</span><br>          <span class="hljs-comment">&lt;!– 生成远程服务代理，可以和本地bean一样使用IUserService–&gt;</span><br>         <span class="hljs-tag">&lt;<span class="hljs-title">dubbo:reference</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">“userService”</span> <span class="hljs-attribute">interface</span>=<span class="hljs-value">“service.IUserService”</span> /&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-title">beans</span>&gt;</span>  </code></pre><br><br><p>3、测试调用服务的代码，LuncherConsumer.java</p><br><br><br><br><pre class="prettyprint"><code class=" hljs java"><span class="hljs-keyword">package</span> demo;<br><br><br><br><span class="hljs-keyword">import</span> org.springframework.context.ApplicationContext;<br><span class="hljs-keyword">import</span> org.springframework.context.support.ClassPathXmlApplicationContext;<br><br><span class="hljs-keyword">import</span> service.IUserService;<br><br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">LuncherConsumer</span>  {</span><br>         <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span>(String[] args) <span class="hljs-keyword">throws</span> InterruptedException{<br>                   LuncherConsumer luncher=<span class="hljs-keyword">new</span> LuncherConsumer();<br>                   String configLocation=<span class="hljs-string">“classpath:/dubbo-consumer.xml”</span>;<br>                   ApplicationContext context =<span class="hljs-keyword">new</span> ClassPathXmlApplicationContext(configLocation);<br>                   IUserService us=(IUserService) context.getBean(<span class="hljs-string">“userService”</span>);<br>                   String[] names=context.getBeanDefinitionNames();<br>                   us.sayHello();<br>         }<br>}  </code></pre><br><br><p>观察服务端的控制台，会输出“HELLO WORLD” <br><br><img src="http://img.blog.csdn.net/20160331090854144" alt="这里写图片描述" title=""></p><br><br><p>至此，dubbox的配置和使用就成功了！</p></div>
-
-</div>
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -1118,7 +1118,7 @@ http://www.CodeHighlighter.com/<br />
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-count">56</span>
                 <span class="site-state-item-name">Artikel</span>
               </a>
             </div>

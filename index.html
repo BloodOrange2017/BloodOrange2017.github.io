@@ -590,6 +590,118 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2099/09/07/myProject-01/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="XueCheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XueCheng Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2099/09/07/myProject-01/" itemprop="url">案例项目-下载页</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2099-09-07T10:13:49+08:00">
+                2099-09-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p></p><h4>maven项目</h4><br><a href="https://bloodorange2017.github.io//myProject/base_maven/base-pom.zip">maven基础分层项目</a><br><a href="https://bloodorange2017.github.io//myProject/maven+activemq/base-pom.zip">maven分层工程结合activemq</a><p></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/08/11/annotation-01/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -926,119 +1038,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/08/08/activeMq-04/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="XueCheng">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="XueCheng Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/08/08/activeMq-04/" itemprop="url">转载:ActiveMQ -JMS事务与XA事务</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Veröffentlicht am</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-08T14:32:03+08:00">
-                2017-08-08
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <div id="article_content" class="article_content tracking-ad" data-mod="popu_307" data-dsm="post"><br><br><h3><span style="font-family:Microsoft YaHei; font-size:14px">1.为什么要用事务？</span></h3><br><p></p><br><div><span style="font-family:Microsoft YaHei; font-size:14px">&nbsp; &nbsp; &nbsp; &nbsp;消息事务是在生产者producer到broker或broker到consumer过程中同一个session中发生的，保证几条消息在发送过程中的原子性。</span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px">&nbsp; &nbsp; &nbsp; &nbsp;可以在connection的createSession方法中指定一个布尔&#20540;开启，如果消息确认机制是事务确认，那么在发送message的过程中session就会开启事务（实际上broker的），不用用户显示调用 beginTransaction，这时所有通过session发送的消息都被缓存下来，用户调用session.commit时会发送所有消息，当发送出现异常时用户可以调用rollback进行回滚操作，只有在开启事务状态下有效。</span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px">&nbsp;</span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px"></span><br><p>为什么commit之后，不会有持久的消息重新传送呢?</p><br><p>&nbsp; &nbsp; &nbsp; &nbsp;原因在于commit操作会自动将为签收确认的消息进行签收确认，如果是当前接收但未签收确认的消息，都会被确认处理。因而在commit之后不会有持久化的消息出现。</p><br><br><br></div><br><h3><span style="font-family:Microsoft YaHei; font-size:14px">2.activeMQ支持的事务：</span></h3><br><div><span style="font-family:Microsoft YaHei; font-size:14px"></span><br><p style="font-family:verdana,arial,helvetica,sans-serif; margin-top:3px; line-height:24px"><br>ActiveMQ有支持两种事务，</p><br><ul style="font-family:verdana,arial,helvetica,sans-serif; margin-left:15px; margin-top:5px; margin-bottom:5px; line-height:24px"><br><li>JMS transactions - the commit() / rollback() methods on a Session (which is like doing commit() / rollback() on a JDBC connection)</li><li>XA Transactions - where the&nbsp;<a target="_blank" href="http://activemq.apache.org/maven/activemq-core/apidocs/org/apache/activemq/ActiveMQXASession.html" class="external-link" style="color:#880055">XASession</a>&nbsp;acts as an&nbsp;<a target="_blank" href="http://java.sun.com/j2ee/1.4/docs/api/javax/transaction/xa/XAResource.html" class="external-link" style="color:#880055">XAResource</a>&nbsp;by<br> communicating with the Message Broker, rather like a JDBC Connection takes place in an XA transaction by communicating with the database.</li></ul><br><p style="margin-top:10px; line-height:24px">在支持事务的session中，producer发送message时在message中带有transaction ID。broker收到message后判断是否有transaction ID，如果有就把message保存在transaction store中，等待commit或者rollback消息。所以<span style="line-height:1.5">ActiveMq的事务是针对broker而不是producer的，不管session是否commit，broker都会收到message。</span></p><br><p style="margin-top:10px; line-height:24px"><span style="line-height:1.5em">如果producer发送模式选择了persistent，那么message过期后会进入死亡队列。在message进入死亡队列之前，ActiveMQ会删除message中的transaction ID，这样过期的message就不在事务中了，不会保存在</span><span style="line-height:1.5em">transaction store中，会直接进入死亡队列。具体删除transaction<br> ID的地方是在：</span><span style="line-height:1.5em">org.apache.activemq.util.</span><span style="line-height:1.5em">BrokerSupport的doResend，将transaction ID保存在了originalTransactionID中，删除了transaction ID。</span></p><br><p style="margin-top:10px; line-height:24px"><span style="line-height:1.5em">&nbsp; &nbsp; &nbsp; &nbsp;在下面的介绍中我用的是<span style="font-family:verdana,arial,helvetica,sans-serif; font-size:14px">JMS transactions.</span></span></p><br><p style="margin-top:10px; line-height:24px"><span style="font-family:verdana,arial,helvetica,sans-serif; font-size:14px">JMS transactions事务的配置：</span><br><br></p><br><p style="margin-top:10px; line-height:24px"><span style="font-family:verdana,arial,helvetica,sans-serif; font-size:14px">&nbsp; &nbsp; &nbsp; ①建立JMS事务，并引入关联链接事务。</span></p><br><p style="margin-top:10px; line-height:24px">&nbsp; &nbsp; &nbsp; &nbsp;<span style="font-size:14px"> &nbsp;②.设置一个jmsTamplat，并关联监听容器。</span></p><br><p style="margin-top:10px; line-height:24px"><pre name="code" class="html">&lt;!– jms事务 –&gt;<br>    &lt;bean id=&quot;jmsTransactionManager&quot;<br>        class=&quot;org.springframework.jms.connection.JmsTransactionManager&quot;&gt;<br>        &lt;property name=&quot;connectionFactory&quot; ref=&quot;connectionFactory&quot; /&gt;<br>    &lt;/bean&gt;<br>    &lt;tx:annotation-driven transaction-manager=&quot;jmsTransactionManager&quot; /&gt;<br><br><br>&lt;!– 消息监听容器 消息接收监听器用于异步接收消息 –&gt;<br>    &lt;bean id=&quot;jmsContainerOne&quot; class=&quot;org.springframework.jms.listener.DefaultMessageListenerContainer&quot;&gt;<br>        &lt;property name=&quot;connectionFactory&quot; ref=&quot;connectionFactory&quot; /&gt;<br>        &lt;property name=&quot;destination&quot; ref=&quot;destinationOne&quot; /&gt;<br>        &lt;property name=&quot;messageListener&quot; ref=&quot;consumerMessageListenerOfOne&quot; /&gt;<br>        &lt;!– &lt;property name=&quot;sessionTransacted&quot; value=&quot;true&quot;/&gt; –&gt;  &lt;!– 给listener添加事务，只负责接收消息的回滚 （有了transactionManager就不用这个了，这个功能不全） 设置后好像并没有起作用 不知道为啥 –&gt;<br>        &lt;!– &lt;property name=&quot;transactionManager&quot; ref=&quot;jtaTransactionManager&quot;/&gt; –&gt; &lt;!– 接收消息和数据库访问处于同一事务中 jta –&gt;<br>        &lt;property name=&quot;transactionManager&quot; ref=&quot;jmsTransactionManager&quot; /&gt; &lt;!–jms事务 –&gt;<br>        &lt;property name=&quot;sessionAcknowledgeMode&quot; value=&quot;4&quot;&gt;&lt;/property&gt;   &lt;!– 应答模式是 INDIVIDUAL_ACKNOWLEDGE <a href="http://blog.csdn.net/yueding_h/article/details/54944254" target="_blank" rel="external">http://blog.csdn.net/yueding_h/article/details/54944254</a> –&gt;<br>        &lt;!– ActiveMQ:设置多个并行的消费者 –&gt;<br>        &lt;property name=&quot;concurrency&quot; value=&quot;2-3&quot; /&gt;<br>    &lt;/bean&gt;</pre><br><br></p><br></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px">上面配置文件配置完成后，在接收着那边接受消息失败后，进行事务回滚。</span><pre name="code" class="html">session.rollback();</pre></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px">&nbsp; &nbsp;具体实现：</span><pre name="code" class="html"> public void onMessage(Message message, Session session) {<br>          TextMessage textMsg = (TextMessage) message;<br>            try {<br>                    System.out.println(1);<br>                    String endStr = textMsg.getText();<br>                    Integer endInt = Integer.parseInt(endStr);<br>                    System.out.println(&quot;消息：===&quot;+endInt);<br>                    //只要被确认后   就会出队，接受失败没有确认成功，会在原队列里面<br>                        textMsg.acknowledge();<br><br>            } catch (Exception e) {<br>                try {<br>                    session.rollback();<br>                    System.out.println(&quot;测试回滚&quot;);<br>                                      e.printStackTrace();<br>                                 System.out.println(&quot;异常信息是：===：&quot; + e.getMessage());<br>                      }<br>        }<br><br></pre>&nbsp; 这就介绍完了。</div><br><div><span style="font-family:Microsoft YaHei; font-size:14px">&nbsp; 另外，activeMQ还有一种JtaTransactionManager 事务控制。</span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px">&nbsp;&nbsp;事务控制： （这里让接收消息和数据库访问处于同一事务中）我们就可以配置一个外部的事务管理同时配置一个支持外部事务管理的消息监听容器（如DefaultMessageListenerContainer）&nbsp;。要配置这样一个参与分布式事务管理的消息监听容器，我们可以配置一个JtaTransactionManager，当然底层的JMS ConnectionFactory需要能够支持分布式事务管理，&nbsp;并正确地注册我们的JtaTransactionManager。这样消息监听器进行消息接收和对应的数据库访问就会处于同一数据库控制下，当消息接收失败或数据库访问失败都会进行事务回滚操作。&nbsp;</span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px">&nbsp; &nbsp;这种事务控制，我在配置的时候，失败了，所以选用了JMS事务控制。<br><br>&nbsp; &nbsp;待我详细了解<span style="font-family:&quot;Microsoft YaHei&quot;; font-size:14px">JtaTransactionManager 后，再说吧。</span></span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px"><br><br></span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px"><br><br></span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px"><br><br></span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px"><br><br></span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px"><br><br></span></div><br><p></p><br><br></div>
-
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -1088,7 +1087,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-count">56</span>
                 <span class="site-state-item-name">Artikel</span>
               </a>
             </div>
