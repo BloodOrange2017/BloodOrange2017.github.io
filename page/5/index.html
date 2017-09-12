@@ -200,7 +200,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
-            Startseite
+            Home
           </a>
         </li>
       
@@ -210,7 +210,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
-            Archiv
+            Archives
           </a>
         </li>
       
@@ -253,6 +253,122 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/06/01/guavaCache-01/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="XueCheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XueCheng Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/06/01/guavaCache-01/" itemprop="url">转载:Guava Cache高速本地缓存</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-06-01T15:03:48+08:00">
+                2017-06-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <div class="post_content"><br>      <p><a href="http://code.google.com/p/guava-libraries/wiki/CachesExplained" target="_blank">原文地址</a>  <a href="http://ifeve.com/google-guava-cachesexplained/" target="_blank">译文地址</a>    译者：许巧辉  校对：沈义扬</p><br><h2>范例</h2><br><pre class="brush: java; title: ; notranslate" title=""><br>LoadingCache&lt;Key, Graph&gt; graphs = CacheBuilder.newBuilder()<br>        .maximumSize(1000)<br>        .expireAfterWrite(10, TimeUnit.MINUTES)<br>        .removalListener(MY_LISTENER)<br>        .build(<br>            new CacheLoader&lt;Key, Graph&gt;() {<br>                public Graph load(Key key) throws AnyException {<br>                    return createExpensiveGraph(key);<br>                }<br>        });<br></pre><br><p><span id="more-8711"></span></p><br><h2>适用性</h2><br><p>缓存在很多场景下都是相当有用的。例如，计算或检索一个值的代价很高，并且对同样的输入需要不止一次获取值的时候，就应当考虑使用缓存。</p><br><p align="left"><tt></tt><tt>Guava Cache与ConcurrentMap很相似，但也不完全一样。最基本的区别是ConcurrentMap会一直保存所有添加的元素，直到显式地移除。相对地，Guava Cache为了限制内存占用，通常都设定为自动回收元素。在某些场景下，尽管LoadingCache 不回收元素，它也是很有用的，因为它会自动加载缓存。</tt></p><br><p><tt>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/06/01/guavaCache-01/#more" rel="contents">
+              Read more &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/05/23/jvm-03/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -282,7 +398,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-23T14:45:12+08:00">
                 2017-05-23
@@ -395,7 +511,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-23T14:42:00+08:00">
                 2017-05-23
@@ -509,7 +625,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-17T17:36:39+08:00">
                 2017-05-17
@@ -622,7 +738,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-16T11:53:57+08:00">
                 2017-05-16
@@ -746,7 +862,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-16T11:19:45+08:00">
                 2017-05-16
@@ -859,7 +975,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-16T09:04:51+08:00">
                 2017-05-16
@@ -934,135 +1050,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/05/12/lock-03/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="XueCheng">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="XueCheng Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/05/12/lock-03/" itemprop="url">转载:Lock实现原理(底层实现)</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Veröffentlicht am</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-12T17:18:57+08:00">
-                2017-05-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <div id="article_content" class="article_content"><br>        <div class="markdown_views"><p>关于java lock的底层实现原理，讲的有点深，转载学习！</p><br><br><p>Lock完全用Java写成，在java这个层面是无关JVM实现的。</p><br><br><p>在java.util.concurrent.locks包中有很多Lock的实现类，常用的有ReentrantLock、ReadWriteLock（实现类ReentrantReadWriteLock），其实现都依赖java.util.concurrent.<strong>AbstractQueuedSynchronizer</strong>类，实现思路都大同小异，因此我们以ReentrantLock作为讲解切入点。</p><br><br><br><br><h3 id="reentrantlock的调用过程">ReentrantLock的调用过程</h3><br><br><p>经过观察ReentrantLock把所有Lock接口的操作都委派到一个<strong>Sync类</strong>上，该类继承了<strong>AbstractQueuedSynchronizer</strong>：</p><br><br><pre><code>static abstract class Sync extends AbstractQueuedSynchronizer<br></code></pre><br><br><p>Sync又有两个子类：</p><br><br><pre><code>final static class NonfairSync extends Sync<br><br>final static class FairSync extends Sync<br></code></pre><br><br><p>显然是为了支持公平锁和非公平锁而定义，默认情况下为非公平锁。 <br><br>先理一下Reentrant.lock()方法的调用过程（默认非公平锁）： <br><br><img src="http://hi.csdn.net/attachment/201107/29/0_13119022769n5R.gif" alt="这里写图片描述" title=""></p><br><br><p>这些讨厌的Template模式导致很难直观的看到整个调用过程，其实通过上面调用过程及AbstractQueuedSynchronizer的注释可以发现，AbstractQueuedSynchronizer中抽象了绝大多数Lock的功能，而只把tryAcquire方法延迟到子类中实现。tryAcquire方法的语义在于用具体子类判断请求线程是否可以获得锁，无论成功与否AbstractQueuedSynchronizer都将处理后面的流程。</p><br><br><br><br><h3 id="锁实现加锁">锁实现（加锁）</h3><br><br><p>简单说来，AbstractQueuedSynchronizer会把所有的请求线程构成一个CLH队列，当一个线程执行完毕（lock.unlock()）时会激活自己的后继节点，但正在执行的线程并不在队列中，而那些等待执行的线程全部处于阻塞状态，经过调查线程的显式阻塞是通过调用LockSupport.park()完成，而LockSupport.park()则调用sun.misc.Unsafe.park()本地方法，再进一步，HotSpot在Linux中中通过调用pthread_mutex_lock函数把线程交给系统内核进行阻塞。 <br><br>该队列如图：</p><br><br><p><img src="http://hi.csdn.net/attachment/201107/28/0_1311847049xnXb.gif" alt="这里写图片描述" title=""></p><br><br><p>与synchronized相同的是，这也是一个虚拟队列，不存在队列实例，仅存在节点之间的前后关系。令人疑惑的是为什么采用CLH队列呢？原生的CLH队列是用于自旋锁，但Doug Lea把其改造为阻塞锁。 <br><br><strong>当有线程竞争锁时，该线程会首先尝试获得锁，这对于那些已经在队列中排队的线程来说显得不公平，这也是非公平锁的由来</strong>，与synchronized实现类似，这样会极大提高吞吐量。 <br><br>如果已经存在Running线程，则新的竞争线程会被追加到队尾，具体是采用基于CAS的Lock-Free算法，因为线程并发对Tail调用CAS可能会导致其他线程CAS失败，解决办法是<strong>循环CAS直至成功</strong>。AbstractQueuedSynchronizer的实现非常精巧，令人叹为观止，不入细节难以完全领会其精髓，下面详细说明实现过程：</p><br><br><br><br><h4 id="21-syncnonfairtryacquire">2.1 Sync.nonfairTryAcquire</h4><br><br><p>nonfairTryAcquire方法将是lock方法间接调用的第一个方法，每次请求锁时都会首先调用该方法。</p><br><br><pre><code>final boolean nonfairTryAcquire(int acquires) {<br>    final Thread current = Thread.currentThread();<br>    int c = getState();<br>    if (c == 0) {<br>        if (compareAndSetState(0, acquires)) {<br>            setExclusiveOwnerThread(current);<br>            return true;<br>        }<br>    }<br>    else if (current == getExclusiveOwnerThread()) {<br>        int nextc = c + acquires;<br>        if (nextc &lt; 0) // overflow<br>            throw new Error(“Maximum lock count exceeded”);<br>        setState(nextc);<br>        return true;<br>    }<br>    return false;<br>}<br></code></pre><br><br><p>该方法会首先判断当前状态，如果c==0说明没有线程正在竞争该锁，如果不c !=0 说明有线程正拥有了该锁。 <br><br>如果发现c==0，则通过CAS设置该状态值为acquires,acquires的初始调用值为1，每次线程重入该锁都会+1，每次unlock都会-1，但为0时释放锁。如果CAS设置成功，则可以预计其他任何线程调用CAS都不会再成功，也就认为当前线程得到了该锁，也作为Running线程，<strong>很显然这个Running线程并未进入等待队列。</strong> <br><br>如果c !=0 但发现自己已经拥有锁，只是简单地++acquires，并修改status值，但因为没有竞争，所以通过setStatus修改，而非CAS，也就是说这段代码实现了偏向锁的功能，并且实现的非常漂亮。</p><br><br><br><br><h4 id="22-abstractqueuedsynchronizeraddwaiter">2.2 AbstractQueuedSynchronizer.addWaiter</h4><br><br><p>addWaiter方法负责把<strong>当前无法获得锁的线程包装为一个Node添加到队尾</strong>：</p><br><br><pre><code>private Node addWaiter(Node mode) {<br>    Node node = new Node(Thread.currentThread(), mode);<br>    // Try the fast path of enq; backup to full enq on failure<br>    Node pred = tail;<br>    if (pred != null) {<br>        node.prev = pred;<br>        if (compareAndSetTail(pred, node)) {<br>            pred.next = node;<br>            return node;<br>        }<br>    }<br>    enq(node);<br>    return node;<br>}<br></code></pre><br><br><p>其中参数mode是独占锁还是共享锁，默认为null，独占锁。追加到队尾的动作分两步： <br><br>如果当前队尾已经存在(tail!=null)，则使用CAS把当前线程更新为Tail <br><br>如果当前<strong>Tail为null或则线程调用CAS设置队尾失败</strong>，则通过enq方法继续设置Tail <br><br>下面是enq方法：</p><br><br><pre><code>private Node enq(final Node node) {<br>    for (;;) {<br>        Node t = tail;<br>        if (t == null) { // Must initialize<br>            Node h = new Node(); // Dummy header<br>            h.next = node;<br>            node.prev = h;<br>            if (compareAndSetHead(h)) {<br>                tail = node;<br>                return h;<br>            }<br>        }<br>        else {<br>            node.prev = t;<br>            if (compareAndSetTail(t, node)) {<br>                t.next = node;<br>                return t;<br>            }<br>        }<br>    }<br>}<br></code></pre><br><br><p>该方法就是<strong>循环调用CAS</strong>，即使有高并发的场景，无限循环将会最终成功把当前线程追加到队尾（或设置队头）。总而言之，<strong>addWaiter的目的就是通过CAS把当前线程追加到队尾，并返回包装后的Node实例。</strong></p><br><br><p>把线程要包装为Node对象的主要原因，除了用Node构造供虚拟队列外，还用Node包装了各种线程状态，这些状态被精心设计为一些数字值：</p><br><br><ul><br><li>SIGNAL(-1) ：线程的后继线程正/已被阻塞，当该线程release或cancel时要重新这个后继线程(unpark)</li><br><li>CANCELLED(1)：因为超时或中断，该线程已经被取消</li><br><li>CONDITION(-2)：表明该线程被处于条件队列，就是因为调用了Condition.await而被阻塞</li><br><li>PROPAGATE(-3)：传播共享锁</li><br><li>0：0代表无状态</li><br></ul><br><br><br><br><h4 id="23-abstractqueuedsynchronizeracquirequeued">2.3 AbstractQueuedSynchronizer.acquireQueued</h4><br><br><p>acquireQueued的主要作用是把已经追加到队列的线程节点（addWaiter方法返回值）进行阻塞，但阻塞前又通过tryAccquire重试是否能获得锁，如果重试成功能则无需阻塞，直接返回</p><br><br><pre><code>final boolean acquireQueued(final Node node, int arg) {<br>    try {<br>        boolean interrupted = false;<br>        for (;;) {<br>            final Node p = node.predecessor();<br>            if (p == head &amp;&amp; tryAcquire(arg)) {<br>                setHead(node);<br>                p.next = null; // help GC<br>                return interrupted;<br>            }<br>            if (shouldParkAfterFailedAcquire(p, node) &amp;&amp;<br>                parkAndCheckInterrupt())<br>                interrupted = true;<br>        }<br>    } catch (RuntimeException ex) {<br>        cancelAcquire(node);<br>        throw ex;<br>    }<br>}<br></code></pre><br><br><p>仔细看看这个方法是个无限循环，感觉如果p == head &amp;&amp; tryAcquire(arg)条件不满足循环将永远无法结束，当然不会出现死循环，奥秘在于第12行的<strong>parkAndCheckInterrupt会把当前线程挂起</strong>，从而阻塞住线程的调用栈。</p><br><br><pre><code>private final boolean parkAndCheckInterrupt() {<br>    LockSupport.park(this);<br>    return Thread.interrupted();<br>}<br></code></pre><br><br><p>如前面所述，LockSupport.park最终把线程交给系统（Linux）内核进行阻塞。当然也不是马上把请求不到锁的线程进行阻塞，还要检查该线程的状态，比如如果该线程处于Cancel状态则没有必要，具体的检查在shouldParkAfterFailedAcquire中：</p><br><br><pre><code>  private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {<br>      int ws = pred.waitStatus;<br>      if (ws == Node.SIGNAL)<br>          /<em> 
-           </em> This node has already set status asking a release<br>           <em> to signal it, so it can safely park 
-           </em>/<br>          return true;<br>      if (ws &gt; 0) {<br>          /<em> 
-           </em> Predecessor was cancelled. Skip over predecessors and<br>           <em> indicate retry. 
-           </em>/<br>   do {<br>            node.prev = pred = pred.prev;<br>    } while (pred.waitStatus &gt; 0);<br>            pred.next = node;<br>    } else {<br>          /<em> 
-           </em> waitStatus must be 0 or PROPAGATE. Indicate that we<br>           <em> need a signal, but don’t park yet. Caller will need to 
-           </em> retry to make sure it cannot acquire before parking.<br>           <em>/<br>          compareAndSetWaitStatus(pred, ws, Node.SIGNAL);<br>      }<br>      return false;<br>  }<br></em></code></pre><br><br><p>检查原则在于：</p><br><br><ul><br><li><p>规则1：如果前继的节点状态为SIGNAL，表明当前节点需要unpark，则返回成功，此时acquireQueued方法的第12行（parkAndCheckInterrupt）将导致线程阻塞</p></li><br><li><p>规则2：如果前继节点状态为CANCELLED(ws&gt;0)，说明前置节点已经被放弃，则回溯到一个非取消的前继节点，返回false，acquireQueued方法的无限循环将递归调用该方法，直至规则1返回true，导致线程阻塞</p></li><br><li><p>规则3：如果前继节点状态为非SIGNAL、非CANCELLED，则设置前继的状态为SIGNAL，返回false后进入acquireQueued的无限循环，与规则2同</p></li><br></ul><br><br><p>总体看来，shouldParkAfterFailedAcquire就是靠前继节点判断当前线程是否应该被阻塞，如果前继节点处于CANCELLED状态，<strong>则顺便删除这些节点重新构造队列。</strong> <br><br>至此，锁住线程的逻辑已经完成，下面讨论解锁的过程。</p><br><br><h3 id="解锁">解锁</h3><br><br><p>请求锁不成功的线程会被挂起在acquireQueued方法的第12行，12行以后的代码必须等线程被解锁锁才能执行，假如被阻塞的线程得到解锁，则执行第13行，即设置interrupted = true，之后又进入无限循环。</p><br><br><p>从无限循环的代码可以看出，并不是得到解锁的线程一定能获得锁，必须在第6行中调用tryAccquire重新竞争，因为锁是非公平的，有可能被新加入的线程获得，<strong>从而导致刚被唤醒的线程再次被阻塞</strong>，这个细节充分体现了“非公平”的精髓。通过之后将要介绍的解锁机制会看到，第一个被解锁的线程就是Head，因此p == head的判断基本都会成功。</p><br><br><p>至此可以看到，把tryAcquire方法延迟到子类中实现的做法非常精妙并具有极强的可扩展性，令人叹为观止！当然精妙的不是这个Template设计模式，而是Doug Lea对锁结构的精心布局。</p><br><br><p>解锁代码相对简单，主要体现在AbstractQueuedSynchronizer.release和Sync.tryRelease方法中： <br><br>class AbstractQueuedSynchronizer</p><br><br><pre><code>public final boolean release(int arg) {<br>    if (tryRelease(arg)) {<br>        Node h = head;<br>        if (h != null &amp;&amp; h.waitStatus != 0)<br>            unparkSuccessor(h);<br>        return true;<br>    }<br>    return false;<br>}<br></code></pre><br><br><p>class Sync</p><br><br><pre><code>protected final boolean tryRelease(int releases) {<br>    int c = getState() - releases;<br>    if (Thread.currentThread() != getExclusiveOwnerThread())<br>        throw new IllegalMonitorStateException();<br>    boolean free = false;<br>    if (c == 0) {<br>        free = true;<br>        setExclusiveOwnerThread(null);<br>    }<br>    setState(c);<br>    return free;<br>}<br></code></pre><br><br><p>tryRelease与tryAcquire语义相同，把如何释放的逻辑延迟到子类中。</p><br><br><p>tryRelease语义很明确：如果线程多次锁定，则进行多次释放，直至status==0则真正释放锁，所谓释放锁即设置status为0，因为无竞争所以没有使用CAS。 <br><br>release的语义在于：如果可以释放锁，则唤醒队列第一个线程（Head），具体唤醒代码如下：</p><br><br><pre><code>private void unparkSuccessor(Node node) {<br>    /<br>     <em> If status is negative (i.e., possibly needing signal) try 
-     </em> to clear in anticipation of signalling. It is OK if this<br>     <em> fails or if status is changed by waiting thread. 
-     </em>/<br>    int ws = node.waitStatus;<br>    if (ws &lt; 0)<br>        compareAndSetWaitStatus(node, ws, 0);<br><br>    /<em> 
-     </em> Thread to unpark is held in successor, which is normally<br>     <em> just the next node.  But if cancelled or apparently null, 
-     </em> traverse backwards from tail to find the actual<br>     <em> non-cancelled successor. 
-     </em>/<br>    Node s = node.next;<br>    if (s == null || s.waitStatus &gt; 0) {<br>        s = null;<br>        for (Node t = tail; t != null &amp;&amp; t != node; t = t.prev)<br>            if (t.waitStatus &lt;= 0)<br>                s = t;<br>    }<br>    if (s != null)<br>        LockSupport.unpark(s.thread);<br>}<br></code></pre><br><br><p>这段代码的意思在于找出第一个可以unpark的线程，一般说来head.next == head，Head就是第一个线程，但Head.next可能被取消或被置为null，因此比较稳妥的办法是从后往前找第一个可用线程。貌似回溯会导致性能降低，其实这个发生的几率很小，所以不会有性能影响。之后便是通知系统内核继续该线程，在Linux下是通过pthread_mutex_unlock完成。之后，被解锁的线程进入上面所说的重新竞争状态。</p><br><br><br><br><h3 id="lock-vs-synchronized">Lock VS Synchronized</h3><br><br><p>AbstractQueuedSynchronizer通过构造一个<strong>基于阻塞的CLH队列</strong>容纳所有的阻塞线程，而对该队列的操作均通过Lock-Free（CAS）操作，但对已经获得锁的线程而言，ReentrantLock实现了偏向锁的功能。</p><br><br><p>synchronized的底层也是一个基于CAS操作的等待队列，但JVM实现的更精细，把等待队列分为ContentionList和EntryList，目的是为了降低线程的出列速度；当然也实现了偏向锁，从数据结构来说二者设计没有本质区别。但synchronized还实现了自旋锁，并针对不同的系统和硬件体系进行了优化，而Lock则完全依靠系统阻塞挂起等待线程。</p><br><br><p>当然Lock比synchronized更适合在应用层扩展，可以继承AbstractQueuedSynchronizer定义各种实现，比如实现读写锁（ReadWriteLock），公平或不公平锁；同时，Lock对应的Condition也比wait/notify要方便的多、灵活的多。</p></div>
-
-</div>
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1107,8 +1099,8 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">56</span>
-                <span class="site-state-item-name">Artikel</span>
+                <span class="site-state-item-count">57</span>
+                <span class="site-state-item-name">posts</span>
               </a>
             </div>
           
@@ -1162,7 +1154,7 @@
 
 
 <div class="powered-by">
-  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
 </div>
 
 <div class="theme-info">

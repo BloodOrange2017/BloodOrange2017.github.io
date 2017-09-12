@@ -1,0 +1,676 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="近期都在谈微服务，本人也正在做相关的工作，应领导要求做了一个微服务的分享，本篇文章主要来源于分享的PPT，所以有些简单，有问题可以在下面留言，大家 一起讨论。本篇文章先简单介绍了互联网架构的演变，进而介绍了服务化，最后再介绍微服务，微服务是服务治理的升级也是互联网架构的进一步延伸。互联网架构演变一体架构在计算机软件发展早期，一般桌面软件都是采用这种架构，不管是界面还">
+<meta property="og:type" content="article">
+<meta property="og:title" content="转载:服务治理与微服务">
+<meta property="og:url" content="https://bloodorange2017.github.io/archives/2017/09/12/serviceGovernment/index.html">
+<meta property="og:site_name" content="XueCheng Notes">
+<meta property="og:description" content="近期都在谈微服务，本人也正在做相关的工作，应领导要求做了一个微服务的分享，本篇文章主要来源于分享的PPT，所以有些简单，有问题可以在下面留言，大家 一起讨论。本篇文章先简单介绍了互联网架构的演变，进而介绍了服务化，最后再介绍微服务，微服务是服务治理的升级也是互联网架构的进一步延伸。互联网架构演变一体架构在计算机软件发展早期，一般桌面软件都是采用这种架构，不管是界面还">
+<meta property="og:image" content="http://img.blog.csdn.net/20170103111147803?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170103111226848?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170103112334944?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170103142540155?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170103143859427?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170103144218850?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170103144355679?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170103144440554?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170103145438903?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170103150555199?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170103151255786?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170103151747772?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:updated_time" content="2017-09-12T01:35:17.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="转载:服务治理与微服务">
+<meta name="twitter:description" content="近期都在谈微服务，本人也正在做相关的工作，应领导要求做了一个微服务的分享，本篇文章主要来源于分享的PPT，所以有些简单，有问题可以在下面留言，大家 一起讨论。本篇文章先简单介绍了互联网架构的演变，进而介绍了服务化，最后再介绍微服务，微服务是服务治理的升级也是互联网架构的进一步延伸。互联网架构演变一体架构在计算机软件发展早期，一般桌面软件都是采用这种架构，不管是界面还">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20170103111147803?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://bloodorange2017.github.io/archives/2017/09/12/serviceGovernment/"/>
+
+
+
+
+
+  <title>转载:服务治理与微服务 | XueCheng Notes</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">XueCheng Notes</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Where there is a will, there is a way.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/09/12/serviceGovernment/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="XueCheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XueCheng Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">转载:服务治理与微服务</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-12T09:32:44+08:00">
+                2017-09-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <div id="article_content" class="article_content tracking-ad" data-mod="popu_307" data-dsm="post"><br>                <div class="markdown_views"><p>近期都在谈微服务，本人也正在做相关的工作，应领导要求做了一个微服务的分享，本篇文章主要来源于分享的PPT，所以有些简单，有问题可以在下面留言，大家 一起讨论。</p><br><br><p>本篇文章先简单介绍了互联网架构的演变，进而介绍了服务化，最后再介绍微服务，微服务是服务治理的升级也是互联网架构的进一步延伸。</p><br><br><h2 id="互联网架构演变">互联网架构演变</h2><br><br><br><br><h3 id="一体架构">一体架构</h3><br><br><p>在计算机软件发展早期，一般桌面软件都是采用这种架构，不管是界面还是业务处理还是数据处理都放到一个包中。这种其实谈不上架构，但也可以说是很好的架构，因为它足够简单。</p><br><br><p><img src="http://img.blog.csdn.net/20170103111147803?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p><br><br><br><br><h3 id="mvc架构">mvc架构</h3><br><br><p>但随着浏览器的出现便产生了web应用，web应用的特点是界面部分是显示在浏览器中，服务处理是在服务容器中的，页面显示一般用css+js+html技术来处理，而后端可以用java、php等语言，这就产生了前后端分离。对于web系统，一体架构难以满足前后端分离的开发需求，因而便产生了MVC架构。</p><br><br><p><img src="http://img.blog.csdn.net/20170103111226848?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p><br><br><p>MVC才算的上真正意义上的架构，因为它除了解决了前后端分离问题，还引入了一种全新的开发模式，用一种业务逻辑、数据、界面显示分离的方法组织代码，使得整个应用层次更加分明，而且各个层次之间不但减低了耦合性，还提高了各个层次的可重用性。</p><br><br><p>但随着应用规模的不断扩大，应用模块不断增加，整个应用也显得越来越臃肿，维护起来也更加困难，因此便又产生了多应用架构。</p><br><br><br><br><h3 id="多应用架构">多应用架构</h3><br><br><p>多应用架构很简单，就是把原来的应用按照业务特点拆分成多个应用。比如一个大型电商系统可能包含用户系统、商品系统、订单系统、评价系统等等，我们可以把他们独立出来形成一个个单独的应用。多应用架构的特点是应用之间各自独立 ，不相互调用。</p><br><br><p><img src="http://img.blog.csdn.net/20170103112334944?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p><br><br><p>多应用虽然解决了应用臃肿问题，但应用之间相互独立，有些共同的业务或代码无法复用。</p><br><br><br><br><h3 id="分布式架构">分布式架构</h3><br><br><p>对于一个大型的互联网系统，一般会包含多个应用，而且应用之间往往还存在共同的业务，并且应用之间还存在调用关系。除此之外 ，对于大型的互联网系统还有一些其它的挑战，比如如何应对急剧增长的用户，如何管理好研发团队快速迭代产品研发，如何保持产品升级更加稳定等等 。</p><br><br><p>因此，为了使业务得到很好的复用，模块更加容易拓展和维护，我们希望业务与应用分离，某个业务不再属于一个应用，而是作为一个独立的服务单独进行维护。应用本身不再是一个臃肿的模块堆积，而是由一个个模块化的服务组件组合而成。</p><br><br><p><img src="http://img.blog.csdn.net/20170103142540155?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p><br><br><br><br><h2 id="服务化">服务化</h2><br><br><br><br><h3 id="服务化的特点">服务化的特点</h3><br><br><p>上面介绍的分布式架构即服务化。我们再总结一下，服务化主要有如下特点：</p><br><br><ul><br><li>应用按业务拆分成服务</li><br><li>各个服务均可独立部署</li><br><li>服务可被多个应用共享</li><br><li>服务之间可以通信</li><br></ul><br><br><br><br><h3 id="服务化的好处">服务化的好处</h3><br><br><p>那么企业采用服务化有哪些好处呢？</p><br><br><ul><br><li>架构上系统更加清晰</li><br><li>核心模块稳定，以服务组件为单位进行升级，避免了频繁发布带来的风险</li><br><li>开发管理方便</li><br><li>单独团队维护、工作分明，职责清晰</li><br><li>业务复用、代码复用</li><br><li>非常容易拓展</li><br></ul><br><br><br><br><h3 id="服务化实现方式">服务化实现方式</h3><br><br><p>如果要实现服务化的话，最常用的方式就是利用RPC框架。因为服务组件一般分布在不同的服务器上，所以要实现服务化需要解决的第一个问题就是RPC<strong>远程服务调用</strong>。类似于RPC方案有很多，比如：</p><br><br><ul><br><li>Java RMI</li><br><li>WebService</li><br><li>Hessian</li><br><li>Http</li><br><li>Thrift</li><br><li>… …</li><br></ul><br><br><br><br><h3 id="服务化面临的挑战">服务化面临的挑战</h3><br><br><p>上面提到要实现服务化首先需要解决远程服务调用问题，除此之外，还有很多其他问题需要解决。</p><br><br><ul><br><li>服务越来越多，配置管理复杂</li><br><li>服务间依赖关系复杂</li><br><li>服务之间的负载均衡</li><br><li>服务的拓展</li><br><li>服务监控</li><br><li>服务降级</li><br><li>服务鉴权</li><br><li>服务上线与下线</li><br><li>服务文档</li><br><li>… …</li><br></ul><br><br><br><br><h2 id="服务治理">服务治理</h2><br><br><p>上面提到了服务化，其实要想服务化，<strong>服务治理</strong>是关键。那么有没有好的服务治理方案呢？答案是有的，而且很多人都在用这个框架，他就是-dubbo。dubbo就是一个<strong>带有服务治理功能的RPC框架</strong>。</p><br><br><p><img src="http://img.blog.csdn.net/20170103143859427?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p><br><br><p>dubbo提供了一套较为完整的服务治理方案，所以企业如果要实现服务化的话，dubbo 是很好的一个选择。这里简单介绍一下dubbo服务治理相关方案。</p><br><br><br><br><h4 id="服务发现注册">服务发现注册</h4><br><br><p>服务治理领域最重要的问题就是服务发现与注册。dubbo中引入了一个注册中心的概念，服务的注册与发现主要就依赖这个服务中心。</p><br><br><p><img src="http://img.blog.csdn.net/20170103144218850?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p><br><br><p>dubbo注册中心服务注册发现的具体过程：</p><br><br><ul><br><li>服务提供者启动，向注册中心注册自己提供的服务</li><br><li>消费者启动，向注册中心订阅自己需要的服务</li><br><li>注册中心返回服务提供者的列表给消费者</li><br><li>消费者从服务提供者列表中，按照软负载均衡算法，选择一台发起请求</li><br></ul><br><br><br><br><h4 id="服务监控">服务监控</h4><br><br><p><img src="http://img.blog.csdn.net/20170103144355679?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p><br><br><br><br><h4 id="集群容错">集群容错</h4><br><br><p><img src="http://img.blog.csdn.net/20170103144440554?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p><br><br><br><br><h4 id="负载均衡">负载均衡</h4><br><br><ul><br><li>Random Loadbalance</li><br><li>RoundRobin </li><br><li>LeastActive </li><br><li>ConsistentHash </li><br></ul><br><br><br><br><h4 id="dubbo服务治理优势">dubbo服务治理优势</h4><br><br><ul><br><li>注册中心只负责注册查找，不负责请求转发，压力小</li><br><li>注册中心宕机影响消费者，消费者本地缓存服务地址列表</li><br><li>注册中心对等集群，宕掉一台自动切换到另外 一台</li><br><li>服务提供者无状态，可动态部署，注册中心负责推送</li><br><li>统计无压力，本地内存中累计次数，每分钟发送注册中心</li><br><li>消费者调用服务者，自动软负载均衡</li><br><li>通过服务中心可追踪依赖关系</li><br><li>监控中心为扩容和降级提供依据</li><br><li>可启用acl机制进行鉴权</li><br><li>与Spring整合，接入简单松耦合</li><br><li>多种序列化协议支持</li><br></ul><br><br><br><br><h4 id="dubbo的不足">dubbo的不足</h4><br><br><ul><br><li>消费者仍需要依赖配置中心</li><br><li>消费者仍需要依赖jar包配置provider</li><br><li>提供者文档管理功能缺失</li><br><li>无统一入口</li><br><li>不支持OAuth2.0</li><br><li>内部鉴权不方便管理</li><br><li>无外部应用鉴权</li><br><li>接口基本裸奔，无法直接对外暴露服务</li><br><li>IT治理不方便</li><br></ul><br><br><br><br><h2 id="微服务">微服务</h2><br><br><p>现在很多人都在谈微服务，那么到底什么是微服务呢？这里谈谈我对微服务的理解。</p><br><br><p>微服务有两个核心：</p><br><br><ul><br><li>微：服务的粒度要细，即服务要细化到API</li><br><li>服务：提供好服务，要让用户感到好用(要做到这一点很不容易)</li><br></ul><br><br><p>上面两个核心总结起来，可以用下面这幅图表示：</p><br><br><p><img src="http://img.blog.csdn.net/20170103145438903?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p><br><br><p>从上面这幅图看出，微服务特别简单（好的架构就应该简单），我们把服务再拆分成一个个API，API是一个完整的功能。然后我们把API扔到一个“云上”，然后用户就可以到“云上”获取所有API的服务，这个“云”保证能提供好的服务。</p><br><br><p>我们可以看到，有了微服务之后，服务对用户来说变得特别简单，而且上面dubbo的不足之处在微服务这里都解决了。使用者不再需要依赖任何jar包，不再需要去注册中心查找服务，不再去做鉴权处理，不用担心服务挂掉，不用担心不会使用服务，所有的问题这个“云”都解决了。这也是微服务的核心之一，提供好服务。</p><br><br><p>说到这里，大家就应该大体知道该怎么做微服务了，图中的“云”是关键。下面我们就慢慢拨开这朵云。</p><br><br><br><br><h3 id="微服务的实现">微服务的实现</h3><br><br><p><img src="http://img.blog.csdn.net/20170103150555199?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p><br><br><p>微服务的关键是<strong>服务网关</strong>，所以，上面提到的“云”就是服务网关。要做微服务，我们先定义一下微服务需要具备的特点。</p><br><br><h4 id="微服务的特点">微服务的特点</h4><br><br><p>服务需要再细化成API（服务接口——&gt;服务API）</p><br><br><ul><br><li>每个服务由一组API组成</li><br><li>以API形式对外提供统一格式的服务</li><br><li>使用者无需任何配置，直接调用（http）</li><br><li>完整的API文档</li><br><li>API服务安全可靠稳定</li><br></ul><br><br><br><br><h4 id="微服务要解决的问题">微服务要解决的问题</h4><br><br><p>上面提到了，dubbo还存在一些问题 ，其实dubbo存在的问题 就是 微服务要解决的问题，这里 再总结一下。当然，dubbo和微服务的侧重点不一样，dubbo侧重于内部接口之间的RPC，而微服务则侧重于对外提供服务。</p><br><br><ul><br><li>统一入口</li><br><li>安全控制：防刷限流</li><br><li>统一鉴权：应用鉴权、用户鉴权、OAuth鉴权、ACL</li><br><li>协议转换：http、dubbo、Protobuf</li><br><li>API配置管理</li><br><li>API上线、下线</li><br><li>API与服务接口映射</li><br><li>监控与报警</li><br><li>整体架构的可拓展、高并发、分布式 </li><br><li>服务容器自动收缩、扩容</li><br></ul><br><br><br><br><h4 id="实现方案">实现方案</h4><br><br><p><img src="http://img.blog.csdn.net/20170103151255786?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p><br><br><ul><br><li>负载均衡层：nginx/lvs/F5</li><br><li>微服务层 <br><br><ul><li>高性能服务网关</li><br><li>统一入口、API配置管理、分流鉴权、服务监控、协议转换</li><br><li>API映射、OAuth2.0、API文档管理</li><br><li>分布式、可拓展</li></ul></li><br><li>服务治理层 <br><br><ul><li>成熟的服务治理框架dubbo</li><br><li>MQ服务之间解耦</li></ul></li><br><li>弹性云 <br><br><ul><li>服务docker化</li><br><li>基于访问压力的实时集群调度与管理</li></ul></li><br></ul><br><br><h4 id="弹性云">弹性云</h4><br><br><p>这里简单介绍一下弹性云的概念，微服务要想提供好服务，保证API不能挂掉并且有好的性能，需要很高的运维要求。这里的弹性云便是自动化运维解决方案，对访问压力进行监控，根据监控解决调度应用的发布和回收。</p><br><br><p><img src="http://img.blog.csdn.net/20170103151747772?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p><link rel="stylesheet" href="http://static.blog.csdn.net/public/res-min/markdown_views.css?v=1.0"></div><link rel="stylesheet" href="http://static.blog.csdn.net/public/res-min/markdown_views.css?v=1.0"><br>            </div><br>        <br>        <div class="readall_box tracking-ad" data-mod="popu_376"><br>            <a class="btn btn-large btn-gray-fred read_more_btn" target="_self">阅读全文</a><br>        </div><br>        <div class="article_copyright"><br>            版权声明：本文为博主原创文章，未经博主允许不得转载。<br>            <span class="r_ico"><i class="icon iconfont icon-jubao"></i><span class="txt" id="reportBtn">举报</span></span><br>        </div>
+
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/08/11/annotation-01/" rel="next" title="转载:Java自定义注解教程">
+                <i class="fa fa-chevron-left"></i> 转载:Java自定义注解教程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2099/09/07/myProject-01/" rel="prev" title="案例项目-下载页">
+                案例项目-下载页 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://bloodorange2017.github.io/images/img_head_001.jpg"
+               alt="XueCheng" />
+          <p class="site-author-name" itemprop="name">XueCheng</p>
+           
+              <p class="site-description motion-element" itemprop="description">Do one thing at a time, and do well.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">57</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#互联网架构演变"><span class="nav-number">1.</span> <span class="nav-text">互联网架构演变</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一体架构"><span class="nav-number">1.1.</span> <span class="nav-text">一体架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mvc架构"><span class="nav-number">1.2.</span> <span class="nav-text">mvc架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多应用架构"><span class="nav-number">1.3.</span> <span class="nav-text">多应用架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分布式架构"><span class="nav-number">1.4.</span> <span class="nav-text">分布式架构</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务化"><span class="nav-number">2.</span> <span class="nav-text">服务化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#服务化的特点"><span class="nav-number">2.1.</span> <span class="nav-text">服务化的特点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#服务化的好处"><span class="nav-number">2.2.</span> <span class="nav-text">服务化的好处</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#服务化实现方式"><span class="nav-number">2.3.</span> <span class="nav-text">服务化实现方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#服务化面临的挑战"><span class="nav-number">2.4.</span> <span class="nav-text">服务化面临的挑战</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务治理"><span class="nav-number">3.</span> <span class="nav-text">服务治理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#服务发现注册"><span class="nav-number">3.0.1.</span> <span class="nav-text">服务发现注册</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#服务监控"><span class="nav-number">3.0.2.</span> <span class="nav-text">服务监控</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#集群容错"><span class="nav-number">3.0.3.</span> <span class="nav-text">集群容错</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#负载均衡"><span class="nav-number">3.0.4.</span> <span class="nav-text">负载均衡</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#dubbo服务治理优势"><span class="nav-number">3.0.5.</span> <span class="nav-text">dubbo服务治理优势</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#dubbo的不足"><span class="nav-number">3.0.6.</span> <span class="nav-text">dubbo的不足</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#微服务"><span class="nav-number">4.</span> <span class="nav-text">微服务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#微服务的实现"><span class="nav-number">4.1.</span> <span class="nav-text">微服务的实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#微服务的特点"><span class="nav-number">4.1.1.</span> <span class="nav-text">微服务的特点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#微服务要解决的问题"><span class="nav-number">4.1.2.</span> <span class="nav-text">微服务要解决的问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#实现方案"><span class="nav-number">4.1.3.</span> <span class="nav-text">实现方案</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#弹性云"><span class="nav-number">4.1.4.</span> <span class="nav-text">弹性云</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">XueCheng</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+<script type="text/javascript"
+color="160,160,233" opacity='0.4' zIndex="-2" count="16" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+</body>
+</html>

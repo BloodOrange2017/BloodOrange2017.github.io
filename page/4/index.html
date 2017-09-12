@@ -200,7 +200,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
-            Startseite
+            Home
           </a>
         </li>
       
@@ -210,7 +210,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
-            Archiv
+            Archives
           </a>
         </li>
       
@@ -253,6 +253,125 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/06/16/activeMq-03/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="XueCheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XueCheng Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/06/16/activeMq-03/" itemprop="url">Sping+ActiveMQ整合</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-06-16T17:13:23+08:00">
+                2017-06-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <pre><code>&lt;div class=&quot;entry&quot;&gt;
+</code></pre><p>通过前一篇《<a href="http://blog.csdn.net/u013256816/article/details/51161548" class="external" rel="nofollow" target="_blank">ActiveMQ简述</a>》大概对ActiveMQ有了一个大概的认识，本篇所阐述的是如何通过Spring继承ActiveMQ进而更有效、更灵活的运用ActiveMQ.</p><br><p>Spring和ActiveMQ整合需要在项目中包含以下这几个jar包（缺一不可）：activeio-core-3.1.4.jar，activemq-all-5.13.2.jar，activemq-pool-5.13.2.jar，commons-pool2-2.4.2.jar，这些jar可以在ActiveMQ的安装包中的/lib/optional/下找到，或者从<a href="http://download.csdn.net/detail/u013256816/9492418" class="external" rel="nofollow" target="_blank">这里</a>下载。</p><br><h2 id="配置connectionfactory"><a name="t0"></a>配置ConnectionFactory</h2><br><p>ConnectionFactory是用于产生到JMS服务器的链接的，Spring为我们提供了多个ConnectionFactory，有SingleConnectionFactory和CachingConnectionFactory。SingleConnectionFactory对于建立JMS服务器链接的请求会一直返回同一个链接，并且会忽略Connection的close方法调用。CachingConnectionFactory继承了SingleConnectionFactory，所以它拥有SingleConnectionFactory的所有功能，同时它还新增了缓存功能，可以缓存Session, MessageProducer和MessageConsumer。</p><br><p>Spring提供的ConnectionFactory只是Spring用于管理ConnectionFactory的，真正产生到JMS服务器链接的ConnectionFactory还得是JMS服务厂商提供的，并且需要把它注入到Spring提供的ConnectionFactory中，这里使用ActiveMQ提供的ConnectionFactory，所以定义如下（10.10.195.187是博主的测试ip地址）：</p><br><pre class="brush: java; gutter: true">&lt;bean id=&quot;targetConnectionFactory&quot; class=&quot;org.apache.activemq.ActiveMQConnectionFactory&quot;&gt;<br>        &lt;property name=&quot;brokerURL&quot; value=&quot;tcp://10.10.195.187:61616&quot; /&gt;<br>    &lt;/bean&gt;<br>    &lt;bean id=&quot;connectionFactory&quot; class=&quot;org.springframework.jms.connection.SingleConnectionFactory&quot;&gt;<br>        &lt;property name=&quot;targetConnectionFactory&quot; ref=&quot;targetConnectionFactory&quot;/&gt;<br>    &lt;/bean&gt;</pre><br><p>ActiveMQ为我们提供了一个PooledConnectionFactory，通过往里面注入一个ActiveMQConnectionFactory可以用来将Connection, Session和MessageProducer池化，这样可以大大的减少我们的资源消耗。当使用PooledConnectionFactory时，我们在定义一个ConnectionFactory时这样定义：</p><br><pre class="brush: java; gutter: true"> &lt;bean id=&quot;targetConnectionFactory&quot; class=&quot;org.apache.activemq.ActiveMQConnectionFactory&quot;&gt;<br>        &lt;property name=&quot;brokerURL&quot; value=&quot;tcp://10.10.195.187:61616&quot; /&gt;<br>    &lt;/bean&gt;<br>    &lt;bean id=&quot;poolConnectionFactory&quot; class=&quot;org.apache.activemq.pool.PooledConnectionFactory&quot;  &gt;<br>        &lt;property name=&quot;connectionFactory&quot; ref=&quot;targetConnectionFactory&quot; /&gt;<br>        &lt;property name=&quot;maxConnections&quot; value=&quot;10&quot;/&gt;<br>    &lt;/bean&gt;<br>    &lt;bean id=&quot;connectionFactory&quot; class=&quot;org.springframework.jms.connection.SingleConnectionFactory&quot;&gt;<br>        &lt;property name=&quot;targetConnectionFactory&quot; ref=&quot;poolConnectionFactory&quot;/&gt;<br>    &lt;/bean&gt;</pre><br><p>这里也可以去掉spring提供的SingleConnectionFactory,类似这样：</p><br><pre class="brush: java; gutter: true">&lt;bean id=&quot;targetConnectionFactory&quot; class=&quot;org.apache.activemq.ActiveMQConnectionFactory&quot;&gt;<br>        &lt;property name=&quot;brokerURL&quot; value=&quot;tcp://10.10.195.187:61616&quot; /&gt;<br>    &lt;/bean&gt;<br>    &lt;bean id=&quot;connectionFactory&quot; class=&quot;org.apache.activemq.pool.PooledConnectionFactory&quot;  &gt;<br>        &lt;property name=&quot;connectionFactory&quot; ref=&quot;targetConnectionFactory&quot; /&gt;<br>        &lt;property name=&quot;maxConnections&quot; value=&quot;10&quot;/&gt;<br>    &lt;/bean&gt;</pre><br><hr><br><h2 id="配置消息发送生产者"><a name="t1"></a>配置消息发送（生产）者</h2><br><p>配置好ConnectionFactory之后我们就需要配置生产者。生产者负责生产消息并发送到JMS服务器，这通常对应的是我们的一个业务逻辑服务实现类。但是我们的服务实现类是怎么进行消息的发送的呢？这通常是利用Spring为我们提供的JmsTemplate类来实现，所以配置生产者其实最核心的就是配置进行消息发送的JmsTemplate。对于消息发送者而言，它在发送消息的时候要知道自己该往哪里发，为此，我们在定义JmsTemplate的时候需要往里面注入一个Spring提供的ConnectionFactory对象。</p><br><p>spring配置文件中添加:</p><br><pre class="brush: java; gutter: true"> &lt;bean id=&quot;jmsTemplate&quot; class=&quot;org.springframework.jms.core.JmsTemplate&quot;&gt;<br>        &lt;property name=&quot;connectionFactory&quot; ref=&quot;poolConnectionFactory&quot;/&gt;<br>    &lt;/bean&gt;</pre><br><p>在<a title="Java EE知识库" href="http://lib.csdn.net/base/17" target="_blank" class="external" rel="nofollow">Java</a>相关处理文件中添加(这里用的是@Inject注解，当然也可以用@Autowired)：</p><br><pre class="brush: java; gutter: true"> @Inject<br>    @Named(&quot;jmsTemplate&quot;)<br>    private JmsTemplate jmsTemplate;</pre><br><p>这样就可以通过jmsTemplate对象来处理相关信息，譬如：</p><br><pre class="brush: java; gutter: true">  jmsTemplate.convertAndSend(&quot;sqlQueue&quot;,sql);</pre><br><p>真正利用JmsTemplate进行消息发送的时候，我们需要知道消息发送的目的地，即Destination。在Jms中有一个用来表示目的地的Destination接口，它里面没有任何方法定义，只是用来做一个标志而已。当我们在使用JmsTemplate进行消息发送时没有指定destination的时候将使用默认的Destination。默认Destination可以通过在定义jmsTemplate bean对象时通过属性defaultDestination或defaultDestinationName来进行诸如，defaultDestinationName对于的就是一个普通字符串。在ActiveMQ中实现了两种类型的Destination，一个是点对点的ActiveMQQueue,另一个就是支持订阅-发布模式的ActiveMQTopic。</p><br><pre class="brush: java; gutter: true">&lt;bean id=&quot;queueDestination&quot; class=&quot;org.apache.activemq.command.ActiveMQQueue&quot;&gt;<br>        &lt;constructor-arg&gt;<br>            &lt;value&gt;sqlQueue&lt;/value&gt;<br>        &lt;/constructor-arg&gt;<br>    &lt;/bean&gt;<br>    &lt;bean id=&quot;topicDestination&quot; class=&quot;org.apache.activemq.command.ActiveMQTopic&quot;&gt;<br>        &lt;constructor-arg&gt;<br>            &lt;value&gt;topic&lt;/value&gt;<br>        &lt;/constructor-arg&gt;<br>    &lt;/bean&gt;</pre><br><p>对面上面的那个例子可以在Java程序中添加：</p><br><pre class="brush: java; gutter: true"> @Inject<br>    @Named(&quot;queueDestination&quot;)<br>    private Destination queueDestination;</pre><br><p>进而【jmsTemplate.convertAndSend(“sqlQueue”,sql);】可以改为【jmsTemplate.convertAndSend(queueDestination,sql);】<br><br>也可以这样修改jmsTemplate：</p><br><pre class="brush: java; gutter: true">&lt;bean id=&quot;jmsTemplate&quot; class=&quot;org.springframework.jms.core.JmsTemplate&quot;&gt;<br>        &lt;property name=&quot;connectionFactory&quot; ref=&quot;connectionFactory&quot;/&gt;<br>        &lt;property name=&quot;defaultDestination&quot; ref=&quot;queueDestination&quot;/&gt;<br>    &lt;/bean&gt;</pre><br><p>或者：</p><br><pre class="brush: java; gutter: true">&lt;bean id=&quot;jmsTemplate&quot; class=&quot;org.springframework.jms.core.JmsTemplate&quot;&gt;<br>        &lt;property name=&quot;connectionFactory&quot; ref=&quot;connectionFactory&quot;/&gt;<br>        &lt;property name=&quot;defaultDestinationName&quot; value=&quot;sqlQueue&quot;/&gt;<br>    &lt;/bean&gt;</pre><br><p>进而在java程序中这样调用：jmsTemplate.convertAndSend(sql);</p><br><hr><br><h2 id="配置消息接收消费者"><a name="t2"></a>配置消息接收（消费）者</h2><br><p>生产者往指定目的地Destination发送消息后，接下来就是消费者对指定目的地的消息进行消费了。那么消费者是如何知道有生产者发送消息到指定目的地Destination了呢？这是通过Spring为我们封装的消息监听容器MessageListenerContainer实现的，它负责接收信息，并把接收到的信息分发给真正的MessageListener进行处理。每个消费者对应每个目的地都需要有对应的MessageListenerContainer。对于消息监听容器而言，除了要知道监听哪个目的地之外，还需要知道到哪里去监听，也就是说它还需要知道去监听那个JMS服务器，这是通过在配置MessageConnectionFactory的时候往里面注入一个ConnectionFactory来实现的。所以我们在配置一个MessageListenerContainer的时候有三个属性必须指定，一个是表示从哪里监听的ConnectionFactory，一个是表示监听什么的Destination，一个是接收到消息以后进行消息处理的MessageListener.</p><br><p>Spring为我们听过了两种类型的MessageListenerContainer：SimpleMessageListenerContainer和DefaultMessageListenerContainer。MessageListenerContainer：SimpleMessageListenerContainer会在一开始的时候就创建一个会话Session和消费者Consumer，并且会适用标准的JMS的MessageConsumer.setMessageListener()方法注册监听器让JMS提供调用监听器的回调函数。它不会动态的适应运行时需要和参与外部的事务管理。兼容性方面，它非常接近于独立的JMS规范，但一般不兼容J2EE的JMS限制。大多数情况下，我们还是使用DefaultMessageListenerContainer，跟MessageListenerContainer：SimpleMessageListenerContainer想比，它会动态的适应运行时的需求，并且能够参与外部的事务管理。它很好的平衡了JMS提供者要求低，先进功能如事务参与和兼容J2EE环境。</p><br><p>spring配置文件中添加:</p><br><pre class="brush: java; gutter: true"> &lt;bean id=&quot;queueDestination&quot; class=&quot;org.apache.activemq.command.ActiveMQQueue&quot;&gt;<br>        &lt;constructor-arg&gt;<br>            &lt;value&gt;sqlQueue&lt;/value&gt;<br>        &lt;/constructor-arg&gt;<br>    &lt;/bean&gt;<br>    &lt;bean id=&quot;listenerContainer&quot; class=&quot;org.springframework.jms.listener.DefaultMessageListenerContainer&quot;&gt;<br>        &lt;property name=&quot;connectionFactory&quot; ref=&quot;poolConnectionFactory&quot; /&gt;<br>        &lt;property name=&quot;messageListener&quot; ref=&quot;jmsQueueReceiver&quot; /&gt;<br>        &lt;property name=&quot;destination&quot; ref=&quot;queueDestination&quot; /&gt;<br>    &lt;/bean&gt;</pre><br><p>其中的jmsQueueReceiver代码如下：</p><br><pre class="brush: java; gutter: true">import javax.jms.JMSException;<br>import javax.jms.Message;<br>import javax.jms.MessageListener;<br>import javax.jms.TextMessage;<br><br>import org.springframework.stereotype.Component;<br><br>@Component(&quot;jmsQueueReceiver&quot;)<br>public class JmsQueueReceiver implements MessageListener<br>{<br>    @Override<br>    public void onMessage(Message messgae)<br>    {<br>        if(messgae instanceof TextMessage)<br>        {<br>            TextMessage textMessage = (TextMessage) messgae;<br>            try<br>            {<br>                String text = textMessage.getText();<br>                System.out.println(&quot;######################[&quot;+text+&quot;]######################&quot;);<br>            }<br>            catch (JMSException e)<br>            {<br>                e.printStackTrace();<br>            }<br>        }<br>    }<br>}</pre><br><hr><br><h2 id="事务管理"><a name="t3"></a>事务管理</h2><br><p>Spring提供了一个JmsTransactionManager用于对JMS ConnectionFactory做事务管理。这将允许JMS应用利用Spring的事务管理特性。JmsTransactionManager在执行本地资源事务管理时将从指定的ConnectionFactory绑定一个ConnectionFactory/Session这样的配对到线程中。JmsTemplate会自动检测这样的事务资源，并对他们进行相应的操作。</p><br><p>在J2EE环境中，ConnectionFactory会池化Connection和Session，这样这些资源将会在整个事务中被有效地重复利用。在一个独立的环境中，使用Spring的SingleConnectionFactory时所有的事务将公用一个Connection，但是每个事务将保留自己独立的Session.</p><br><p>JmsTemplate可以利用JtaTransactionManager和能够进行分布式的JMS ConnectionFactory处理分布式事务。</p><br><p>在Spring整合JMS的应用中，如果我们要进行本地的事务管理的话非常简单，只需要在定义对于的消息监听容器时指定其sessionTransacted属性为true(默认为false)：</p><br><pre class="brush: java; gutter: true">&lt;bean id=&quot;listenerContainer&quot; class=&quot;org.springframework.jms.listener.DefaultMessageListenerContainer&quot;&gt;<br>        &lt;property name=&quot;connectionFactory&quot; ref=&quot;connectionFactory&quot; /&gt;<br>        &lt;property name=&quot;messageListener&quot; ref=&quot;jmsQueueReceiver&quot; /&gt;<br>        &lt;property name=&quot;destination&quot; ref=&quot;queueDestination&quot; /&gt;<br>        &lt;property name=&quot;sessionTransacted&quot; value=&quot;true&quot;/&gt;<br>    &lt;/bean&gt;</pre><br><p>这样JMS在进行消息监听的时候就会进行事务控制，当在接收消息时监听器执行失败时JMS就会对接收到的消息进行回滚。这里需要注意的是对于其他操作如<a title="MySQL知识库" href="http://lib.csdn.net/base/14" target="_blank" class="external" rel="nofollow">数据库</a>等访问不属于该事务控制。</p><br><p>可以在JmsQueueReceiver中修改一下代码从而检测到发送异常时是否会进行事务回滚：</p><br><pre class="brush: java; gutter: true">@Component(&quot;jmsQueueReceiver&quot;)<br>public class JmsQueueReceiver implements MessageListener<br>{<br>    @Override<br>    public void onMessage(Message messgae)<br>    {<br>        if(messgae instanceof TextMessage)<br>        {<br>            TextMessage textMessage = (TextMessage) messgae;<br>            try<br>            {<br>                String text = textMessage.getText();<br>                System.out.println(&quot;######################[&quot;+text+&quot;]######################&quot;);<br>                if(true)<br>                {<br>                    throw new RuntimeException(&quot;Error&quot;);<br>                }<br>            }<br>            catch (JMSException e)<br>            {<br>                e.printStackTrace();<br>            }<br>        }<br>    }<br>}</pre><br><p>你可以通过向Destination发送一条信息，通过JmsQueueReceiver处理后，发送异常进而事务混滚。可以通过<a href="http://10.10.195.187:8161/admin/queues.jsp" class="external" rel="nofollow" target="_blank">http://10.10.195.187:8161/admin/queues.jsp</a>查看相关信息（ip地址是博主的ActiveMQ服务器所在id，根据实际情况修改）。</p><br><p>如果想要接收消息和数据库访问处于同一事务中，那么我们就可以配置一个外部的事务管理同时配置一个支持外部事务管理的消息监听容器（如DefaultMessageListenerContainer)。要配置这样一个参与分布式事务管理的消息监听容器，我们可以配置一个JtaTransactionManager，当然底层的JMS ConnectionFactory需要能够支持分布式事务管理，并正确地注册我们的JtaTransactionManager。这样消息监听器进行消息接收和对应的数据库访问就会处于同一数据库控制下，当消息接收失败或数据库访问失败都会进行事务回滚操作。</p><br><pre class="brush: java; gutter: true"> &lt;bean id=&quot;listenerContainer&quot; class=&quot;org.springframework.jms.listener.DefaultMessageListenerContainer&quot;&gt;<br>        &lt;property name=&quot;connectionFactory&quot; ref=&quot;connectionFactory&quot; /&gt;<br>        &lt;property name=&quot;messageListener&quot; ref=&quot;jmsQueueReceiver&quot; /&gt;<br>        &lt;property name=&quot;destination&quot; ref=&quot;queueDestination&quot; /&gt;<br>        &lt;property name=&quot;sessionTransacted&quot; value=&quot;true&quot;/&gt;<br>        &lt;property name=&quot;transactionManager&quot; ref=&quot;jtaTransactionManager&quot;/&gt;<br>    &lt;/bean&gt;<br>    &lt;bean id=&quot;jtaTransactionManager&quot; class=&quot;org.springframework.transaction.jta.JtaTransactionManager&quot;/&gt;</pre><br><p>当给小时监听容器指定了transactionManager时，消息监听容器将忽略sessionTransacted的值。</p><br><p>到这里大概的Spring+ActiveMQ整合告一段落，所有代码经博主亲测，确保有效性及正确性。如有疑问，可在下方留言。</p><br><hr><br><p>参考资料：<br><br>1. <a href="http://haohaoxuexi.iteye.com/blog/1893038" class="external" rel="nofollow" target="_blank">Spring整合JMS(一)——基于ActiveMQ实现</a><br><br>2. <a href="http://blog.csdn.net/wilsonke/article/details/42191015" class="external" rel="nofollow" target="_blank">Spring+ActiveMQ+Mysql 配置JMS</a><br><br>3. <a href="http://blog.csdn.net/u013256816/article/details/51161548" class="external" rel="nofollow" target="_blank">ActiveMQ简述</a></p>
+
+
+
+<pre><code>&lt;!-- BEGIN #author-bio --&gt;
+</code></pre><!-- END #author-bio -->
+<pre><code>&lt;/div&gt;
+</code></pre>
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/06/15/thread-01/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -282,7 +401,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-06-15T14:08:06+08:00">
                 2017-06-15
@@ -430,7 +549,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-06-14T15:58:38+08:00">
                 2017-06-14
@@ -654,7 +773,7 @@ public String first() {
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-06-14T14:17:28+08:00">
                 2017-06-14
@@ -845,7 +964,7 @@ public String first() {
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-06-13T16:23:09+08:00">
                 2017-06-13
@@ -961,7 +1080,7 @@ public String first() {
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-06-08T16:05:27+08:00">
                 2017-06-08
@@ -1075,7 +1194,7 @@ public String first() {
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-06-01T15:19:35+08:00">
                 2017-06-01
@@ -1149,127 +1268,11 @@ public String first() {
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/06/01/guavaCache-01/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="XueCheng">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="XueCheng Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/06/01/guavaCache-01/" itemprop="url">转载:Guava Cache高速本地缓存</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Veröffentlicht am</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-06-01T15:03:48+08:00">
-                2017-06-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <div class="post_content"><br>      <p><a href="http://code.google.com/p/guava-libraries/wiki/CachesExplained" target="_blank">原文地址</a>  <a href="http://ifeve.com/google-guava-cachesexplained/" target="_blank">译文地址</a>    译者：许巧辉  校对：沈义扬</p><br><h2>范例</h2><br><pre class="brush: java; title: ; notranslate" title=""><br>LoadingCache&lt;Key, Graph&gt; graphs = CacheBuilder.newBuilder()<br>        .maximumSize(1000)<br>        .expireAfterWrite(10, TimeUnit.MINUTES)<br>        .removalListener(MY_LISTENER)<br>        .build(<br>            new CacheLoader&lt;Key, Graph&gt;() {<br>                public Graph load(Key key) throws AnyException {<br>                    return createExpensiveGraph(key);<br>                }<br>        });<br></pre><br><p><span id="more-8711"></span></p><br><h2>适用性</h2><br><p>缓存在很多场景下都是相当有用的。例如，计算或检索一个值的代价很高，并且对同样的输入需要不止一次获取值的时候，就应当考虑使用缓存。</p><br><p align="left"><tt></tt><tt>Guava Cache与ConcurrentMap很相似，但也不完全一样。最基本的区别是ConcurrentMap会一直保存所有添加的元素，直到显式地移除。相对地，Guava Cache为了限制内存占用，通常都设定为自动回收元素。在某些场景下，尽管LoadingCache 不回收元素，它也是很有用的，因为它会自动加载缓存。</tt></p><br><p><tt>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/06/01/guavaCache-01/#more" rel="contents">
-              Weiterlesen &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1314,8 +1317,8 @@ public String first() {
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">56</span>
-                <span class="site-state-item-name">Artikel</span>
+                <span class="site-state-item-count">57</span>
+                <span class="site-state-item-name">posts</span>
               </a>
             </div>
           
@@ -1369,7 +1372,7 @@ public String first() {
 
 
 <div class="powered-by">
-  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
 </div>
 
 <div class="theme-info">
