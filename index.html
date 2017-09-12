@@ -200,7 +200,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
-            Home
+            Startseite
           </a>
         </li>
       
@@ -210,7 +210,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
-            Archives
+            Archiv
           </a>
         </li>
       
@@ -282,7 +282,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2099-09-09T12:00:00+08:00">
                 2099-09-09
@@ -395,7 +395,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2099-09-08T15:56:57+08:00">
                 2099-09-08
@@ -507,7 +507,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2099-09-07T11:45:53+08:00">
                 2099-09-07
@@ -619,7 +619,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2099-09-07T10:13:49+08:00">
                 2099-09-07
@@ -702,6 +702,120 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/09/12/esb/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="XueCheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XueCheng Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/09/12/esb/" itemprop="url">转载：企业数据总线(ESB)和注册服务管理(dubbo)的区别</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-12T11:44:29+08:00">
+                2017-09-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <div class="Blog_tit4 Blog_tit5" style="word-wrap:break-word; border-bottom-width:0px; padding:0px 0px 11px; color:rgb(86,86,86); font-family:宋体,Arial"><br>&nbsp;<a target="_blank" href="http://blog.itpub.net/29754888/viewspace-1452858/" style="word-wrap:break-word; text-decoration:none; color:rgb(156,36,35); font-family:微软雅黑,黑体,Verdana; font-size:20px">企业数据总线(ESB)和注册服务管理(dubbo)的区别</a>&nbsp;<span style="word-wrap:break-word; margin-left:22px; color:rgb(187,186,186); font-family:Arial">2015-03-09<br> 08:49:28</span></div><br><div class="Blog_con2" style="word-wrap:break-word; color:rgb(102,102,102); line-height:26px; height:auto; overflow:hidden; font-family:宋体,Arial"><br><div class="Blog_con3" style="word-wrap:break-word; margin-top:10px; line-height:22px"><br><p style="word-wrap:break-word; margin-top:0px; margin-bottom:0px; padding-top:0px; padding-bottom:0px; color:rgb(142,3,0)"><br>分类：&nbsp;<span style="word-wrap:break-word; color:rgb(187,186,186); margin-right:25px">Web开发</span></p><br><p style="word-wrap:break-word; margin-top:0px; margin-bottom:0px; padding-top:0px; padding-bottom:0px; color:rgb(142,3,0)"><br></p><br></div><br><div class="Blog_wz1" style="word-wrap:break-word"><br><p style="word-wrap:break-word; margin-top:0px; margin-bottom:0px; padding-top:0px; padding-bottom:0px; font-family:Arial; font-size:14px; line-height:26px"><br><br style="word-wrap:break-word"><br></p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br><span style="word-wrap:break-word">一、概述</span></p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>1、什么是ESB</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>就是企业数据总线的意思，他的核心功能就是兼容各种协议接口，可以将数据在各种协议之间进行流转，并且可以针对数据&#26684;式进行编排转换。（&#26684;式转换、协议转换、代理、编排、安全控制、监控、不支持高并发，类&#20284;于路由器维护着一张路由表进行路由转发）</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>代表性的项目有：JBOSS ESB,Mule,Camel 以及一些其他的esb项目</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>&nbsp;</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>2、什么是服务注册</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>就是将所有的服务接口（很多时候是hession协议的接口）,注册到一个中心的分布式服务集群上（你可以考虑成apache的zookeeper服务实现的效果）。各个业务系统直接访问分布式服务查找需要调用的接口位置，进而调用。（注册目录服务、监控、负载均衡、安全控制、分布式强健壮、适用于高并发）</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>代表性开源项目有：阿里的dubbo，淘宝的HSF(现在不知道是否继续开源了)</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>&nbsp;</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br><span style="word-wrap:break-word">二、双方特点</span></p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>1、ESB</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>ESB一般采用集中式转发请求，适合大量异构系统集成，并且压力不大的情况</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>&nbsp;</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>但集中式转发也是有优势的，比如调用方用http协议，提供方用rmi协议，转发就可以转换协议，对双方都透明。另外，在总线上还可以执行流程引擎，做服务编排，比如A和B两个服务经常一起调，就可以编排成服务C，而不用再单独启一个服务去做。还有，安全，流控，做起来也更方便。</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>支持groovy类型的脚本语言，在总线上可以给数据&#26684;式做转换</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>2、服务注册管理</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>采用的是分布式调用，注册中心只记录地址信息，然后直连调用，适合并发及压力比较大的情况。</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>对于网站应用，大多是垂直业务，直接从数据库拉数据展示。</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>&nbsp;</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br><span style="word-wrap:break-word">三、应用场景</span></p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>1、ESB</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>esb最常见的场景是，把系统里的集成逻辑，单拉出来， 放到esb容器里来部署，并跟应用系统适配。 这样让应用系统变得只有自己的业务逻辑，简单、轻薄。</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>劣势：在所有的服务上增加了一个总线作为沟通的渠道。对于较大的并发量会将瓶颈推到ESB总线上。很多时候ESB总线都采用MQ类的消息服务器来异步处理缓解压力</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>2、服务注册</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>淘宝和阿里的各个业务系统提供了很多的接口，这个时候需要统一管理提供个各子业务系统使用，让各个子业务系统可以通过注册中心很快找到对应的服务</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>劣势：服务编排和协议转换还是靠各个业务子系统了</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>&nbsp;</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br><span style="word-wrap:break-word">四、综述</span></p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>1、两类开源项目侧重点不同，ESB侧重任务的编排，性能问题可通过异构的方式来进行规避。无法支持特别大的并发</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>2、服务注册侧重服务的治理，将各个服务颗粒化，各个子业务系统在程序逻辑上完成业务的编排。但是比较实用较大的并发量，因为dubbo类的只是存放服务地址。有zookeeper类的分布式通讯框架，能保证单点的失败不影响整个系统的业务调用，因为业务接口都是在各个提供服务的子系统中</p><br></div><br></div>
+
+<p></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/09/12/serviceGovernment/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -731,7 +845,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-12T09:32:44+08:00">
                 2017-09-12
@@ -844,7 +958,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-11T16:55:07+08:00">
                 2017-08-11
@@ -886,119 +1000,6 @@
             <div class="copyright-area"></div><br>    <p style="margin: 0px 0px 1em; padding: 0px; line-height: 35px; color: #666666; font-family: Arial, Helvetica, sans-serif; font-size: 14px; font-style: normal;">Java注解提供了关于代码的一些信息，但并不直接作用于它所注解的代码内容。在这个教程当中，我们将学习Java的注解，如何定制注解，注解的使用以及如何通过反射解析注解。</p><br>    <p style="margin: 0px 0px 1em; padding: 0px; line-height: 35px; color: #666666; font-family: Arial, Helvetica, sans-serif; font-size: 14px; font-style: normal;"><br>    </p><p style="margin: 0px 0px 1em; padding: 0px; line-height: 35px; color: #666666; font-family: Arial, Helvetica, sans-serif; font-size: 14px; font-style: normal;">Java1.5引入了注解，当前许多java框架中大量使用注解，如Hibernate、Jersey、Spring。注解作为程序的元数据嵌入到程序当中。注解可以被一些解析工具或者是编译工具进行解析。我们也可以声明注解在编译过程或执行时产生作用。</p><br>    <p style="margin: 0px 0px 1em; padding: 0px; line-height: 35px; color: #666666; font-family: Arial, Helvetica, sans-serif; font-size: 14px; font-style: normal;">在使用注解之前，程序源数据只是通过java注释和javadoc，但是注解提供的功能要远远超过这些。注解不仅包含了元数据，它还可以作用于程序运行过程中、注解解释器可以通过注解决定程序的执行顺序。例如，在Jersey webservice 我们为方法添加URI字符串的形式的<strong>PATH</strong>注解，那么在程序运行过程中jerser解释程序将决定该方法去调用所给的URI。</p><br>    <p style="margin: 0px 0px 1em; padding: 0px; line-height: 35px; color: #666666; font-family: Arial, Helvetica, sans-serif; font-size: 14px; font-style: normal;"><strong>创建Java自定义注解</strong></p><br>    <p style="margin: 0px 0px 1em; padding: 0px; line-height: 35px; color: #666666; font-family: Arial, Helvetica, sans-serif; font-size: 14px; font-style: normal;">创建自定义注解和创建一个接口相似，但是注解的interface关键字需要以@符号开头。我们可以为注解声明方法。我们先来看看注解的例子，然后我们将讨论他的一些特性。</p><br>    <pre class="brush: java; gutter: true">package com.journaldev.annotations;<br><br>    import java.lang.annotation.Documented;<br>    import java.lang.annotation.ElementType;<br>    import java.lang.annotation.Inherited;<br>    import java.lang.annotation.Retention;<br>    import java.lang.annotation.RetentionPolicy;<br>    import java.lang.annotation.Target;<br><br>    @Documented<br>    @Target(ElementType.METHOD)<br>    @Inherited<br>    @Retention(RetentionPolicy.RUNTIME)<br>    public @interface MethodInfo{<br>    String author() default &#039;Pankaj&#039;;<br>    String date();<br>    int revision() default 1;<br>    String comments();<br>    }</pre><br>    <ul><br>    <li><span style="line-height: 28px;">注解方法不能带有参数；</span></li><br>    <li><span style="line-height: 28px;">注解方法返回值类型限定为：基本类型、String、Enums、Annotation或者是这些类型的数组；</span></li><br>    <li><span style="line-height: 28px;"> 注解方法可以有默认值；</span></li><br>    <li><span style="line-height: 28px;"> 注解本身能够包含元注解，元注解被用来注解其它注解。</span></li><br>    </ul><br>    <p style="margin: 0px 0px 1em; padding: 0px; line-height: 35px; color: #666666; font-family: Arial, Helvetica, sans-serif; font-size: 14px; font-style: normal;">这里有四种类型的元注解：</p><br>    <p style="margin: 0px 0px 1em; padding: 0px; line-height: 35px; color: #666666; font-family: Arial, Helvetica, sans-serif; font-size: 14px; font-style: normal;">1. <strong>@Documented</strong> —— 指明拥有这个注解的元素可以被javadoc此类的工具文档化。这种类型应该用于注解那些影响客户使用带注释的元素声明的类型。如果一种声明使用<strong>Documented</strong>进行注解，这种类型的注解被作为被标注的程序成员的公共API。</p><br>    <p style="margin: 0px 0px 1em; padding: 0px; line-height: 35px; color: #666666; font-family: Arial, Helvetica, sans-serif; font-size: 14px; font-style: normal;">2. <strong>@Target</strong>——指明该类型的注解可以注解的程序元素的范围。该元注解的取值可以为TYPE,METHOD,CONSTRUCTOR,FIELD等。如果<strong>Target</strong>元注解没有出现，那么定义的注解可以应用于程序的任何元素。</p><br>    <p style="margin: 0px 0px 1em; padding: 0px; line-height: 35px; color: #666666; font-family: Arial, Helvetica, sans-serif; font-size: 14px; font-style: normal;">3. <strong>@Inherited</strong>——指明该注解类型被自动继承。如果用户在当前类中查询这个元注解类型并且当前类的声明中不包含这个元注解类型，那么也将自动查询当前类的父类是否存在<strong>Inherited</strong>元注解，这个动作将被重复执行知道这个标注类型被找到，或者是查询到顶层的父类。</p><br>    <p style="margin: 0px 0px 1em; padding: 0px; line-height: 35px; color: #666666; font-family: Arial, Helvetica, sans-serif; font-size: 14px; font-style: normal;">4.<strong>@Retention</strong>——指明了该Annotation被保留的时间长短。RetentionPolicy取值为SOURCE,CLASS,RUNTIME。</p><br>    <p style="margin: 0px 0px 1em; padding: 0px; line-height: 35px; color: #666666; font-family: Arial, Helvetica, sans-serif; font-size: 14px; font-style: normal;"><br>    </p><p style="margin: 0px 0px 1em; padding: 0px; line-height: 35px; color: #666666; font-family: Arial, Helvetica, sans-serif; font-size: 14px; font-style: normal;"><strong>Java内建注解</strong></p><br>    <p style="margin: 0px 0px 1em; padding: 0px; line-height: 35px; color: #666666; font-family: Arial, Helvetica, sans-serif; font-size: 14px; font-style: normal;">Java提供了三种内建注解。</p><br>    <p style="margin: 0px 0px 1em; padding: 0px; line-height: 35px; color: #666666; font-family: Arial, Helvetica, sans-serif; font-size: 14px; font-style: normal;">1. <strong>@Override</strong>——当我们想要复写父类中的方法时，我们需要使用该注解去告知编译器我们想要复写这个方法。这样一来当父类中的方法移除或者发生更改时编译器将提示错误信息。</p><br>    <p style="margin: 0px 0px 1em; padding: 0px; line-height: 35px; color: #666666; font-family: Arial, Helvetica, sans-serif; font-size: 14px; font-style: normal;">2. <strong>@Deprecated</strong>——当我们希望编译器知道某一方法不建议使用时，我们应该使用这个注解。Java在javadoc 中推荐使用该注解，我们应该提供为什么该方法不推荐使用以及替代的方法。</p><br>    <p style="margin: 0px 0px 1em; padding: 0px; line-height: 35px; color: #666666; font-family: Arial, Helvetica, sans-serif; font-size: 14px; font-style: normal;">3. <strong>@SuppressWarnings</strong>——这个仅仅是告诉编译器忽略特定的警告信息，例如在泛型中使用原生数据类型。它的保留策略是SOURCE（译者注：在源文件中有效）并且被编译器丢弃。</p><br>    <p style="margin: 0px 0px 1em; padding: 0px; line-height: 35px; color: #666666; font-family: Arial, Helvetica, sans-serif; font-size: 14px; font-style: normal;">我们来看一个java内建注解的例子参照上边提到的自定义注解。</p><br>    <pre class="brush: java; gutter: true">package com.journaldev.annotations;<br><br>    import java.io.FileNotFoundException;<br>    import java.util.ArrayList;<br>    import java.util.List;<br><br>    public class AnnotationExample {<br><br>    public static void main(String[] args) {<br>    }<br><br>    @Override<br>    @MethodInfo(author = &#039;Pankaj&#039;, comments = &#039;Main method&#039;, date = &#039;Nov 17 2012&#039;, revision = 1)<br>    public String toString() {<br>    return &#039;Overriden toString method&#039;;<br>    }<br><br>    @Deprecated<br>    @MethodInfo(comments = &#039;deprecated method&#039;, date = &#039;Nov 17 2012&#039;)<br>    public static void oldMethod() {<br>    System.out.println(&#039;old method, don&#039;t use it.&#039;);<br>    }<br><br>    @SuppressWarnings({ &#039;unchecked&#039;, &#039;deprecation&#039; })<br>    @MethodInfo(author = &#039;Pankaj&#039;, comments = &#039;Main method&#039;, date = &#039;Nov 17 2012&#039;, revision = 10)<br>    public static void genericsTest() throws FileNotFoundException {<br>    List l = new ArrayList();<br>    l.add(&#039;abc&#039;);<br>    oldMethod();<br>    }<br><br>    }</pre><br>    <p style="margin: 0px 0px 1em; padding: 0px; line-height: 35px; color: #666666; font-family: Arial, Helvetica, sans-serif; font-size: 14px; font-style: normal;">相信这个例子可以不言自明并能展示在不同场景下的应用。</p><br>    <p style="margin: 0px 0px 1em; padding: 0px; line-height: 35px; color: #666666; font-family: Arial, Helvetica, sans-serif; font-size: 14px; font-style: normal;"><br>    </p><p style="margin: 0px 0px 1em; padding: 0px; line-height: 35px; color: #666666; font-family: Arial, Helvetica, sans-serif; font-size: 14px; font-style: normal;"><strong>Java注解解析</strong><br><br>    我们将使用反射技术来解析java类的注解。那么注解的RetentionPolicy应该设置为RUNTIME否则java类的注解信息在执行过程中将不可用那么我们也不能从中得到任何和注解有关的数据。</p><br>    <pre class="brush: java; gutter: true">package com.journaldev.annotations;<br><br>    import java.lang.annotation.Annotation;<br>    import java.lang.reflect.Method;<br><br>    public class AnnotationParsing {<br><br>    public static void main(String[] args) {<br>    try {<br>    for (Method method : AnnotationParsing.class<br>    .getClassLoader()<br>    .loadClass((&#039;com.journaldev.annotations.AnnotationExample&#039;))<br>    .getMethods()) {<br>    // checks if MethodInfo annotation is present for the method<br>    if (method.isAnnotationPresent(com.journaldev.annotations.MethodInfo.class)) {<br>    try {<br>    // iterates all the annotations available in the method<br>    for (Annotation anno : method.getDeclaredAnnotations()) {<br>    System.out.println(&#039;Annotation in Method &#039;&#039;+ method + &#039;&#039; : &#039; + anno);<br>    }<br>    MethodInfo methodAnno = method.getAnnotation(MethodInfo.class);<br>    if (methodAnno.revision() == 1) {<br>    System.out.println(&#039;Method with revision no 1 = &#039;+ method);<br>    }<br><br>    } catch (Throwable ex) {<br>    ex.printStackTrace();<br>    }<br>    }<br>    }<br>    } catch (SecurityException | ClassNotFoundException e) {<br>    e.printStackTrace();<br>    }<br>    }<br><br>    }</pre><br>    <p style="margin: 0px 0px 1em; padding: 0px; line-height: 35px; color: #666666; font-family: Arial, Helvetica, sans-serif; font-size: 14px; font-style: normal;">运行上面程序将输出：</p><br>    <pre class="brush: java; gutter: true">Annotation in Method &#039;public java.lang.String com.journaldev.annotations.AnnotationExample.toString()&#039; : @com.journaldev.annotations.MethodInfo(author=Pankaj, revision=1, comments=Main method, date=Nov 17 2012)<br>    Method with revision no 1 = public java.lang.String com.journaldev.annotations.AnnotationExample.toString()<br>    Annotation in Method &#039;public static void com.journaldev.annotations.AnnotationExample.oldMethod()&#039; : @java.lang.Deprecated()<br>    Annotation in Method &#039;public static void com.journaldev.annotations.AnnotationExample.oldMethod()&#039; : @com.journaldev.annotations.MethodInfo(author=Pankaj, revision=1, comments=deprecated method, date=Nov 17 2012)<br>    Method with revision no 1 = public static void com.journaldev.annotations.AnnotationExample.oldMethod()<br>    Annotation in Method &#039;public static void com.journaldev.annotations.AnnotationExample.genericsTest() throws java.io.FileNotFoundException&#039; : @com.journaldev.annotations.MethodInfo(author=Pankaj, revision=10, comments=Main method, date=Nov 17 2012)</pre><br>    <p style="margin: 0px 0px 1em; padding: 0px; line-height: 35px; color: #666666; font-family: Arial, Helvetica, sans-serif; font-size: 14px; font-style: normal;">这就是该教程的全部内容，希望你可以从中学到些东西。</p><br><br><br><br>    <!-- BEGIN #author-bio --><br><br><br>    <!-- END #author-bio --><br>     
 
 
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/08/09/activeMq-06/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="XueCheng">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="XueCheng Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/08/09/activeMq-06/" itemprop="url">转载:消息中间键解决分布式系统最终一致性方案对比</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-09T11:19:51+08:00">
-                2017-08-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <div id="article_content" class="article_content tracking-ad" data-mod="popu_307" data-dsm="post"><br>        <div class="markdown_views"><p>在分布式系统中，同时满足“一致性”、“可用性”和“分区容错性”三者是不可能的。分布式系统的事务一致性是一个技术难题，各种解决方案孰优孰劣？</p><br><br><p>在OLTP系统领域，我们在很多业务场景下都会面临事务一致性方面的需求，例如最经典的Bob给Smith转账的案例。传统的企业开发，系统往往是以单体应用形式存在的，也没有横跨多个数据库。</p><br><br><p>我们通常只需借助开发平台中特有数据访问技术和框架（例如Spring、JDBC、ADO.NET），结合关系型数据库自带的事务管理机制来实现事务性的需求。关系型数据库通常具有ACID特性：原子性（Atomicity）、一致性（Consistency）、隔离性（Isolation）、持久性（Durability）。</p><br><br><p>而大型互联网平台往往是由一系列分布式系统构成的，开发语言平台和技术栈也相对比较杂，尤其是在SOA和微服务架构盛行的今天，一个看起来简单的功能，内部可能需要调用多个“服务”并操作多个数据库或分片来实现，情况往往会复杂很多。单一的技术手段和解决方案，已经无法应对和满足这些复杂的场景了。</p><br><br><br><br><h2 id="分布式系统的特性"><font color="green">分布式系统的特性</font></h2><br><br><p>对分布式系统有过研究的读者，可能听说过“CAP定律”、“Base理论”等，非常巧的是，化学理论中ACID是酸、Base恰好是碱。这里笔者不对这些概念做过多的解释，有兴趣的读者可以查看相关参考资料。CAP定律如下图： <br><br><img src="http://img.blog.csdn.net/20160629182655587" alt="这里写图片描述" title=""></p><br><br><p>在分布式系统中，同时满足“CAP定律”中的“一致性”、“可用性”和“分区容错性”三者是不可能的，这比现实中找对象需同时满足“高、富、帅”或“白、富、美”更加困难。在互联网领域的绝大多数的场景，都需要牺牲强一致性来换取系统的高可用性，系统往往只需要保证“最终一致性”，只要这个最终时间是在用户可以接受的范围内即可。</p><br><br><h2 id="分布式事务"><font color="green">分布式事务</font></h2><br><br><p>提到分布式系统，必然要提到分布式事务。要想理解分布式事务，不得不先介绍一下两阶段提交协议。先举个简单但不精准的例子来说明：</p><br><br><blockquote><br>  <p><font color="Tomato">第一阶段，张老师作为“协调者”，给小强和小明（参与者、节点）发微信，组织他们俩明天8点在学校门口集合，一起去爬山，然后开始等待小强和小明答复。</font></p><br><br>  <p><font color="Tomato">第二阶段，如果小强和小明都回答没问题，那么大家如约而至。如果小强或者小明其中一人回答说“明天没空，不行”，那么张老师会立即通知小强和小明“爬山活动取消”。</font></p><br></blockquote><br><br><p>细心的读者会发现，这个过程中可能有很多问题的。如果小强没看手机，那么张老师会一直等着答复，小明可能在家里把爬山装备都准备好了却一直等着张老师确认信息。更严重的是，如果到明天8点小强还没有答复，那么就算“超时”了，那小明到底去还是不去集合爬山呢？</p><br><br><p>这就是两阶段提交协议的弊病，所以后来业界又引入了三阶段提交协议来解决该类问题。</p><br><br><p>两阶段提交协议在主流开发语言平台，数据库产品中都有广泛应用和实现的，下面来介绍一下XOpen组织提供的DTP模型图： <br><br><img src="http://img.blog.csdn.net/20160629182738995" alt="这里写图片描述" title=""> <br><br>XA协议指的是TM（事务管理器）和RM（资源管理器）之间的接口。目前主流的关系型数据库产品都是实现了XA接口的。JTA(Java Transaction API)是符合X/Open DTP模型的，事务管理器和资源管理器之间也使用了XA协议。 本质上也是借助两阶段提交协议来实现分布式事务的，下面分别来看看XA事务成功和失败的模型图： <br><br><img src="http://img.blog.csdn.net/20160629182809136" alt="这里写图片描述" title=""></p><br><br><p><img src="http://img.blog.csdn.net/20160629182835839" alt="这里写图片描述" title=""></p><br><br><p>在JavaEE平台下，WebLogic、Webshare等主流商用的应用服务器提供了JTA的实现和支持。而在Tomcat下是没有实现的（其实笔者并不认为Tomcat能算是JavaEE应用服务器），这就需要借助第三方的框架Jotm、Automikos等来实现，两者均支持spring事务整合。</p><br><br><p>而在Windows .NET平台中，则可以借助ado.net中的TransactionScop API来编程实现，还必须配置和借助Windows操作系统中的MSDTC服务。如果你的数据库使用的mysql，并且mysql是部署在Linux平台上的，那么是无法支持分布式事务的。 由于篇幅关系，这里不展开，感兴趣的读者可以自行查阅相关资料并实践。</p><br><br><blockquote><br>  <p><font color="Tomato">总结：这种方式实现难度不算太高，比较适合传统的单体应用，在同一个方法中存在跨库操作的情况。但分布式事务对性能的影响会比较大，不适合高并发和高性能要求的场景。</font></p><br></blockquote><br><br><h2 id="提供回滚接口"><font color="green">提供回滚接口</font></h2><br><br><p>在服务化架构中，功能X，需要去协调后端的A、B甚至更多的原子服务。那么问题来了，假如A和B其中一个调用失败了，那可怎么办呢？</p><br><br><p>在笔者的工作中经常遇到这类问题，往往提供了一个BFF层来协调调用A、B服务。如果有些是需要同步返回结果的，我会尽量按照“串行”的方式去调用。如果调用A失败，则不会盲目去调用B。如果调用A成功，而调用B失败，会尝试去回滚刚刚对A的调用操作。</p><br><br><p>当然，有些时候我们不必严格提供单独对应的回滚接口，可以通过传递参数巧妙的实现。</p><br><br><p>这样的情况，我们会尽量把可提供回滚接口的服务放在前面。举个例子说明：</p><br><br><p>我们的某个论坛网站，每天登录成功后会奖励用户5个积分，但是积分和用户又是两套独立的子系统服务，对应不同的DB，这控制起来就比较麻烦了。解决思路：</p><br><br><blockquote><br>  <p><font color="Tomato">1. 把登录和加积分的服务调用放在BFF层一个本地方法中。 <br><br>  <font color="Tomato">2. 当用户请求登录接口时，先执行加积分操作，加分成功后再执行登录操作。 <br><br>  <font color="Tomato">3. 如果登录成功，那当然最好了，积分也加成功了。如果登录失败，则调用加积分对应的回滚接口（执行减积分的操作）。</font></font></font></p><br></blockquote><br><br><hr><br><br><blockquote><br>  <p><font color="Tomato">总结：这种方式缺点比较多，通常在复杂场景下是不推荐使用的，除非是非常简单的场景，非常容易提供回滚，而且依赖的服务也非常少的情况。</font></p><br><br>  <p><font color="Tomato">这种实现方式会造成代码量庞大，耦合性高。而且非常有局限性，因为有很多的业务是无法很简单的实现回滚的，如果串行的服务很多，回滚的成本实在太高。</font></p><br></blockquote><br><br><h2 id="本地消息表"><font color="green">本地消息表</font></h2><br><br><p>这种实现方式的思路，其实是源于ebay，后来通过支付宝等公司的布道，在业内广泛使用。其基本的设计思想是将远程分布式事务拆分成一系列的本地事务。如果不考虑性能及设计优雅，借助关系型数据库中的表即可实现。</p><br><br><p>举个经典的跨行转账的例子来描述。</p><br><br><p>第一步，伪代码如下，扣款1W，通过本地事务保证了凭证消息插入到消息表中。  <br><br><img src="http://img.blog.csdn.net/20160630224838351" alt="这里写图片描述" title=""></p><br><br><p>第二步，通知对方银行账户上加1W了。那问题来了，如何通知到对方呢？</p><br><br><p>通常采用两种方式：</p><br><br><blockquote><br>  <p><font color="Tomato">1. 采用时效性高的MQ，由对方订阅消息并监听，有消息时自动触发事件 <br><br>  <font color="Tomato">2. 采用定时轮询扫描的方式，去检查消息表的数据。</font></font></p><br></blockquote><br><br><p>两种方式其实各有利弊，仅仅依靠MQ，可能会出现通知失败的问题。而过于频繁的定时轮询，效率也不是最佳的（90%是无用功）。所以，我们一般会把两种方式结合起来使用。</p><br><br><p>解决了通知的问题，又有新的问题了。万一这消息有重复被消费，往用户帐号上多加了钱，那岂不是后果很严重？</p><br><br><p>仔细思考，其实我们可以消息消费方，也通过一个“消费状态表”来记录消费状态。在执行“加款”操作之前，检测下该消息（提供标识）是否已经消费过，消费完成后，通过本地事务控制来更新这个“消费状态表”。这样子就避免重复消费的问题。</p><br><br><blockquote><br>  <p><font color="Tomato">总结：上诉的方式是一种非常经典的实现，基本避免了分布式事务，实现了“最终一致性”。但是，关系型数据库的吞吐量和性能方面存在瓶颈，频繁的读写消息会给数据库造成压力。所以，在真正的高并发场景下，该方案也会有瓶颈和限制的。</font></p><br></blockquote><br><br><h2 id="mq非事务消息"><font color="green">MQ（非事务消息）</font></h2><br><br><p>通常情况下，在使用非事务消息支持的MQ产品时，我们很难将业务操作与对MQ的操作放在一个本地事务域中管理。通俗点描述，还是以上述提到的“跨行转账”为例，我们很难保证在扣款完成之后对MQ投递消息的操作就一定能成功。这样一致性似乎很难保证。 <br><br>先从消息生产者这端来分析，请看伪代码：</p><br><br><p><img src="http://img.blog.csdn.net/20160629182959574" alt="这里写图片描述" title=""></p><br><br><p>根据上述代码及注释，我们来分析下可能的情况：</p><br><br><blockquote><br>  <p><font color="Tomato">1. 操作数据库成功，向MQ中投递消息也成功，皆大欢喜 <br><br>   <font color="Tomato">2.  操作数据库失败，不会向MQ中投递消息了 <br><br>   <font color="Tomato">3.  操作数据库成功，但是向MQ中投递消息时失败，向外抛出了异常，刚刚执行的更新数据库的操作将被回滚</font></font></font></p><br></blockquote><br><br><p>从上面分析的几种情况来看，貌似问题都不大的。那么我们来分析下消费者端面临的问题：</p><br><br><blockquote><br>  <p><font color="Tomato">1. 消息出列后，消费者对应的业务操作要执行成功。如果业务执行失败，消息不能失效或者丢失。需要保证消息与业务操作一致 <br><br>  <font color="Tomato">2. 尽量避免消息重复消费。如果重复消费，也不能因此影响业务结果</font></font></p><br></blockquote><br><br><p>如何保证消息与业务操作一致，不丢失？</p><br><br><p>主流的MQ产品都具有持久化消息的功能。如果消费者宕机或者消费失败，都可以执行重试机制的（有些MQ可以自定义重试次数）。</p><br><br><p>如何避免消息被重复消费造成的问题？</p><br><br><blockquote><br>  <p><font color="Tomato">1. 保证消费者调用业务的服务接口的幂等性 <br><br>  <font color="Tomato">2. 通过消费日志或者类似状态表来记录消费状态，便于判断（建议在业务上自行实现，而不依赖MQ产品提供该特性）</font></font></p><br></blockquote><br><br><hr><br><br><blockquote><br>  <p><font color="Tomato">总结：这种方式比较常见，性能和吞吐量是优于使用关系型数据库消息表的方案。如果MQ自身和业务都具有高可用性，理论上是可以满足大部分的业务场景的。不过在没有充分测试的情况下，不建议在交易业务中直接使用。</font></p><br></blockquote><br><br><h2 id="mq事务消息"><font color="green">MQ（事务消息）</font></h2><br><br><p>举个例子，Bob向Smith转账，那我们到底是先发送消息，还是先执行扣款操作？ <br><br>好像都可能会出问题。如果先发消息，扣款操作失败，那么Smith的账户里面会多出一笔钱。反过来，如果先执行扣款操作，后发送消息，那有可能扣款成功了但是消息没发出去，Smith收不到钱。除了上面介绍的通过异常捕获和回滚的方式外，还有没有其他的思路呢？</p><br><br><p>下面以阿里巴巴的RocketMQ中间件为例，分析下其设计和实现思路。</p><br><br><p>RocketMQ第一阶段发送Prepared消息时，会拿到消息的地址，第二阶段执行本地事物，第三阶段通过第一阶段拿到的地址去访问消息，并修改状态。细心的读者可能又发现问题了，如果确认消息发送失败了怎么办？</p><br><br><p>RocketMQ会定期扫描消息集群中的事物消息，这时候发现了Prepared消息，它会向消息发送者确认，Bob的钱到底是减了还是没减呢？如果减了是回滚还是继续发送确认消息呢？RocketMQ会根据发送端设置的策略来决定是回滚还是继续发送确认消息。这样就保证了消息发送与本地事务同时成功或同时失败。如下图： <br><br><img src="http://img.blog.csdn.net/20160629183131215" alt="这里写图片描述" title=""></p><br><br><blockquote><br>  <p><font color="Tomato"> 总结：据笔者的了解，各大知名的电商平台和互联网公司，几乎都是采用类似的设计思路来实现“最终一致性”的。这种方式适合的业务场景广泛，而且比较可靠。不过这种方式技术实现的难度比较大。目前主流的开源MQ（ActiveMQ、RabbitMQ、Kafka）均未实现对事务消息的支持，所以需二次开发或者新造轮子。比较遗憾的是，RocketMQ事务消息部分的代码也并未开源，需要自己去实现。</font></p><br></blockquote><br><br><h2 id="其他补偿方式"><font color="green">其他补偿方式</font></h2><br><br><p>做过支付宝交易接口的同学都知道，我们一般会在支付宝的回调页面和接口里，解密参数，然后调用系统中更新交易状态相关的服务，将订单更新为付款成功。同时，只有当我们回调页面中输出了success字样或者标识业务处理成功相应状态码时，支付宝才会停止回调请求。否则，支付宝会每间隔一段时间后，再向客户方发起回调请求，直到输出成功标识为止。 <br><br>其实这就是一个很典型的补偿例子，跟一些MQ重试补偿机制很类似。</p><br><br><p>一般成熟的系统中，对于级别较高的服务和接口，整体的可用性通常都会很高。如果有些业务由于瞬时的网络故障或调用超时等问题，那么这种重试机制其实是非常有效的。</p><br><br><p>当然，考虑个比较极端的场景，假如系统自身有bug或者程序逻辑有问题，那么重试1W次那也是无济于事的。那岂不是就发生了“明明已经付款，却显示未付款不发货”类似的悲剧？</p><br><br><p>其实为了交易系统更可靠，我们一般会在类似交易这种高级别的服务代码中，加入详细日志记录的，一旦系统内部引发类似致命异常，会有邮件通知。同时，后台会有定时任务扫描和分析此类日志，检查出这种特殊的情况，会尝试通过程序来补偿并邮件通知相关人员。</p><br><br><p>在某些特殊的情况下，还会有“人工补偿”的，这也是最后一道屏障。</p><br><br><h2 id="小结"><font color="green">小结</font></h2><br><br><p>上诉的几种方案中，笔者也大致总结了其设计思路，优势，劣势等，相信读者已经有了一定的理解。其实分布式系统的事务一致性本身是一个技术难题，目前没有一种很简单很完美的方案能够应对所有场景。具体还是要使用者根据不同的业务场景去抉择。</p></div>
-
-</div>
           
         
       
@@ -1081,8 +1082,8 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">57</span>
-                <span class="site-state-item-name">posts</span>
+                <span class="site-state-item-count">58</span>
+                <span class="site-state-item-name">Artikel</span>
               </a>
             </div>
           
@@ -1136,7 +1137,7 @@
 
 
 <div class="powered-by">
-  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
 </div>
 
 <div class="theme-info">

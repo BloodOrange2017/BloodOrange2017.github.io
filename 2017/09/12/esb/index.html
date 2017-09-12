@@ -1,0 +1,639 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="&amp;nbsp;企业数据总线(ESB)和注册服务管理(dubbo)的区别&amp;nbsp;2015-03-09 08:49:28分类：&amp;nbsp;Web开发一、概述1、什么是ESB就是企业数据总线的意思，他的核心功能就是兼容各种协议接口，可以将数据在各种协议之间进行流转，并且可以针对数据&amp;#26684;式进行编排转换。（&amp;#26684;式转换、协议转换、代理、编排、安全控制、监控、不支持高并发，类&amp;#202">
+<meta property="og:type" content="article">
+<meta property="og:title" content="转载：企业数据总线(ESB)和注册服务管理(dubbo)的区别">
+<meta property="og:url" content="https://bloodorange2017.github.io/archives/2017/09/12/esb/index.html">
+<meta property="og:site_name" content="XueCheng Notes">
+<meta property="og:description" content="&amp;nbsp;企业数据总线(ESB)和注册服务管理(dubbo)的区别&amp;nbsp;2015-03-09 08:49:28分类：&amp;nbsp;Web开发一、概述1、什么是ESB就是企业数据总线的意思，他的核心功能就是兼容各种协议接口，可以将数据在各种协议之间进行流转，并且可以针对数据&amp;#26684;式进行编排转换。（&amp;#26684;式转换、协议转换、代理、编排、安全控制、监控、不支持高并发，类&amp;#202">
+<meta property="og:updated_time" content="2017-09-12T03:46:07.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="转载：企业数据总线(ESB)和注册服务管理(dubbo)的区别">
+<meta name="twitter:description" content="&amp;nbsp;企业数据总线(ESB)和注册服务管理(dubbo)的区别&amp;nbsp;2015-03-09 08:49:28分类：&amp;nbsp;Web开发一、概述1、什么是ESB就是企业数据总线的意思，他的核心功能就是兼容各种协议接口，可以将数据在各种协议之间进行流转，并且可以针对数据&amp;#26684;式进行编排转换。（&amp;#26684;式转换、协议转换、代理、编排、安全控制、监控、不支持高并发，类&amp;#202">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://bloodorange2017.github.io/archives/2017/09/12/esb/"/>
+
+
+
+
+
+  <title>转载：企业数据总线(ESB)和注册服务管理(dubbo)的区别 | XueCheng Notes</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">XueCheng Notes</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Where there is a will, there is a way.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Startseite
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archiv
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/09/12/esb/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="XueCheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XueCheng Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">转载：企业数据总线(ESB)和注册服务管理(dubbo)的区别</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-12T11:44:29+08:00">
+                2017-09-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <div class="Blog_tit4 Blog_tit5" style="word-wrap:break-word; border-bottom-width:0px; padding:0px 0px 11px; color:rgb(86,86,86); font-family:宋体,Arial"><br>&nbsp;<a target="_blank" href="http://blog.itpub.net/29754888/viewspace-1452858/" style="word-wrap:break-word; text-decoration:none; color:rgb(156,36,35); font-family:微软雅黑,黑体,Verdana; font-size:20px">企业数据总线(ESB)和注册服务管理(dubbo)的区别</a>&nbsp;<span style="word-wrap:break-word; margin-left:22px; color:rgb(187,186,186); font-family:Arial">2015-03-09<br> 08:49:28</span></div><br><div class="Blog_con2" style="word-wrap:break-word; color:rgb(102,102,102); line-height:26px; height:auto; overflow:hidden; font-family:宋体,Arial"><br><div class="Blog_con3" style="word-wrap:break-word; margin-top:10px; line-height:22px"><br><p style="word-wrap:break-word; margin-top:0px; margin-bottom:0px; padding-top:0px; padding-bottom:0px; color:rgb(142,3,0)"><br>分类：&nbsp;<span style="word-wrap:break-word; color:rgb(187,186,186); margin-right:25px">Web开发</span></p><br><p style="word-wrap:break-word; margin-top:0px; margin-bottom:0px; padding-top:0px; padding-bottom:0px; color:rgb(142,3,0)"><br></p><br></div><br><div class="Blog_wz1" style="word-wrap:break-word"><br><p style="word-wrap:break-word; margin-top:0px; margin-bottom:0px; padding-top:0px; padding-bottom:0px; font-family:Arial; font-size:14px; line-height:26px"><br><br style="word-wrap:break-word"><br></p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br><span style="word-wrap:break-word">一、概述</span></p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>1、什么是ESB</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>就是企业数据总线的意思，他的核心功能就是兼容各种协议接口，可以将数据在各种协议之间进行流转，并且可以针对数据&#26684;式进行编排转换。（&#26684;式转换、协议转换、代理、编排、安全控制、监控、不支持高并发，类&#20284;于路由器维护着一张路由表进行路由转发）</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>代表性的项目有：JBOSS ESB,Mule,Camel 以及一些其他的esb项目</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>&nbsp;</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>2、什么是服务注册</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>就是将所有的服务接口（很多时候是hession协议的接口）,注册到一个中心的分布式服务集群上（你可以考虑成apache的zookeeper服务实现的效果）。各个业务系统直接访问分布式服务查找需要调用的接口位置，进而调用。（注册目录服务、监控、负载均衡、安全控制、分布式强健壮、适用于高并发）</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>代表性开源项目有：阿里的dubbo，淘宝的HSF(现在不知道是否继续开源了)</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>&nbsp;</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br><span style="word-wrap:break-word">二、双方特点</span></p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>1、ESB</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>ESB一般采用集中式转发请求，适合大量异构系统集成，并且压力不大的情况</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>&nbsp;</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>但集中式转发也是有优势的，比如调用方用http协议，提供方用rmi协议，转发就可以转换协议，对双方都透明。另外，在总线上还可以执行流程引擎，做服务编排，比如A和B两个服务经常一起调，就可以编排成服务C，而不用再单独启一个服务去做。还有，安全，流控，做起来也更方便。</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>支持groovy类型的脚本语言，在总线上可以给数据&#26684;式做转换</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>2、服务注册管理</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>采用的是分布式调用，注册中心只记录地址信息，然后直连调用，适合并发及压力比较大的情况。</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>对于网站应用，大多是垂直业务，直接从数据库拉数据展示。</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>&nbsp;</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br><span style="word-wrap:break-word">三、应用场景</span></p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>1、ESB</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>esb最常见的场景是，把系统里的集成逻辑，单拉出来， 放到esb容器里来部署，并跟应用系统适配。 这样让应用系统变得只有自己的业务逻辑，简单、轻薄。</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>劣势：在所有的服务上增加了一个总线作为沟通的渠道。对于较大的并发量会将瓶颈推到ESB总线上。很多时候ESB总线都采用MQ类的消息服务器来异步处理缓解压力</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>2、服务注册</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>淘宝和阿里的各个业务系统提供了很多的接口，这个时候需要统一管理提供个各子业务系统使用，让各个子业务系统可以通过注册中心很快找到对应的服务</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>劣势：服务编排和协议转换还是靠各个业务子系统了</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>&nbsp;</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br><span style="word-wrap:break-word">四、综述</span></p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>1、两类开源项目侧重点不同，ESB侧重任务的编排，性能问题可通过异构的方式来进行规避。无法支持特别大的并发</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>2、服务注册侧重服务的治理，将各个服务颗粒化，各个子业务系统在程序逻辑上完成业务的编排。但是比较实用较大的并发量，因为dubbo类的只是存放服务地址。有zookeeper类的分布式通讯框架，能保证单点的失败不影响整个系统的业务调用，因为业务接口都是在各个提供服务的子系统中</p><br></div><br></div>
+
+<p></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/09/12/serviceGovernment/" rel="next" title="转载:服务治理与微服务">
+                <i class="fa fa-chevron-left"></i> 转载:服务治理与微服务
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2099/09/07/myProject-01/" rel="prev" title="案例项目-下载页">
+                案例项目-下载页 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://bloodorange2017.github.io/images/img_head_001.jpg"
+               alt="XueCheng" />
+          <p class="site-author-name" itemprop="name">XueCheng</p>
+           
+              <p class="site-description motion-element" itemprop="description">Do one thing at a time, and do well.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">58</span>
+                <span class="site-state-item-name">Artikel</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">XueCheng</span>
+</div>
+
+
+<div class="powered-by">
+  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+<script type="text/javascript"
+color="160,160,233" opacity='0.4' zIndex="-2" count="16" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+</body>
+</html>
