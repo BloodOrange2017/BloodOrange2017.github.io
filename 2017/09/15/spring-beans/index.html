@@ -90,15 +90,16 @@
 
 
 
-<meta name="description" content="Do one thing at a time, and do well.">
-<meta property="og:type" content="website">
-<meta property="og:title" content="XueCheng Notes">
-<meta property="og:url" content="https://bloodorange2017.github.io/archives/index.html">
+<meta name="description" content="bean的实例化依赖注入的相关配置&amp;lt;?xml version=”1.0” encoding=”UTF-8”?&amp;gt;&amp;lt;beans xmlns=“http://www.springframework.org/schema/beans“    xmlns:xsi=“http://www.w3.org/2001/XMLSchema-instance“ xmlns:contex">
+<meta property="og:type" content="article">
+<meta property="og:title" content="转载:spring ioc 单利模式与多例模式实现源码、原理">
+<meta property="og:url" content="https://bloodorange2017.github.io/archives/2017/09/15/spring-beans/index.html">
 <meta property="og:site_name" content="XueCheng Notes">
-<meta property="og:description" content="Do one thing at a time, and do well.">
+<meta property="og:description" content="bean的实例化依赖注入的相关配置&amp;lt;?xml version=”1.0” encoding=”UTF-8”?&amp;gt;&amp;lt;beans xmlns=“http://www.springframework.org/schema/beans“    xmlns:xsi=“http://www.w3.org/2001/XMLSchema-instance“ xmlns:contex">
+<meta property="og:updated_time" content="2017-09-15T03:09:21.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="XueCheng Notes">
-<meta name="twitter:description" content="Do one thing at a time, and do well.">
+<meta name="twitter:title" content="转载:spring ioc 单利模式与多例模式实现源码、原理">
+<meta name="twitter:description" content="bean的实例化依赖注入的相关配置&amp;lt;?xml version=”1.0” encoding=”UTF-8”?&amp;gt;&amp;lt;beans xmlns=“http://www.springframework.org/schema/beans“    xmlns:xsi=“http://www.w3.org/2001/XMLSchema-instance“ xmlns:contex">
 
 
 
@@ -126,13 +127,13 @@
 
 
 
-  <link rel="canonical" href="https://bloodorange2017.github.io/archives/"/>
+  <link rel="canonical" href="https://bloodorange2017.github.io/archives/2017/09/15/spring-beans/"/>
 
 
 
 
 
-  <title>XueCheng Notes</title>
+  <title>转载:spring ioc 单利模式与多例模式实现源码、原理 | XueCheng Notes</title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
@@ -157,9 +158,7 @@
     
   
 
-  <div class="container sidebar-position-left 
-   page-home 
- ">
+  <div class="container sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -242,458 +241,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2099/09/09/img-01/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="XueCheng">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="XueCheng Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2099/09/09/img-01/" itemprop="url">欢迎来到薛成的博客</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2099-09-09T12:00:00+08:00">
-                2099-09-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><img src="http://dtbfiles.oss-cn-shenzhen.aliyuncs.com/img/2017/05/05/asong.jpg"></p>
-<div class="collection-title"><br>          <h2>博客中文章仅本人学习使用，如有侵权请尽快通知博主删除</h2><br>        </div>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2099/09/08/pptCatalog-01/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="XueCheng">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="XueCheng Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2099/09/08/pptCatalog-01/" itemprop="url">JAVAEE 学习资料</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2099-09-08T15:56:57+08:00">
-                2099-09-08
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p></p><h2>JAVAEE PPT目录</h2><br><br><p></p>
-<p><b>1.</b><a href="/stutyData/架构第一代码和ppt/ActiveMQ快速上手.pdf">ActiveMQ快速上手.pdf</a></p><p><b>2.</b><a href="/stutyData/架构第一代码和ppt/Git快速上手.pdf">Git快速上手.pdf</a></p><p><b>3.</b><a href="/stutyData/架构第一代码和ppt/Maven补充.pdf">Maven补充.pdf</a></p><p><b>4.</b><a href="/stutyData/架构第一代码和ppt/Memcached快速上手.pdf">Memcached快速上手.pdf</a></p><p><b>5.</b><a href="/stutyData/架构第一代码和ppt/MogileFS快速上手.pdf">MogileFS快速上手.pdf</a></p><p><b>6.</b><a href="/stutyData/架构第一代码和ppt/MongoDB快速上手.pdf">MongoDB快速上手.pdf</a></p><p><b>7.</b><a href="/stutyData/架构第一代码和ppt/Nginx快速上手.pdf">Nginx快速上手.pdf</a></p><p><b>8.</b><a href="/stutyData/架构第一代码和ppt/Varnish快速上手.pdf">Varnish快速上手.pdf</a></p><p><b>9.</b><a href="/stutyData/架构第一代码和ppt/基本业务功能.pdf">基本业务功能.pdf</a></p><br><h2><a name="t0"></a>💻章节隔断💻</h2><br><p><b>1.</b><a href="/stutyData/x-gen-ppt/使用外部主题.pdf">使用外部主题.pdf</a></p><p><b>2.</b><a href="/stutyData/x-gen-ppt/具体调用.pdf">具体调用.pdf</a></p><p><b>3.</b><a href="/stutyData/x-gen-ppt/分发调度.pdf">分发调度.pdf</a></p><p><b>4.</b><a href="/stutyData/x-gen-ppt/整体介绍.pdf">整体介绍.pdf</a></p><p><b>5.</b><a href="/stutyData/x-gen-ppt/模板管理.pdf">模板管理.pdf</a></p><p><b>6.</b><a href="/stutyData/x-gen-ppt/生成代理.pdf">生成代理.pdf</a></p><p><b>7.</b><a href="/stutyData/x-gen-ppt/生成输出.pdf">生成输出.pdf</a></p><p><b>8.</b><a href="/stutyData/x-gen-ppt/自定义外部主题.pdf">自定义外部主题.pdf</a></p><p><b>9.</b><a href="/stutyData/x-gen-ppt/配置管理.pdf">配置管理.pdf</a></p><br><h2><a name="t1"></a>💻章节隔断💻</h2><br><p><b>1.</b><a href="/stutyData/05Java架构师实战/MySQL入门到精通经典教程.pdf">MySQL入门到精通经典教程.pdf</a></p><p><b>2.</b><a href="/stutyData/05Java架构师实战/了不起的NodeJS.pdf">了不起的NodeJS.pdf</a></p><p><b>3.</b><a href="/stutyData/05Java架构师实战/分布式Java应用.pdf">分布式Java应用.pdf</a></p><p><b>4.</b><a href="/stutyData/05Java架构师实战/删除：大数据取舍之道（英）维克托·迈尔-舍恩伯格.pdf">删除：大数据取舍之道（英）维克托·迈尔-舍恩伯格.pdf</a></p><p><b>5.</b><a href="/stutyData/05Java架构师实战/大规模分布式存储系统：原理解析与架构实战.pdf">大规模分布式存储系统：原理解析与架构实战.pdf</a></p><p><b>6.</b><a href="/stutyData/05Java架构师实战/构建高性能Web站点.pdf">构建高性能Web站点.pdf</a></p><p><b>7.</b><a href="/stutyData/05Java架构师实战/淘宝技术架构.pdf">淘宝技术架构.pdf</a></p><p><b>8.</b><a href="/stutyData/05Java架构师实战/淘宝技术这十年，完整最终确认版.pdf.pdf">淘宝技术这十年，完整最终确认版.pdf.pdf</a></p><p><b>9.</b><a href="/stutyData/05Java架构师实战/系统架构设计师教程.pdf">系统架构设计师教程.pdf</a></p><p><b>10.</b><a href="/stutyData/05Java架构师实战/让Oracle跑得更快.pdf">让Oracle跑得更快.pdf</a></p><p><b>11.</b><a href="/stutyData/05Java架构师实战/让Oracle跑得更快2  基于海量数据的数据库设计与优化.pdf">让Oracle跑得更快2  基于海量数据的数据库设计与优化.pdf</a></p><p><b>12.</b><a href="/stutyData/05Java架构师实战/豆瓣数据架构实践-员旭鹏.pdf">豆瓣数据架构实践-员旭鹏.pdf</a></p><p><b>13.</b><a href="/stutyData/05Java架构师实战/阿里分布式数据库服务实践wangjingyu.pdf">阿里分布式数据库服务实践wangjingyu.pdf</a></p><p><b>14.</b><a href="/stutyData/05Java架构师实战/高性能高并发服务器架构.pdf">高性能高并发服务器架构.pdf</a></p><br><h2><a name="t2"></a>💻章节隔断💻</h2><p><a href="http://dubbo.io/User+Guide-zh.htm#UserGuide-zh-配置参考手册" target="_blank" rel="external">Dubbo参考手册</a></p><br><p><b>1.</b><a href="/stutyData/架构第二代码实战知识/.DS_Store">.DS_Store</a></p><p><b>2.</b><a href="/stutyData/架构第二代码实战知识/Keepalived快速上手.pdf">Keepalived快速上手.pdf</a></p><p><b>3.</b><a href="/stutyData/架构第二代码实战知识/Nginx和Varnish优化补充.pdf">Nginx和Varnish优化补充.pdf</a></p><p><b>4.</b><a href="/stutyData/架构第二代码实战知识/Redis上手之后.pdf">Redis上手之后.pdf</a></p><p><b>5.</b><a href="/stutyData/架构第二代码实战知识/Redis快速上手.pdf">Redis快速上手.pdf</a></p><p><b>6.</b><a href="/stutyData/架构第二代码实战知识/SQL优化.pdf">SQL优化.pdf</a></p><p><b>7.</b><a href="/stutyData/架构第二代码实战知识/Web缓存和静态化.pdf">Web缓存和静态化.pdf</a></p><p><b>8.</b><a href="/stutyData/架构第二代码实战知识/Web表现层其它.pdf">Web表现层其它.pdf</a></p><p><b>9.</b><a href="/stutyData/架构第二代码实战知识/Web表现层性能优化.pdf">Web表现层性能优化.pdf</a></p><p><b>10.</b><a href="/stutyData/架构第二代码实战知识/分布式部署.pdf">分布式部署.pdf</a></p><p><b>11.</b><a href="/stutyData/架构第二代码实战知识/分布式部署后的常见问题.pdf">分布式部署后的常见问题.pdf</a></p><p><b>12.</b><a href="/stutyData/架构第二代码实战知识/大数据量处理.pdf">大数据量处理.pdf</a></p><p><b>13.</b><a href="/stutyData/架构第二代码实战知识/异步规划和集群和优化.pdf">异步规划和集群和优化.pdf</a></p><p><b>14.</b><a href="/stutyData/架构第二代码实战知识/数据层处理和性能优化.pdf">数据层处理和性能优化.pdf</a></p><p><b>15.</b><a href="/stutyData/架构第二代码实战知识/数据库性能优化.pdf">数据库性能优化.pdf</a></p><p><b>16.</b><a href="/stutyData/架构第二代码实战知识/整体介绍.pdf">整体介绍.pdf</a></p><p><b>17.</b><a href="/stutyData/架构第二代码实战知识/最后的话.pdf">最后的话.pdf</a></p><p><b>18.</b><a href="/stutyData/架构第二代码实战知识/缓存规划和集群.pdf">缓存规划和集群.pdf</a></p><p><b>19.</b><a href="/stutyData/架构第二代码实战知识/逻辑层其它.pdf">逻辑层其它.pdf</a></p><p><b>20.</b><a href="/stutyData/架构第二代码实战知识/高并发处理.pdf">高并发处理.pdf</a></p><br><h2>💻微服务架构💻</h2><br><p><b>1.</b><a href="/stutyData/微服务ppt/.DS_Store">.DS_Store</a></p><p><b>2.</b><a href="/stutyData/微服务ppt/第01节--课程介绍.pdf">第01节–课程介绍.pdf</a></p><p><b>3.</b><a href="/stutyData/微服务ppt/第02节--解决方案的效果演示.pdf">第02节–解决方案的效果演示.pdf</a></p><p><b>4.</b><a href="/stutyData/微服务ppt/第03节--常用的分布式事务解决方案介绍.pdf">第03节–常用的分布式事务解决方案介绍.pdf</a></p><p><b>5.</b><a href="/stutyData/微服务ppt/第04节--消息发送一致性（可靠消息的前提保障）.pdf">第04节–消息发送一致性（可靠消息的前提保障）.pdf</a></p><p><b>6.</b><a href="/stutyData/微服务ppt/第05节--消息发送一致性的异常流程处理.pdf">第05节–消息发送一致性的异常流程处理.pdf</a></p><p><b>7.</b><a href="/stutyData/微服务ppt/第06节--常规MQ队列消息的处理流程和特点.pdf">第06节–常规MQ队列消息的处理流程和特点.pdf</a></p><p><b>8.</b><a href="/stutyData/微服务ppt/第07节--消息重复发送问题与业务接口的幂等性设计.pdf">第07节–消息重复发送问题与业务接口的幂等性设计.pdf</a></p>
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2099/09/07/download-file/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="XueCheng">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="XueCheng Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2099/09/07/download-file/" itemprop="url">框架软件-下载页</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2099-09-07T11:45:53+08:00">
-                2099-09-07
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><a href="https://bloodorange2017.github.io//software/dubbo简易依赖包.zip"><h4>Dubbo-简易依赖包</h4></a><br><a href="https://bloodorange2017.github.io//software/dobbo-admin.war"><h4>Dubbo-admin</h4></a><br><a href="https://bloodorange2017.github.io//software/dobbo-admin.war"><img src="https://bloodorange2017.github.io//images/bubbo_01.png"> </a></p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2099/09/07/myProject-01/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="XueCheng">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="XueCheng Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2099/09/07/myProject-01/" itemprop="url">案例项目-下载页</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2099-09-07T10:13:49+08:00">
-                2099-09-07
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p></p><h4>maven项目</h4><br><a href="https://bloodorange2017.github.io//myProject/base_maven/base-pom.zip">maven基础分层项目</a><br><a href="https://bloodorange2017.github.io//myProject/maven+activemq/base-pom.zip">maven分层工程结合activemq</a><br><a href="https://bloodorange2017.github.io//myProject/maven+activemq+dubbo+zookeeper/base-pom.zip">maven分层工程结合activemq+dubbo+zookeeper</a><br><a href="https://bloodorange2017.github.io//myProject/maven+activemq+dubbo+zookeeper+transaction/base-pom.zip">注解式解决分布式事务最终一致性问题(采用actionmq做消息中间件)</a><br><img src="https://bloodorange2017.github.io//images/dubbo_02.png"><br><a href="https://bloodorange2017.github.io//myProject/maven+dubbo+readAndWrite/dtb-base-pom.zip">dubbo微服务结合mysql集群+一键导出jar包</a><br><a href="https://bloodorange2017.github.io//myProject/maven+dubbo+readAndWrite+web/dtb-base-pom.zip">dubbo微服务结合mysql集群+tomcat容器</a><br><a href="https://bloodorange2017.github.io//myProject/dubbox/dubbox-demo.zip">当当网dubbox</a><br><a href="https://bloodorange2017.github.io//myProject/dubbox-end/dtb-base-pom.zip">maven+dubbox+注解式解决分mysql集群+tomcat容器</a><br><a href="https://BloodOrange2017.github.io/myProject/dubbox-rest/dtb-base-pom.zip">maven+dubbox+注解式解决分mysql集群+tomcat容器+rest风格+redis</a><br><a href="https://bloodorange2017.github.io//myProject/dubbo-2.8.4.jar">dubbox-2.8.4.jar</a><br><a href="https://BloodOrange2017.github.io/myProject/dubbox-1.0/dtb-base-pom.zip">maven+dubbox+restful完整版</a><br>://BloodOrange2017.github.io/myProject/dubbo-monitor/dubbo-monitor.zip”&gt;dubbox监控monitor<p></p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
 
   
 
@@ -719,9 +269,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/09/15/spring-beans/" itemprop="url">转载:spring ioc 单利模式与多例模式实现源码、原理</a></h1>
+          <h1 class="post-title" itemprop="name headline">转载:spring ioc 单利模式与多例模式实现源码、原理</h1>
         
 
         <div class="post-meta">
@@ -768,9 +316,7 @@
       
 
       
-        
-          
-            <div id="article_content" class="article_content tracking-ad" data-mod="popu_307" data-dsm="post"><br>        <div class="markdown_views"><ol><br><li><p>bean的实例化</p></li><br><li><p>依赖注入的相关配置</p></li><br></ol><br><br><br><br><pre class="prettyprint"><code class=" hljs xml"><span class="hljs-pi">&lt;?xml version=”1.0” encoding=”UTF-8”?&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-title">beans</span> <span class="hljs-attribute">xmlns</span>=<span class="hljs-value">“<a href="http://www.springframework.org/schema/beans" target="_blank" rel="external">http://www.springframework.org/schema/beans</a>“</span><br>    <span class="hljs-attribute">xmlns:xsi</span>=<span class="hljs-value">“<a href="http://www.w3.org/2001/XMLSchema-instance" target="_blank" rel="external">http://www.w3.org/2001/XMLSchema-instance</a>“</span> <span class="hljs-attribute">xmlns:context</span>=<span class="hljs-value">“<a href="http://www.springframework.org/schema/context" target="_blank" rel="external">http://www.springframework.org/schema/context</a>“</span><br>    <span class="hljs-attribute">xsi:schemaLocation</span>=<span class="hljs-value">“<br>        <a href="http://www.springframework.org/schema/beans" target="_blank" rel="external">http://www.springframework.org/schema/beans</a> <a href="http://www.springframework.org/schema/beans/spring-beans-4.1.xsd" target="_blank" rel="external">http://www.springframework.org/schema/beans/spring-beans-4.1.xsd</a><br>        <a href="http://www.springframework.org/schema/context" target="_blank" rel="external">http://www.springframework.org/schema/context</a> <a href="http://www.springframework.org/schema/context/spring-context-4.1.xsd" target="_blank" rel="external">http://www.springframework.org/schema/context/spring-context-4.1.xsd</a>“</span><br>    <span class="hljs-attribute">default-lazy-init</span>=<span class="hljs-value">“true”</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-title">description</span>&gt;</span>Spring公共配置 <span class="hljs-tag">&lt;/<span class="hljs-title">description</span>&gt;</span><br>    <span class="hljs-comment">&lt;!– &lt;context:component-scan<br>        base-package=”com.sjj.controller,com.sjj.service,com.sjj.dao” /&gt; –&gt;</span><br><br>    <span class="hljs-tag">&lt;<span class="hljs-title">bean</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">“moneyService”</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">“com.sjj.service.MoneyService”</span> <span class="hljs-attribute">init-method</span>=<span class="hljs-value">“initMethod”</span> &gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-title">property</span> <span class="hljs-attribute">name</span>=<span class="hljs-value">“name”</span>  <span class="hljs-attribute">value</span>=<span class="hljs-value">“人民币”</span> /&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-title">bean</span>&gt;</span><br><br>    <span class="hljs-comment">&lt;!–init-method 方法是用户定义的初始化方法，在bean被实例化之后执行，bean实例化有两种方式  –&gt;</span><br><br>    <span class="hljs-tag">&lt;<span class="hljs-title">bean</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">“bankService”</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">“com.sjj.service.BankService”</span> <span class="hljs-attribute">init-method</span>=<span class="hljs-value">“initMethod”</span>  <span class="hljs-attribute">scope</span> = “<span class="hljs-attribute">singleton</span>“&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-title">property</span> <span class="hljs-attribute">name</span>=<span class="hljs-value">“moneyService”</span> <span class="hljs-attribute">ref</span>=<span class="hljs-value">“moneyService”</span> /&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-title">property</span> <span class="hljs-attribute">name</span>=<span class="hljs-value">“bankNames”</span>&gt;</span><br>         <span class="hljs-tag">&lt;<span class="hljs-title">list</span>&gt;</span><br>          <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>ICBC<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span><br>          <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>CYBC<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span><br>         <span class="hljs-tag">&lt;/<span class="hljs-title">list</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-title">bean</span>&gt;</span><br><br>    <span class="hljs-tag">&lt;<span class="hljs-title">bean</span> <span class="hljs-attribute">id</span> =<span class="hljs-value">“myBeanFactoryPostProcessor”</span> <span class="hljs-attribute">class</span> = “<span class="hljs-attribute">com.sjj.postProcessor.MyBeanFactoryPostProcessor</span>“&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">bean</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-title">bean</span> <span class="hljs-attribute">id</span> =<span class="hljs-value">“myBeanPostProcessor”</span> <span class="hljs-attribute">class</span> = “<span class="hljs-attribute">com.sjj.postProcessor.MyBeanPostProcessor</span>“&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">bean</span>&gt;</span><br><br><span class="hljs-tag">&lt;/<span class="hljs-title">beans</span>&gt;</span>    </code></pre><br><br><p>default-lazy-init=”true” 配置了全局的延迟加载，延迟加载的含义spring上下文环境初始化时并不会实例化所有的bean，只有当真正使用时才会去初始化，何时才算真正使用呢？比如调用getBean方法时就会实例化指定的bean，这个全局配置灵活性不高。一般情况会在bean定义上配置各自的lazy-init=”true”属性。</p><br><br><p><em>注意：如果被引用bean moneyService配置的延迟加载，引用bean bankService配置的非延迟加载，此时由于bankService要用到moneyService，这种情况也符合真正用到的意思，所以moneyService也会被实例化。</em></p><br><br><ol><br><li><p>bean实例化的源码分析</p><br><br><p>方法getBean是bean实例化的入口，FileSystemXmlApplicationContext的父类AbstractRefreshableApplicationContext默认持有DefaultListableBeanFactory的实例，bean实例化的主要逻辑都在其方法doGetBean中。</p></li><br></ol><br><br><br><br><pre class="prettyprint"><code class=" hljs cs">FileSystemXmlApplicationContext ctx = <span class="hljs-keyword">new</span> FileSystemXmlApplicationContext(<span class="hljs-string">“D:/workspace/demo_spring_standalone/src/main/resources/applicationContext.xml”</span>);<br>ctx.getBean(<span class="hljs-string">“bankService”</span>)</code></pre><br><br><br><br><pre class="prettyprint"><code class=" hljs java"><span class="hljs-keyword">protected</span> &lt;T&gt; T <span class="hljs-title">doGetBean</span>(<br>            <span class="hljs-keyword">final</span> String name, <span class="hljs-keyword">final</span> Class&lt;T&gt; requiredType, <span class="hljs-keyword">final</span> Object[] args, <span class="hljs-keyword">boolean</span> typeCheckOnly)<br>            <span class="hljs-keyword">throws</span> BeansException {<br><br>        <span class="hljs-keyword">final</span> String beanName = transformedBeanName(name);<br>        Object bean;<br><br>        <span class="hljs-comment">// Eagerly check singleton cache for manually registered singletons.</span><br>        <span class="hljs-comment">/<em>
+        <div id="article_content" class="article_content tracking-ad" data-mod="popu_307" data-dsm="post"><br>        <div class="markdown_views"><ol><br><li><p>bean的实例化</p></li><br><li><p>依赖注入的相关配置</p></li><br></ol><br><br><br><br><pre class="prettyprint"><code class=" hljs xml"><span class="hljs-pi">&lt;?xml version=”1.0” encoding=”UTF-8”?&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-title">beans</span> <span class="hljs-attribute">xmlns</span>=<span class="hljs-value">“<a href="http://www.springframework.org/schema/beans" target="_blank" rel="external">http://www.springframework.org/schema/beans</a>“</span><br>    <span class="hljs-attribute">xmlns:xsi</span>=<span class="hljs-value">“<a href="http://www.w3.org/2001/XMLSchema-instance" target="_blank" rel="external">http://www.w3.org/2001/XMLSchema-instance</a>“</span> <span class="hljs-attribute">xmlns:context</span>=<span class="hljs-value">“<a href="http://www.springframework.org/schema/context" target="_blank" rel="external">http://www.springframework.org/schema/context</a>“</span><br>    <span class="hljs-attribute">xsi:schemaLocation</span>=<span class="hljs-value">“<br>        <a href="http://www.springframework.org/schema/beans" target="_blank" rel="external">http://www.springframework.org/schema/beans</a> <a href="http://www.springframework.org/schema/beans/spring-beans-4.1.xsd" target="_blank" rel="external">http://www.springframework.org/schema/beans/spring-beans-4.1.xsd</a><br>        <a href="http://www.springframework.org/schema/context" target="_blank" rel="external">http://www.springframework.org/schema/context</a> <a href="http://www.springframework.org/schema/context/spring-context-4.1.xsd" target="_blank" rel="external">http://www.springframework.org/schema/context/spring-context-4.1.xsd</a>“</span><br>    <span class="hljs-attribute">default-lazy-init</span>=<span class="hljs-value">“true”</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-title">description</span>&gt;</span>Spring公共配置 <span class="hljs-tag">&lt;/<span class="hljs-title">description</span>&gt;</span><br>    <span class="hljs-comment">&lt;!– &lt;context:component-scan<br>        base-package=”com.sjj.controller,com.sjj.service,com.sjj.dao” /&gt; –&gt;</span><br><br>    <span class="hljs-tag">&lt;<span class="hljs-title">bean</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">“moneyService”</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">“com.sjj.service.MoneyService”</span> <span class="hljs-attribute">init-method</span>=<span class="hljs-value">“initMethod”</span> &gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-title">property</span> <span class="hljs-attribute">name</span>=<span class="hljs-value">“name”</span>  <span class="hljs-attribute">value</span>=<span class="hljs-value">“人民币”</span> /&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-title">bean</span>&gt;</span><br><br>    <span class="hljs-comment">&lt;!–init-method 方法是用户定义的初始化方法，在bean被实例化之后执行，bean实例化有两种方式  –&gt;</span><br><br>    <span class="hljs-tag">&lt;<span class="hljs-title">bean</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">“bankService”</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">“com.sjj.service.BankService”</span> <span class="hljs-attribute">init-method</span>=<span class="hljs-value">“initMethod”</span>  <span class="hljs-attribute">scope</span> = “<span class="hljs-attribute">singleton</span>“&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-title">property</span> <span class="hljs-attribute">name</span>=<span class="hljs-value">“moneyService”</span> <span class="hljs-attribute">ref</span>=<span class="hljs-value">“moneyService”</span> /&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-title">property</span> <span class="hljs-attribute">name</span>=<span class="hljs-value">“bankNames”</span>&gt;</span><br>         <span class="hljs-tag">&lt;<span class="hljs-title">list</span>&gt;</span><br>          <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>ICBC<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span><br>          <span class="hljs-tag">&lt;<span class="hljs-title">value</span>&gt;</span>CYBC<span class="hljs-tag">&lt;/<span class="hljs-title">value</span>&gt;</span><br>         <span class="hljs-tag">&lt;/<span class="hljs-title">list</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-title">property</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-title">bean</span>&gt;</span><br><br>    <span class="hljs-tag">&lt;<span class="hljs-title">bean</span> <span class="hljs-attribute">id</span> =<span class="hljs-value">“myBeanFactoryPostProcessor”</span> <span class="hljs-attribute">class</span> = “<span class="hljs-attribute">com.sjj.postProcessor.MyBeanFactoryPostProcessor</span>“&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">bean</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-title">bean</span> <span class="hljs-attribute">id</span> =<span class="hljs-value">“myBeanPostProcessor”</span> <span class="hljs-attribute">class</span> = “<span class="hljs-attribute">com.sjj.postProcessor.MyBeanPostProcessor</span>“&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">bean</span>&gt;</span><br><br><span class="hljs-tag">&lt;/<span class="hljs-title">beans</span>&gt;</span>    </code></pre><br><br><p>default-lazy-init=”true” 配置了全局的延迟加载，延迟加载的含义spring上下文环境初始化时并不会实例化所有的bean，只有当真正使用时才会去初始化，何时才算真正使用呢？比如调用getBean方法时就会实例化指定的bean，这个全局配置灵活性不高。一般情况会在bean定义上配置各自的lazy-init=”true”属性。</p><br><br><p><em>注意：如果被引用bean moneyService配置的延迟加载，引用bean bankService配置的非延迟加载，此时由于bankService要用到moneyService，这种情况也符合真正用到的意思，所以moneyService也会被实例化。</em></p><br><br><ol><br><li><p>bean实例化的源码分析</p><br><br><p>方法getBean是bean实例化的入口，FileSystemXmlApplicationContext的父类AbstractRefreshableApplicationContext默认持有DefaultListableBeanFactory的实例，bean实例化的主要逻辑都在其方法doGetBean中。</p></li><br></ol><br><br><br><br><pre class="prettyprint"><code class=" hljs cs">FileSystemXmlApplicationContext ctx = <span class="hljs-keyword">new</span> FileSystemXmlApplicationContext(<span class="hljs-string">“D:/workspace/demo_spring_standalone/src/main/resources/applicationContext.xml”</span>);<br>ctx.getBean(<span class="hljs-string">“bankService”</span>)</code></pre><br><br><br><br><pre class="prettyprint"><code class=" hljs java"><span class="hljs-keyword">protected</span> &lt;T&gt; T <span class="hljs-title">doGetBean</span>(<br>            <span class="hljs-keyword">final</span> String name, <span class="hljs-keyword">final</span> Class&lt;T&gt; requiredType, <span class="hljs-keyword">final</span> Object[] args, <span class="hljs-keyword">boolean</span> typeCheckOnly)<br>            <span class="hljs-keyword">throws</span> BeansException {<br><br>        <span class="hljs-keyword">final</span> String beanName = transformedBeanName(name);<br>        Object bean;<br><br>        <span class="hljs-comment">// Eagerly check singleton cache for manually registered singletons.</span><br>        <span class="hljs-comment">/<em>
          </em> 如果指定的bean设置了非延迟加载，那么这时的bean应该是已经被实例化了，也就是说sharedInstance不为null，<br>         <em> 这时走到方法getObjectForBeanInstance，该方法主要是判断指定bean是否FactoryBean，是则进行相应处理得到FactoryBean代表的            
          </em> bean的实例<br>         <em>/</em></span><br>        Object sharedInstance = getSingleton(beanName);<br>        <span class="hljs-keyword">if</span> (sharedInstance != <span class="hljs-keyword">null</span> &amp;&amp; args == <span class="hljs-keyword">null</span>) {<br>            <span class="hljs-keyword">if</span> (logger.isDebugEnabled()) {<br>                <span class="hljs-keyword">if</span> (isSingletonCurrentlyInCreation(beanName)) {<br>                    logger.debug(<span class="hljs-string">“Returning eagerly cached instance of singleton bean ‘“</span> + beanName +<br>                            <span class="hljs-string">“‘ that is not fully initialized yet - a consequence of a circular reference”</span>);<br>                }<br>                <span class="hljs-keyword">else</span> {<br>                    logger.debug(<span class="hljs-string">“Returning cached instance of singleton bean ‘“</span> + beanName + <span class="hljs-string">“‘“</span>);<br>                }<br>            }<br>            bean = getObjectForBeanInstance(sharedInstance, name, beanName, <span class="hljs-keyword">null</span>);<br>        }<br><br>        <span class="hljs-keyword">else</span> {<br>            <span class="hljs-comment">// Fail if we’re already creating this bean instance:</span><br>            <span class="hljs-comment">// We’re assumably within a circular reference.</span><br>            <span class="hljs-comment">/<br>             <em>这里判断指定bean在当前线程中是不是正在被创建，这里有一个重要的限定词“当前线程”，为什么要限定当前线程呢？
              </em>因为else分支说明指定bean不是单例的，即使原型的，原型是指每次使用都创建新的实例，在考虑到应用可能运行在多线程环境中，<br>             <em>每个线程都可以创建自己的bean的实例而互不干扰，这是可以理解的合理状况。
@@ -903,20 +449,27 @@
 </code></pre><p></p>
 <pre><code>&lt;div&gt;
 </code></pre>
-          
+      
+    </div>
+
+    <div>
+      
         
+
       
     </div>
 
     <div>
       
-    </div>
+        
 
-    <div>
       
     </div>
 
     <div>
+      
+        
+
       
     </div>
 
@@ -924,252 +477,42 @@
       
 
       
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/09/12/esb/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="XueCheng">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="XueCheng Notes">
-    </span>
-
-    
-      <header class="post-header">
-
         
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/09/12/esb/" itemprop="url">转载：企业数据总线(ESB)和注册服务管理(dubbo)的区别</a></h1>
-        
+      
 
-        <div class="post-meta">
-          <span class="post-time">
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
             
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-12T11:44:29+08:00">
-                2017-09-12
-              </time>
+              <a href="/2017/09/12/esb/" rel="next" title="转载：企业数据总线(ESB)和注册服务管理(dubbo)的区别">
+                <i class="fa fa-chevron-left"></i> 转载：企业数据总线(ESB)和注册服务管理(dubbo)的区别
+              </a>
             
+          </div>
 
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
             
-
+              <a href="/2099/09/07/myProject-01/" rel="prev" title="案例项目-下载页">
+                案例项目-下载页 <i class="fa fa-chevron-right"></i>
+              </a>
             
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
+          </div>
         </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
-        
-          
-            <div class="Blog_tit4 Blog_tit5" style="word-wrap:break-word; border-bottom-width:0px; padding:0px 0px 11px; color:rgb(86,86,86); font-family:宋体,Arial"><br>&nbsp;<a target="_blank" href="http://blog.itpub.net/29754888/viewspace-1452858/" style="word-wrap:break-word; text-decoration:none; color:rgb(156,36,35); font-family:微软雅黑,黑体,Verdana; font-size:20px">企业数据总线(ESB)和注册服务管理(dubbo)的区别</a>&nbsp;<span style="word-wrap:break-word; margin-left:22px; color:rgb(187,186,186); font-family:Arial">2015-03-09<br> 08:49:28</span></div><br><div class="Blog_con2" style="word-wrap:break-word; color:rgb(102,102,102); line-height:26px; height:auto; overflow:hidden; font-family:宋体,Arial"><br><div class="Blog_con3" style="word-wrap:break-word; margin-top:10px; line-height:22px"><br><p style="word-wrap:break-word; margin-top:0px; margin-bottom:0px; padding-top:0px; padding-bottom:0px; color:rgb(142,3,0)"><br>分类：&nbsp;<span style="word-wrap:break-word; color:rgb(187,186,186); margin-right:25px">Web开发</span></p><br><p style="word-wrap:break-word; margin-top:0px; margin-bottom:0px; padding-top:0px; padding-bottom:0px; color:rgb(142,3,0)"><br></p><br></div><br><div class="Blog_wz1" style="word-wrap:break-word"><br><p style="word-wrap:break-word; margin-top:0px; margin-bottom:0px; padding-top:0px; padding-bottom:0px; font-family:Arial; font-size:14px; line-height:26px"><br><br style="word-wrap:break-word"><br></p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br><span style="word-wrap:break-word">一、概述</span></p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>1、什么是ESB</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>就是企业数据总线的意思，他的核心功能就是兼容各种协议接口，可以将数据在各种协议之间进行流转，并且可以针对数据&#26684;式进行编排转换。（&#26684;式转换、协议转换、代理、编排、安全控制、监控、不支持高并发，类&#20284;于路由器维护着一张路由表进行路由转发）</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>代表性的项目有：JBOSS ESB,Mule,Camel 以及一些其他的esb项目</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>&nbsp;</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>2、什么是服务注册</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>就是将所有的服务接口（很多时候是hession协议的接口）,注册到一个中心的分布式服务集群上（你可以考虑成apache的zookeeper服务实现的效果）。各个业务系统直接访问分布式服务查找需要调用的接口位置，进而调用。（注册目录服务、监控、负载均衡、安全控制、分布式强健壮、适用于高并发）</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>代表性开源项目有：阿里的dubbo，淘宝的HSF(现在不知道是否继续开源了)</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>&nbsp;</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br><span style="word-wrap:break-word">二、双方特点</span></p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>1、ESB</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>ESB一般采用集中式转发请求，适合大量异构系统集成，并且压力不大的情况</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>&nbsp;</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>但集中式转发也是有优势的，比如调用方用http协议，提供方用rmi协议，转发就可以转换协议，对双方都透明。另外，在总线上还可以执行流程引擎，做服务编排，比如A和B两个服务经常一起调，就可以编排成服务C，而不用再单独启一个服务去做。还有，安全，流控，做起来也更方便。</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>支持groovy类型的脚本语言，在总线上可以给数据&#26684;式做转换</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>2、服务注册管理</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>采用的是分布式调用，注册中心只记录地址信息，然后直连调用，适合并发及压力比较大的情况。</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>对于网站应用，大多是垂直业务，直接从数据库拉数据展示。</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>&nbsp;</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br><span style="word-wrap:break-word">三、应用场景</span></p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>1、ESB</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>esb最常见的场景是，把系统里的集成逻辑，单拉出来， 放到esb容器里来部署，并跟应用系统适配。 这样让应用系统变得只有自己的业务逻辑，简单、轻薄。</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>劣势：在所有的服务上增加了一个总线作为沟通的渠道。对于较大的并发量会将瓶颈推到ESB总线上。很多时候ESB总线都采用MQ类的消息服务器来异步处理缓解压力</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>2、服务注册</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>淘宝和阿里的各个业务系统提供了很多的接口，这个时候需要统一管理提供个各子业务系统使用，让各个子业务系统可以通过注册中心很快找到对应的服务</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>劣势：服务编排和协议转换还是靠各个业务子系统了</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>&nbsp;</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br><span style="word-wrap:break-word">四、综述</span></p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>1、两类开源项目侧重点不同，ESB侧重任务的编排，性能问题可通过异构的方式来进行规避。无法支持特别大的并发</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>2、服务注册侧重服务的治理，将各个服务颗粒化，各个子业务系统在程序逻辑上完成业务的编排。但是比较实用较大的并发量，因为dubbo类的只是存放服务地址。有zookeeper类的分布式通讯框架，能保证单点的失败不影响整个系统的业务调用，因为业务接口都是在各个提供服务的子系统中</p><br></div><br></div>
-
-<p></p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </article>
 
 
-    
-      
 
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/09/12/serviceGovernment/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="XueCheng">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="XueCheng Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/09/12/serviceGovernment/" itemprop="url">转载:服务治理与微服务</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-12T09:32:44+08:00">
-                2017-09-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <div id="article_content" class="article_content tracking-ad" data-mod="popu_307" data-dsm="post"><br>                <div class="markdown_views"><p>近期都在谈微服务，本人也正在做相关的工作，应领导要求做了一个微服务的分享，本篇文章主要来源于分享的PPT，所以有些简单，有问题可以在下面留言，大家 一起讨论。</p><br><br><p>本篇文章先简单介绍了互联网架构的演变，进而介绍了服务化，最后再介绍微服务，微服务是服务治理的升级也是互联网架构的进一步延伸。</p><br><br><h2 id="互联网架构演变">互联网架构演变</h2><br><br><br><br><h3 id="一体架构">一体架构</h3><br><br><p>在计算机软件发展早期，一般桌面软件都是采用这种架构，不管是界面还是业务处理还是数据处理都放到一个包中。这种其实谈不上架构，但也可以说是很好的架构，因为它足够简单。</p><br><br><p><img src="http://img.blog.csdn.net/20170103111147803?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p><br><br><br><br><h3 id="mvc架构">mvc架构</h3><br><br><p>但随着浏览器的出现便产生了web应用，web应用的特点是界面部分是显示在浏览器中，服务处理是在服务容器中的，页面显示一般用css+js+html技术来处理，而后端可以用java、php等语言，这就产生了前后端分离。对于web系统，一体架构难以满足前后端分离的开发需求，因而便产生了MVC架构。</p><br><br><p><img src="http://img.blog.csdn.net/20170103111226848?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p><br><br><p>MVC才算的上真正意义上的架构，因为它除了解决了前后端分离问题，还引入了一种全新的开发模式，用一种业务逻辑、数据、界面显示分离的方法组织代码，使得整个应用层次更加分明，而且各个层次之间不但减低了耦合性，还提高了各个层次的可重用性。</p><br><br><p>但随着应用规模的不断扩大，应用模块不断增加，整个应用也显得越来越臃肿，维护起来也更加困难，因此便又产生了多应用架构。</p><br><br><br><br><h3 id="多应用架构">多应用架构</h3><br><br><p>多应用架构很简单，就是把原来的应用按照业务特点拆分成多个应用。比如一个大型电商系统可能包含用户系统、商品系统、订单系统、评价系统等等，我们可以把他们独立出来形成一个个单独的应用。多应用架构的特点是应用之间各自独立 ，不相互调用。</p><br><br><p><img src="http://img.blog.csdn.net/20170103112334944?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p><br><br><p>多应用虽然解决了应用臃肿问题，但应用之间相互独立，有些共同的业务或代码无法复用。</p><br><br><br><br><h3 id="分布式架构">分布式架构</h3><br><br><p>对于一个大型的互联网系统，一般会包含多个应用，而且应用之间往往还存在共同的业务，并且应用之间还存在调用关系。除此之外 ，对于大型的互联网系统还有一些其它的挑战，比如如何应对急剧增长的用户，如何管理好研发团队快速迭代产品研发，如何保持产品升级更加稳定等等 。</p><br><br><p>因此，为了使业务得到很好的复用，模块更加容易拓展和维护，我们希望业务与应用分离，某个业务不再属于一个应用，而是作为一个独立的服务单独进行维护。应用本身不再是一个臃肿的模块堆积，而是由一个个模块化的服务组件组合而成。</p><br><br><p><img src="http://img.blog.csdn.net/20170103142540155?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p><br><br><br><br><h2 id="服务化">服务化</h2><br><br><br><br><h3 id="服务化的特点">服务化的特点</h3><br><br><p>上面介绍的分布式架构即服务化。我们再总结一下，服务化主要有如下特点：</p><br><br><ul><br><li>应用按业务拆分成服务</li><br><li>各个服务均可独立部署</li><br><li>服务可被多个应用共享</li><br><li>服务之间可以通信</li><br></ul><br><br><br><br><h3 id="服务化的好处">服务化的好处</h3><br><br><p>那么企业采用服务化有哪些好处呢？</p><br><br><ul><br><li>架构上系统更加清晰</li><br><li>核心模块稳定，以服务组件为单位进行升级，避免了频繁发布带来的风险</li><br><li>开发管理方便</li><br><li>单独团队维护、工作分明，职责清晰</li><br><li>业务复用、代码复用</li><br><li>非常容易拓展</li><br></ul><br><br><br><br><h3 id="服务化实现方式">服务化实现方式</h3><br><br><p>如果要实现服务化的话，最常用的方式就是利用RPC框架。因为服务组件一般分布在不同的服务器上，所以要实现服务化需要解决的第一个问题就是RPC<strong>远程服务调用</strong>。类似于RPC方案有很多，比如：</p><br><br><ul><br><li>Java RMI</li><br><li>WebService</li><br><li>Hessian</li><br><li>Http</li><br><li>Thrift</li><br><li>… …</li><br></ul><br><br><br><br><h3 id="服务化面临的挑战">服务化面临的挑战</h3><br><br><p>上面提到要实现服务化首先需要解决远程服务调用问题，除此之外，还有很多其他问题需要解决。</p><br><br><ul><br><li>服务越来越多，配置管理复杂</li><br><li>服务间依赖关系复杂</li><br><li>服务之间的负载均衡</li><br><li>服务的拓展</li><br><li>服务监控</li><br><li>服务降级</li><br><li>服务鉴权</li><br><li>服务上线与下线</li><br><li>服务文档</li><br><li>… …</li><br></ul><br><br><br><br><h2 id="服务治理">服务治理</h2><br><br><p>上面提到了服务化，其实要想服务化，<strong>服务治理</strong>是关键。那么有没有好的服务治理方案呢？答案是有的，而且很多人都在用这个框架，他就是-dubbo。dubbo就是一个<strong>带有服务治理功能的RPC框架</strong>。</p><br><br><p><img src="http://img.blog.csdn.net/20170103143859427?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p><br><br><p>dubbo提供了一套较为完整的服务治理方案，所以企业如果要实现服务化的话，dubbo 是很好的一个选择。这里简单介绍一下dubbo服务治理相关方案。</p><br><br><br><br><h4 id="服务发现注册">服务发现注册</h4><br><br><p>服务治理领域最重要的问题就是服务发现与注册。dubbo中引入了一个注册中心的概念，服务的注册与发现主要就依赖这个服务中心。</p><br><br><p><img src="http://img.blog.csdn.net/20170103144218850?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p><br><br><p>dubbo注册中心服务注册发现的具体过程：</p><br><br><ul><br><li>服务提供者启动，向注册中心注册自己提供的服务</li><br><li>消费者启动，向注册中心订阅自己需要的服务</li><br><li>注册中心返回服务提供者的列表给消费者</li><br><li>消费者从服务提供者列表中，按照软负载均衡算法，选择一台发起请求</li><br></ul><br><br><br><br><h4 id="服务监控">服务监控</h4><br><br><p><img src="http://img.blog.csdn.net/20170103144355679?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p><br><br><br><br><h4 id="集群容错">集群容错</h4><br><br><p><img src="http://img.blog.csdn.net/20170103144440554?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p><br><br><br><br><h4 id="负载均衡">负载均衡</h4><br><br><ul><br><li>Random Loadbalance</li><br><li>RoundRobin </li><br><li>LeastActive </li><br><li>ConsistentHash </li><br></ul><br><br><br><br><h4 id="dubbo服务治理优势">dubbo服务治理优势</h4><br><br><ul><br><li>注册中心只负责注册查找，不负责请求转发，压力小</li><br><li>注册中心宕机影响消费者，消费者本地缓存服务地址列表</li><br><li>注册中心对等集群，宕掉一台自动切换到另外 一台</li><br><li>服务提供者无状态，可动态部署，注册中心负责推送</li><br><li>统计无压力，本地内存中累计次数，每分钟发送注册中心</li><br><li>消费者调用服务者，自动软负载均衡</li><br><li>通过服务中心可追踪依赖关系</li><br><li>监控中心为扩容和降级提供依据</li><br><li>可启用acl机制进行鉴权</li><br><li>与Spring整合，接入简单松耦合</li><br><li>多种序列化协议支持</li><br></ul><br><br><br><br><h4 id="dubbo的不足">dubbo的不足</h4><br><br><ul><br><li>消费者仍需要依赖配置中心</li><br><li>消费者仍需要依赖jar包配置provider</li><br><li>提供者文档管理功能缺失</li><br><li>无统一入口</li><br><li>不支持OAuth2.0</li><br><li>内部鉴权不方便管理</li><br><li>无外部应用鉴权</li><br><li>接口基本裸奔，无法直接对外暴露服务</li><br><li>IT治理不方便</li><br></ul><br><br><br><br><h2 id="微服务">微服务</h2><br><br><p>现在很多人都在谈微服务，那么到底什么是微服务呢？这里谈谈我对微服务的理解。</p><br><br><p>微服务有两个核心：</p><br><br><ul><br><li>微：服务的粒度要细，即服务要细化到API</li><br><li>服务：提供好服务，要让用户感到好用(要做到这一点很不容易)</li><br></ul><br><br><p>上面两个核心总结起来，可以用下面这幅图表示：</p><br><br><p><img src="http://img.blog.csdn.net/20170103145438903?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p><br><br><p>从上面这幅图看出，微服务特别简单（好的架构就应该简单），我们把服务再拆分成一个个API，API是一个完整的功能。然后我们把API扔到一个“云上”，然后用户就可以到“云上”获取所有API的服务，这个“云”保证能提供好的服务。</p><br><br><p>我们可以看到，有了微服务之后，服务对用户来说变得特别简单，而且上面dubbo的不足之处在微服务这里都解决了。使用者不再需要依赖任何jar包，不再需要去注册中心查找服务，不再去做鉴权处理，不用担心服务挂掉，不用担心不会使用服务，所有的问题这个“云”都解决了。这也是微服务的核心之一，提供好服务。</p><br><br><p>说到这里，大家就应该大体知道该怎么做微服务了，图中的“云”是关键。下面我们就慢慢拨开这朵云。</p><br><br><br><br><h3 id="微服务的实现">微服务的实现</h3><br><br><p><img src="http://img.blog.csdn.net/20170103150555199?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p><br><br><p>微服务的关键是<strong>服务网关</strong>，所以，上面提到的“云”就是服务网关。要做微服务，我们先定义一下微服务需要具备的特点。</p><br><br><h4 id="微服务的特点">微服务的特点</h4><br><br><p>服务需要再细化成API（服务接口——&gt;服务API）</p><br><br><ul><br><li>每个服务由一组API组成</li><br><li>以API形式对外提供统一格式的服务</li><br><li>使用者无需任何配置，直接调用（http）</li><br><li>完整的API文档</li><br><li>API服务安全可靠稳定</li><br></ul><br><br><br><br><h4 id="微服务要解决的问题">微服务要解决的问题</h4><br><br><p>上面提到了，dubbo还存在一些问题 ，其实dubbo存在的问题 就是 微服务要解决的问题，这里 再总结一下。当然，dubbo和微服务的侧重点不一样，dubbo侧重于内部接口之间的RPC，而微服务则侧重于对外提供服务。</p><br><br><ul><br><li>统一入口</li><br><li>安全控制：防刷限流</li><br><li>统一鉴权：应用鉴权、用户鉴权、OAuth鉴权、ACL</li><br><li>协议转换：http、dubbo、Protobuf</li><br><li>API配置管理</li><br><li>API上线、下线</li><br><li>API与服务接口映射</li><br><li>监控与报警</li><br><li>整体架构的可拓展、高并发、分布式 </li><br><li>服务容器自动收缩、扩容</li><br></ul><br><br><br><br><h4 id="实现方案">实现方案</h4><br><br><p><img src="http://img.blog.csdn.net/20170103151255786?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p><br><br><ul><br><li>负载均衡层：nginx/lvs/F5</li><br><li>微服务层 <br><br><ul><li>高性能服务网关</li><br><li>统一入口、API配置管理、分流鉴权、服务监控、协议转换</li><br><li>API映射、OAuth2.0、API文档管理</li><br><li>分布式、可拓展</li></ul></li><br><li>服务治理层 <br><br><ul><li>成熟的服务治理框架dubbo</li><br><li>MQ服务之间解耦</li></ul></li><br><li>弹性云 <br><br><ul><li>服务docker化</li><br><li>基于访问压力的实时集群调度与管理</li></ul></li><br></ul><br><br><h4 id="弹性云">弹性云</h4><br><br><p>这里简单介绍一下弹性云的概念，微服务要想提供好服务，保证API不能挂掉并且有好的性能，需要很高的运维要求。这里的弹性云便是自动化运维解决方案，对访问压力进行监控，根据监控解决调度应用的发布和回收。</p><br><br><p><img src="http://img.blog.csdn.net/20170103151747772?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p><link rel="stylesheet" href="http://static.blog.csdn.net/public/res-min/markdown_views.css?v=1.0"></div><link rel="stylesheet" href="http://static.blog.csdn.net/public/res-min/markdown_views.css?v=1.0"><br>            </div><br>        <br>        <div class="readall_box tracking-ad" data-mod="popu_376"><br>            <a class="btn btn-large btn-gray-fred read_more_btn" target="_self">阅读全文</a><br>        </div><br>        <div class="article_copyright"><br>            版权声明：本文为博主原创文章，未经博主允许不得转载。<br>            <span class="r_ico"><i class="icon iconfont icon-jubao"></i><span class="txt" id="reportBtn">举报</span></span><br>        </div>
-
-
-          
-        
+    <div class="post-spread">
       
     </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-  </section>
-
-  
-  <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
-  </nav>
-
+  </div>
 
 
           </div>
@@ -1177,6 +520,10 @@
 
 
           
+  <div class="comments" id="comments">
+    
+  </div>
+
 
         </div>
         
@@ -1354,6 +701,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
 
   
 
