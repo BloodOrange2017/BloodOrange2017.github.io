@@ -200,7 +200,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
-            Home
+            Startseite
           </a>
         </li>
       
@@ -210,7 +210,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
-            Archives
+            Archiv
           </a>
         </li>
       
@@ -282,7 +282,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2099-09-09T12:00:00+08:00">
                 2099-09-09
@@ -395,7 +395,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2099-09-08T15:56:57+08:00">
                 2099-09-08
@@ -507,7 +507,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2099-09-07T11:45:53+08:00">
                 2099-09-07
@@ -619,7 +619,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2099-09-07T10:13:49+08:00">
                 2099-09-07
@@ -702,6 +702,124 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/09/18/serialization-01/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="XueCheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XueCheng Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/09/18/serialization-01/" itemprop="url">转载:java序列化机制及原理</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-18T11:27:22+08:00">
+                2017-09-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <pre><code>&lt;div class=&quot;postBody&quot;&gt;
+    &lt;div id=&quot;cnblogs_post_body&quot;&gt;&lt;p&gt;&amp;nbsp;&lt;strong&gt;&lt;span&gt;Java&lt;/span&gt;&lt;/strong&gt;&lt;strong&gt;&lt;span&gt;序列化算法透析&lt;/span&gt;&lt;/strong&gt;&lt;/p&gt; &lt;p&gt;&lt;strong&gt;&lt;span&gt;&lt;/span&gt;&lt;/strong&gt;&lt;span&gt;&amp;nbsp; Serialization&lt;/span&gt;&lt;span&gt;（序列化）是一种将对象以一连串的字节描述的过程；反序列化&lt;/span&gt;&lt;span&gt;&lt;span&gt;deserialization&lt;/span&gt;&lt;/span&gt;&lt;span&gt;是一种将这些字节重建成一个对象的过程。&lt;/span&gt;&lt;span&gt;Java&lt;/span&gt;&lt;span&gt;序列化&lt;/span&gt;&lt;span&gt;API&lt;/span&gt;&lt;span&gt;提供一种处理对象序列化的标准机制。在这里你能学到如何序列化一个对象，什么时候需要序列化以及&lt;/span&gt;&lt;span&gt;Java&lt;/span&gt;&lt;span&gt;序列化的算法，我们用一个实例来示范序列化以后的字节是如何描述一个对象的信息的。&lt;/span&gt;&lt;/p&gt; &lt;p&gt;&lt;span&gt;&lt;/span&gt;&lt;strong&gt;&lt;span&gt;序列化的必要性&lt;/span&gt;&lt;/strong&gt;&lt;/p&gt; &lt;p&gt;&lt;strong&gt;&lt;span&gt;&lt;/span&gt;&lt;/strong&gt;&lt;span&gt;Java&lt;/span&gt;&lt;span&gt;中，一切都是对象，在分布式环境中经常需要将&lt;/span&gt;&lt;span&gt;Object&lt;/span&gt;&lt;span&gt;从这一端网络或设备传递到另一端。 &lt;br&gt;这就需要有一种可以在两端传输数据的协议。&lt;/span&gt;&lt;span&gt;Java&lt;/span&gt;&lt;span&gt;序列化机制就是为了解决这个问题而产生。&lt;/span&gt;&lt;/p&gt; &lt;p&gt;&lt;span&gt;&lt;/span&gt;&lt;strong&gt;&lt;span&gt;如何序列化一个对象&lt;/span&gt;&lt;/strong&gt;&lt;/p&gt; &lt;p&gt;&lt;strong&gt;&lt;span&gt;&lt;/span&gt;&lt;/strong&gt;&lt;span&gt;一个对象能够序列化的前提是实现&lt;/span&gt;&lt;span&gt;&lt;span&gt;Serializable&lt;/span&gt;&lt;/span&gt;&lt;span&gt;接口，&lt;/span&gt;&lt;span&gt;&lt;span&gt;Serializable&lt;/span&gt;&lt;/span&gt;&lt;span&gt;接口没有方法，更像是个标记。 &lt;br&gt;有了这个标记的&lt;/span&gt;&lt;span&gt;Class&lt;/span&gt;&lt;span&gt;就能被序列化机制处理。&lt;/span&gt;&lt;/p&gt; &lt;div style=&quot;border-bottom: silver 1px solid; text-align: left; border-left: silver 1px solid; padding-bottom: 4px; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; padding-left: 4px; width: 97.5%; padding-right: 4px; font-family: &apos;Courier New&apos;, courier, monospace; direction: ltr; max-height: 200px; font-size: 8pt; overflow: auto; border-top: silver 1px solid; cursor: text; border-right: silver 1px solid; padding-top: 4px&quot; id=&quot;codeSnippetWrapper&quot;&gt;&lt;pre style=&quot;border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: &apos;Courier New&apos;, courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px&quot; id=&quot;codeSnippet&quot;&gt;&lt;span style=&quot;color: #006080&quot;&gt;import java.io.Serializable;&lt;/span&gt;   &lt;br&gt;class TestSerial implements Serializable {          &lt;br&gt;    public byte version &lt;span style=&quot;color: #006080&quot;&gt;= 100;&lt;/span&gt;         &lt;br&gt;    public byte count &lt;span style=&quot;color: #006080&quot;&gt;= 0;&lt;/span&gt;   &lt;br&gt;} &lt;/pre&gt;&lt;br&gt;&lt;/div&gt;
+</code></pre><p></p><p><span>然后我们写个程序将对象序列化并输出。</span><span><span>ObjectOutputStream</span></span><span>能把</span><span>Object</span><span>输出成</span><span>Byte</span><span>流。 <br>我们将</span><span>Byte</span><span>流暂时存储到</span><span><span>temp.out</span></span><span>文件里。</span><span>&nbsp;</span></p><p></p>
+<div style="border-bottom: silver 1px solid; text-align: left; border-left: silver 1px solid; padding-bottom: 4px; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; padding-left: 4px; width: 97.5%; padding-right: 4px; font-family: 'Courier New', courier, monospace; direction: ltr; max-height: 200px; font-size: 8pt; overflow: auto; border-top: silver 1px solid; cursor: text; border-right: silver 1px solid; padding-top: 4px" id="codeSnippetWrapper"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px" id="codeSnippet">public static void main(String args[]) throws IOException {          <br>    FileOutputStream fos = new FileOutputStream(“temp<span style="color: #cc6633">.out</span>“);         <br>    ObjectOutputStream oos = new ObjectOutputStream(fos);          <br>    TestSerial ts = new TestSerial();          <br>    oos<span style="color: #cc6633">.writeObject</span>(ts);          <br>    oos<span style="color: #cc6633">.flush</span>();          <br>    oos<span style="color: #cc6633">.close</span>(); <br>}</pre><br></div><br><ul class="con"><pre><span>如果要从持久的文件中读取</span><span>Bytes</span><span>重建对象，我们可以使用</span><span><span>ObjectInputStream</span></span><span>。</span>  </pre><br><div style="border-bottom: silver 1px solid; text-align: left; border-left: silver 1px solid; padding-bottom: 4px; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; padding-left: 4px; width: 97.5%; padding-right: 4px; font-family: 'Courier New', courier, monospace; direction: ltr; max-height: 200px; font-size: 8pt; overflow: auto; border-top: silver 1px solid; cursor: text; border-right: silver 1px solid; padding-top: 4px" id="codeSnippetWrapper"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px" id="codeSnippet">public static void main(String args[]) throws IOException {     <br>    FileInputStream fis = new FileInputStream(“temp<span style="color: #cc6633">.out</span>“);          <br>    ObjectInputStream oin = new ObjectInputStream(fis);           <br>    TestSerial ts = (TestSerial) oin<span style="color: #cc6633">.readObject</span>();           <br>    System<span style="color: #cc6633">.out</span><span style="color: #cc6633">.println</span>(“version=”+ts<span style="color: #cc6633">.version</span>);    <br>} </pre><br></div><pre>执行结果为 <span>100.</span> </pre><pre><strong><span>对象的序列化格式</span></strong></pre><pre><span>将一个对象序列化后是什么样子呢？打开刚才我们将对象序列化输出的</span><span><span>temp.out</span></span><span>文件</span></pre><pre><span></span><span>以</span><span>16</span><span>进制方式显示。内容应该如下：</span> </pre><pre><span>AC ED 00 05 73 72 00 0A 53 65 72 69 61 6C 54 65<br>73 74 A0 0C 34 00 FE B1 DD F9 02 00 02 42 00 05<br>63 6F 75 6E 74 42 00 07 76 65 72 73 69 6F 6E 78<br>70 00 64<br></span><span><span></span></span></pre><pre><span><span>这一坨字节就是用来描述序列化以后的</span><span><span>TestSerial</span></span><span>对象的，我们注意到</span><span><span>TestSerial</span></span><span>类中只有两个域：</span></span></pre><pre><span><span></span></span><em><span><span>public</span></span><span><span>&nbsp;</span>byte version = 100;</span></em></pre><pre><em><span></span></em><em><span><span>public</span></span><span><span>&nbsp;</span>byte count = 0;</span></em></pre><pre><span>且都是</span><span>byte</span><span>型，理论上存储这两个域只需要</span><span>2</span><span>个</span><span>byte</span><span>，但是实际上</span><span><span>temp.out</span></span><span>占据空间为</span><span>51bytes</span><span>，也就是说除了数据以外，还包括了对序列化对象的其他描述</span></pre><pre><span></span><strong><span>Java</span></strong><strong><span>的序列化算法</span></strong></pre><pre><strong><span></span></strong><span>序列化算法一般会按步骤做如下事情：</span></pre><pre><span></span><span><span>◆</span></span><span>将对象实例相关的类元数据输出。</span></pre><pre><span></span><span><span>◆</span></span><span>递归地输出类的超类描述直到不再有超类。</span></pre><pre><span></span><span><span>◆</span></span><span>类元数据完了以后，开始从最顶层的超<span>类开始</span>输出对象实例的实际数据值。</span></pre><pre><span></span><span><span>◆</span></span><span>从上至下递归输出实例的数据</span></pre><pre><span></span><span>我们用另一个更完整覆盖所有可能出现的情况的例子来说明：</span></pre><br><ol class="dp-j"><br><div style="border-bottom: silver 1px solid; text-align: left; border-left: silver 1px solid; padding-bottom: 4px; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; padding-left: 4px; width: 97.5%; padding-right: 4px; font-family: 'Courier New', courier, monospace; direction: ltr; max-height: 200px; font-size: 8pt; overflow: auto; border-top: silver 1px solid; cursor: text; border-right: silver 1px solid; padding-top: 4px" id="codeSnippetWrapper"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px" id="codeSnippet">class parent implements Serializable {          <br>    int parentVersion <span style="color: #006080">= 10;</span>   <br>} </pre><br></div><span class="keyword"><strong><span style="color: #006699"></span></strong></span></ol></ul><br><ul class="con"><br><div style="border-bottom: silver 1px solid; text-align: left; border-left: silver 1px solid; padding-bottom: 4px; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; padding-left: 4px; width: 97.5%; padding-right: 4px; font-family: 'Courier New', courier, monospace; direction: ltr; max-height: 200px; font-size: 8pt; overflow: auto; border-top: silver 1px solid; cursor: text; border-right: silver 1px solid; padding-top: 4px" id="codeSnippetWrapper"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px" id="codeSnippet">class contain implements Serializable{          <br>    Int containVersion <span style="color: #006080">= 11;</span>   <br>}  </pre><br></div><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; height: 244px; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px" id="codeSnippet">public class SerialTest extends parent implements Serializable {   <br>       int version <span style="color: #006080">= 66;</span>   <br>       contain con = new contain();   <br>       public int getVersion() <span style="color: #006080">{  <br>              return version;</span>   <br>       }  <br>       public static void main(String args[]) throws IOException {  <br>              FileOutputStream fos = new FileOutputStream(“temp<span style="color: #cc6633">.out</span>“);  <br>              ObjectOutputStream oos = new ObjectOutputStream(fos);  <br>              SerialTest st = new SerialTest();  <br>              oos<span style="color: #cc6633">.writeObject</span>(st);  <br>              oos<span style="color: #cc6633">.flush</span>();  <br>              oos<span style="color: #cc6633">.close</span>();  <br>       }  <br>}  </pre><br><li>&nbsp; <ol><br><li><br><div><span>AC ED: STREAM_MAGIC.<span>&nbsp;</span></span><span>声明使用了序列化协议</span><span>.</span></div><br></li><li><br><div><span>00 05: STREAM_VERSION.<span>&nbsp;</span></span><span>序列化协议版本</span><span>.</span></div><br></li><li><br><div><span><span>0x73: TC_OBJECT.</span></span><span><span>&nbsp;</span></span><span>声明这是一个新的对象</span><span>.</span>&nbsp;<span>&nbsp;</span></div></li></ol><br><ol><br><li><br><div><span><span>0x72: TC_CLASSDESC.</span><span>&nbsp;</span></span><span>声明这里开始一个新</span><span>Class</span><span>。</span></div><br></li><li><br><div><span>00 0A: Class</span><span>名字的长度</span><span>.</span></div><br></li><li><br><div><span>53 65 72 69 61 6c 54 65 73 74:<span>&nbsp;</span><span>SerialTest,Class</span></span><span>类名</span><span>.</span></div><br></li><li><br><div><span>05 52 81 5A AC 66 02 F6:<span>&nbsp;</span><span>SerialVersionUID</span>,<span>&nbsp;</span></span><span>序列化</span><span>ID</span><span>，如果没有指定， <br>则会由算法随机生成一个</span><span>8byte</span><span>的</span><span>ID.</span></div><br></li><li><br><div><span>0x02:<span>&nbsp;</span></span><span>标记号</span><span>.<span>&nbsp;</span></span><span>该值声明该对象支持序列化。</span></div><br></li><li><br><div><span>00 02:<span>&nbsp;</span></span><span>该类所包含的域个数。</span></div></li></ol><br><ol><br><li><br><div><span>0x49:<span>&nbsp;</span></span><span>域类型</span><span>. 49<span>&nbsp;</span></span><span>代表</span><span>“I”,<span>&nbsp;</span></span><span>也就是</span><span>Int.</span></div><br></li><li><br><div><span>00 07:<span>&nbsp;</span></span><span>域名字的长度</span><span>.</span></div><br></li><li><br><div><span>76 65 72 73 69 6F 6E: version,</span><span>域名字描述</span><span>.</span></div></li></ol><br><ol><br><li><br><div><span>0x4C:<span>&nbsp;</span></span><span>域的类型</span><span>.</span></div><br></li><li><br><div><span>00 03:<span>&nbsp;</span></span><span>域名字长度</span><span>.</span></div><br></li><li><br><div><span>63 6F 6E:<span>&nbsp;</span></span><span>域名字描述，</span><span>con</span></div><br></li><li><br><div><span><span>0x74: TC_STRING.</span><span>&nbsp;</span></span><span>代表一个</span><span>new String.</span><span>用</span><span>String</span><span>来引用对象。</span></div><br></li><li><br><div><span>00 09:<span>&nbsp;</span></span><span>该</span><span>String</span><span>长度</span><span>.</span></div><br></li><li><br><div><span>4C 63 6F 6E 74 61 69 6E 3B:<span>&nbsp;</span><span>Lcontain</span>;, JVM</span><span>的标准对象签名表示法</span><span>.</span></div><br></li><li><br><div><span>0x78: TC_ENDBLOCKDATA,</span><span>对象数据块结束的标志</span></div></li></ol><br><ol><br><li><br><div><span><span>0x72: TC_CLASSDESC.</span><span>&nbsp;</span></span><span>声明这个是个新类</span><span>.</span></div><br></li><li><br><div><span>00 06:<span>&nbsp;</span></span><span>类名长度</span><span>.</span></div><br></li><li><br><div><span>70 61 72 65 6E 74: parent,</span><span>类名描述。</span></div><br></li><li><br><div><span>0E DB D2 BD 85 EE 63 7A:<span>&nbsp;</span><span>SerialVersionUID</span>,<span>&nbsp;</span></span><span>序列化</span><span>ID.</span></div><br></li><li><br><div><span>0x02:<span>&nbsp;</span></span><span>标记号</span><span>.<span>&nbsp;</span></span><span>该值声明该对象支持序列化</span><span>.</span></div><br></li><li><br><div><span>00 01:<span>&nbsp;</span></span><span>类中域的个数</span><span>.</span></div></li></ol><br><ol><br><li><br><div><span>0x49:<span>&nbsp;</span></span><span>域类型</span><span>. 49<span>&nbsp;</span></span><span>代表</span><span>“I”,<span>&nbsp;</span></span><span>也就是</span><span>Int.</span></div><br></li><li><br><div><span>00 0D:<span>&nbsp;</span></span><span>域名字长度</span><span>.</span></div><br></li><li><br><div><span>70 61 72 65 6E 74 56 65 72 73 69 6F 6E:<span>&nbsp;</span><span>parentVersion</span></span><span>，域名字描述。</span></div><br></li><li><br><div><span>0x78: TC_ENDBLOCKDATA,</span><span>对象块结束的标志。</span></div><br></li><li><br><div><span>0x70: TC_NULL,<span>&nbsp;</span></span><span>说明没有其他超类的标志。</span><span>.</span></div></li></ol><br><ol><br><li><br><div><span><span>00<span>&nbsp;</span><span>00</span><span>&nbsp;</span></span></span><span><span>00</span></span><span><span>&nbsp;</span>0A: 10,<span>&nbsp;</span><span>parentVersion</span></span><span>域的值</span><span>.</span></div></li></ol><br><ol><br><li><br><div><span><span>00<span>&nbsp;</span><span>00</span><span>&nbsp;</span></span></span><span><span>00</span></span><span><span>&nbsp;</span>42: 66, version</span><span>域的值</span><span>.</span></div></li></ol><br><ol><br><li><br><div><span>0x73: TC_OBJECT,<span>&nbsp;</span></span><span>声明这是一个新的对象</span><span>.</span></div><br></li><li><br><div><span>0x72: TC_CLASSDESC</span><span>声明这里开始一个新</span><span>Class.</span></div><br></li><li><br><div><span>00 07:<span>&nbsp;</span></span><span>类名的长度</span><span>.</span></div><br></li><li><br><div><span>63 6F 6E 74 61 69 6E: contain,</span><span>类名描述</span><span>.</span></div><br></li><li><br><div><span>FC BB E6 0E FB CB 60 C7:<span>&nbsp;</span><span>SerialVersionUID</span>,<span>&nbsp;</span></span><span>序列化</span><span>ID.</span></div><br></li><li><br><div><span><span>0x02: Various flags.</span><span>&nbsp;</span></span><span>标记号</span><span>.<span>&nbsp;</span></span><span>该值声明该对象支持序列化</span></div><br></li><li><br><div><span>00 01:<span>&nbsp;</span></span><span>类内的域个数。</span></div></li></ol><br><ol><br><li><br><div><span>0x49:<span>&nbsp;</span></span><span>域类型</span><span>. 49<span>&nbsp;</span></span><span>代表</span><span>“I”,<span>&nbsp;</span></span><span>也就是</span><span>Int..</span></div><br></li><li><br><div><span>00 0E:<span>&nbsp;</span></span><span>域名字长度</span><span>.</span></div><br></li><li><br><div><span>63 6F 6E 74 61 69 6E 56 65 72 73 69 6F 6E:<span>&nbsp;</span><span>containVersion</span>,<span>&nbsp;</span></span><span>域名字描述</span><span>.</span></div><br></li><li><br><div><span>0x78: TC_ENDBLOCKDATA</span><span>对象块结束的标志</span><span>.</span></div></li></ol><br><ol><br><li><br><div><span>0x70:TC_NULL</span><span>，没有超类了。</span></div></li></ol><br><ol><br><li><br><div><span><span>00<span>&nbsp;</span><span>00</span><span>&nbsp;</span></span></span><span><span>00</span></span><span><span>&nbsp;</span>0B: 11,<span>&nbsp;</span><span>containVersion</span></span><span>的值</span><span>.</span></div></li></ol><br><p><span>这个例子是相当的直白啦。</span><span><span>SerialTest</span></span><span><span>类实现</span></span><span>了</span><span>Parent</span><span>超类，内部还持有一个</span><span>Container</span><span>对象。</span></p><br><p><span>序列化后的格式如下：</span></p><br><p><span style="background-color: yellow; background-origin: initial; background-clip: initial">AC ED 00 05 73</span><span><span>&nbsp;</span><span style="background-color: lime; background-origin: initial; background-clip: initial">72 00 0A 53 65 72 69 61 6C 54 65</span></span></p><br><p><span style="background-color: lime; background-origin: initial; background-clip: initial">73 74 05 52 81 5A AC 66 02 F6 02 00 02</span><span><span>&nbsp;</span><span style="background-color: aqua; background-origin: initial; background-clip: initial">49 00 07</span></span></p><br><p><span style="background-color: aqua; background-origin: initial; background-clip: initial">76 65 72 73 69 6F 6E</span><span><span>&nbsp;</span><span style="background-color: silver; background-origin: initial; background-clip: initial">4C</span><span style="background-color: silver; background-origin: initial; background-clip: initial"><span>&nbsp;</span>00 03 63 6F 6E</span><span>&nbsp;</span><span style="background-color: silver; background-origin: initial; background-clip: initial">74 00 09</span></span></p><br><p><span style="background-color: silver; background-origin: initial; background-clip: initial">4C</span><span style="background-color: silver; background-origin: initial; background-clip: initial"><span>&nbsp;</span>63 6F 6E 74 61 69 6E 3B 78</span><span><span>&nbsp;</span><span style="background-color: red; background-origin: initial; background-clip: initial">72 00 06 70 61 72</span></span></p><br><p><span style="background-color: red; background-origin: initial; background-clip: initial">65 6E 74 0E DB D2 BD 85 EE 63 7A 02 00 01</span><span><span>&nbsp;</span><span style="background-color: red; background-origin: initial; background-clip: initial">49 00</span></span></p><br><p><span style="background-color: red; background-origin: initial; background-clip: initial">0D 70 61 72 65 6E 74 56 65 72 73 69 6F 6E 78 70</span></p><br><p><span style="background-color: teal; background-origin: initial; background-clip: initial">00<span>&nbsp;</span><span>00</span><span>&nbsp;</span><span>00</span><span>&nbsp;</span>0A 00<span>&nbsp;</span><span>00</span><span>&nbsp;</span><span>00</span><span>&nbsp;</span>42</span><span><span>&nbsp;</span><span style="background-color: green; background-origin: initial; background-clip: initial">73 72 00 07 63 6F 6E 74</span></span></p><br><p><span style="background-color: green; background-origin: initial; background-clip: initial">61 69 6E FC BB E6 0E FB CB 60 C7 02 00 01</span><span><span>&nbsp;</span><span style="background-color: green; background-origin: initial; background-clip: initial">49 00</span></span></p><br><p><span style="background-color: green; background-origin: initial; background-clip: initial">0E 63 6F 6E 74 61 69 6E 56 65 72 73 69 6F 6E 78</span></p><br><p><span style="background-color: green; background-origin: initial; background-clip: initial">70</span><span><span>&nbsp;</span><span style="background-color: green; background-origin: initial; background-clip: initial">00<span>&nbsp;</span><span>00</span><span>&nbsp;</span><span>00</span><span>&nbsp;</span>0B</span></span></p><br><p><span>我们来仔细看看这些字节都代表了啥。开头部分，见<span style="background-color: yellow; background-origin: initial; background-clip: initial">颜色</span>：</span></p><br><p><span>序列化算法的第一步就是输出对象相关类的描述。例子所示对象为</span><span><span>SerialTest</span></span><span>类实例， <br>因此接下来输出</span><span><span>SerialTest</span></span><span>类的描述。见<span style="background-color: lime; background-origin: initial; background-clip: initial">颜色</span>：</span></p><br><p><span>接下来，算法输出其中的一个域，</span><span><span>int</span></span><span><span>&nbsp;</span>version=66</span><span>；见<span style="background-color: aqua; background-origin: initial; background-clip: initial">颜色</span>：</span></p><br><p><span>然后，算法输出下一个域，</span><span>contain con = new contain();</span><span>这个有点特殊，是个对象。 <br>描述对象类型引用时需要使用</span><span>JVM</span><span>的标准对象签名表示法，见<span style="background-color: silver; background-origin: initial; background-clip: initial">颜色</span>：</span></p><br><p><span>.</span><span>接下来算法就会输出超类也就是</span><span>Parent</span><span>类描述了，见<span style="background-color: red; background-origin: initial; background-clip: initial">颜色</span>：</span></p><br><p><span>下一步，输出</span><span>parent</span><span>类的域描述，</span><span><span>int</span></span><span><span>&nbsp;</span><span>parentVersion</span>=100;</span><span>同见<span style="background-color: red; background-origin: initial; background-clip: initial">颜色</span>：</span></p><br><p><span>到此为止，算法已经对所有的类的描述都做了输出。下一步就是把实例对象的实际值输出了。这时候是从</span><span>parent Class</span><span>的域开始的，见<span style="background-color: teal; background-origin: initial; background-clip: initial">颜色</span>：</span></p><br><p><span>还有</span><span><span>SerialTest</span></span><span>类的域：</span></p><br><p><span>再往后的</span><span>bytes</span><span>比较有意思，算法需要描述</span><span>contain</span><span>类的信息，要记住， <br>现在还没有对</span><span>contain</span><span>类进行过描述，见<span style="background-color: green; background-origin: initial; background-clip: initial">颜色</span>：</span></p><br><p><span>.</span><span>输出</span><span>contain</span><span>的唯一的域描述，</span><span><span>int</span></span><span><span>&nbsp;</span><span>containVersion</span>=11</span><span>；</span></p><br><p><span>这时，序列化算法会检查</span><span>contain</span><span>是否有超类，如果有的话会接着输出。</span></p><br><p><span>最后，将</span><span>contain</span><span>类实际域值输出。</span></p><br><p><span>OK,</span><span>我们讨论了</span><span>java</span><span>序列化的机制和原理，希望能对同学们有所帮助。</span></p></li></ul><br><div><span style="white-space: pre"></span>&nbsp; 转自 <a href="http://www.java3z.com/cwbwebhome/article/article8/862.html" target="_blank" rel="external">http://www.java3z.com/cwbwebhome/article/article8/862.html</a></div><br><div><strong>serialVersionUID值的重要作用</strong></div><br><div><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </strong>根据上面的分析,可以发现如果一个类可序列化,serialVersionUID建议给一个确定的值,不要由系统自动生成,否则在增减字段(不能修改字段类型及长度)时,如果两边的类的版本不同会导致反序列化失败.</div><br><div></div><br><div><strong>注意问题</strong></div><br><div>如果序列化时代码这样写:</div><br><div style="border-bottom: silver 1px solid; text-align: left; border-left: silver 1px solid; padding-bottom: 4px; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; padding-left: 4px; width: 97.5%; padding-right: 4px; font-family: 'Courier New', courier, monospace; direction: ltr; max-height: 200px; font-size: 8pt; overflow: auto; border-top: silver 1px solid; cursor: text; border-right: silver 1px solid; padding-top: 4px" id="codeSnippetWrapper"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px" id="codeSnippet">SerialTest st = new SerialTest(); <br>oos<span style="color: #cc6633">.writeObject</span>((parent)st);</pre><br></div><br><div>会发现序列化的对象依然是SerialTest,如果在分布式环境中用Parent反序列化(调用段不存在SerialTest),会造成ClassNotFoundException.</div><div id="MySignature"></div><br><div class="clear"></div><br><div id="blog_post_info_block"><br><div id="BlogPostCategory"></div><br><div id="EntryTag"></div><br><div id="blog_post_info"><br></div><br><div class="clear"></div><br><div id="post_next_prev"></div><br></div>
+
+
+<pre><code>&lt;/div&gt;
+</code></pre>
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/09/15/spring-beans/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -731,7 +849,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-15T11:08:16+08:00">
                 2017-09-15
@@ -974,7 +1092,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-12T11:44:29+08:00">
                 2017-09-12
@@ -1016,119 +1134,6 @@
             <div class="Blog_tit4 Blog_tit5" style="word-wrap:break-word; border-bottom-width:0px; padding:0px 0px 11px; color:rgb(86,86,86); font-family:宋体,Arial"><br>&nbsp;<a target="_blank" href="http://blog.itpub.net/29754888/viewspace-1452858/" style="word-wrap:break-word; text-decoration:none; color:rgb(156,36,35); font-family:微软雅黑,黑体,Verdana; font-size:20px">企业数据总线(ESB)和注册服务管理(dubbo)的区别</a>&nbsp;<span style="word-wrap:break-word; margin-left:22px; color:rgb(187,186,186); font-family:Arial">2015-03-09<br> 08:49:28</span></div><br><div class="Blog_con2" style="word-wrap:break-word; color:rgb(102,102,102); line-height:26px; height:auto; overflow:hidden; font-family:宋体,Arial"><br><div class="Blog_con3" style="word-wrap:break-word; margin-top:10px; line-height:22px"><br><p style="word-wrap:break-word; margin-top:0px; margin-bottom:0px; padding-top:0px; padding-bottom:0px; color:rgb(142,3,0)"><br>分类：&nbsp;<span style="word-wrap:break-word; color:rgb(187,186,186); margin-right:25px">Web开发</span></p><br><p style="word-wrap:break-word; margin-top:0px; margin-bottom:0px; padding-top:0px; padding-bottom:0px; color:rgb(142,3,0)"><br></p><br></div><br><div class="Blog_wz1" style="word-wrap:break-word"><br><p style="word-wrap:break-word; margin-top:0px; margin-bottom:0px; padding-top:0px; padding-bottom:0px; font-family:Arial; font-size:14px; line-height:26px"><br><br style="word-wrap:break-word"><br></p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br><span style="word-wrap:break-word">一、概述</span></p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>1、什么是ESB</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>就是企业数据总线的意思，他的核心功能就是兼容各种协议接口，可以将数据在各种协议之间进行流转，并且可以针对数据&#26684;式进行编排转换。（&#26684;式转换、协议转换、代理、编排、安全控制、监控、不支持高并发，类&#20284;于路由器维护着一张路由表进行路由转发）</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>代表性的项目有：JBOSS ESB,Mule,Camel 以及一些其他的esb项目</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>&nbsp;</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>2、什么是服务注册</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>就是将所有的服务接口（很多时候是hession协议的接口）,注册到一个中心的分布式服务集群上（你可以考虑成apache的zookeeper服务实现的效果）。各个业务系统直接访问分布式服务查找需要调用的接口位置，进而调用。（注册目录服务、监控、负载均衡、安全控制、分布式强健壮、适用于高并发）</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>代表性开源项目有：阿里的dubbo，淘宝的HSF(现在不知道是否继续开源了)</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>&nbsp;</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br><span style="word-wrap:break-word">二、双方特点</span></p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>1、ESB</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>ESB一般采用集中式转发请求，适合大量异构系统集成，并且压力不大的情况</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>&nbsp;</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>但集中式转发也是有优势的，比如调用方用http协议，提供方用rmi协议，转发就可以转换协议，对双方都透明。另外，在总线上还可以执行流程引擎，做服务编排，比如A和B两个服务经常一起调，就可以编排成服务C，而不用再单独启一个服务去做。还有，安全，流控，做起来也更方便。</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>支持groovy类型的脚本语言，在总线上可以给数据&#26684;式做转换</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>2、服务注册管理</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>采用的是分布式调用，注册中心只记录地址信息，然后直连调用，适合并发及压力比较大的情况。</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>对于网站应用，大多是垂直业务，直接从数据库拉数据展示。</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>&nbsp;</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br><span style="word-wrap:break-word">三、应用场景</span></p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>1、ESB</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>esb最常见的场景是，把系统里的集成逻辑，单拉出来， 放到esb容器里来部署，并跟应用系统适配。 这样让应用系统变得只有自己的业务逻辑，简单、轻薄。</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>劣势：在所有的服务上增加了一个总线作为沟通的渠道。对于较大的并发量会将瓶颈推到ESB总线上。很多时候ESB总线都采用MQ类的消息服务器来异步处理缓解压力</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>2、服务注册</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>淘宝和阿里的各个业务系统提供了很多的接口，这个时候需要统一管理提供个各子业务系统使用，让各个子业务系统可以通过注册中心很快找到对应的服务</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>劣势：服务编排和协议转换还是靠各个业务子系统了</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>&nbsp;</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br><span style="word-wrap:break-word">四、综述</span></p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>1、两类开源项目侧重点不同，ESB侧重任务的编排，性能问题可通过异构的方式来进行规避。无法支持特别大的并发</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>2、服务注册侧重服务的治理，将各个服务颗粒化，各个子业务系统在程序逻辑上完成业务的编排。但是比较实用较大的并发量，因为dubbo类的只是存放服务地址。有zookeeper类的分布式通讯框架，能保证单点的失败不影响整个系统的业务调用，因为业务接口都是在各个提供服务的子系统中</p><br></div><br></div>
 
 <p></p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/09/12/serviceGovernment/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="XueCheng">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="XueCheng Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/09/12/serviceGovernment/" itemprop="url">转载:服务治理与微服务</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-12T09:32:44+08:00">
-                2017-09-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <div id="article_content" class="article_content tracking-ad" data-mod="popu_307" data-dsm="post"><br>                <div class="markdown_views"><p>近期都在谈微服务，本人也正在做相关的工作，应领导要求做了一个微服务的分享，本篇文章主要来源于分享的PPT，所以有些简单，有问题可以在下面留言，大家 一起讨论。</p><br><br><p>本篇文章先简单介绍了互联网架构的演变，进而介绍了服务化，最后再介绍微服务，微服务是服务治理的升级也是互联网架构的进一步延伸。</p><br><br><h2 id="互联网架构演变">互联网架构演变</h2><br><br><br><br><h3 id="一体架构">一体架构</h3><br><br><p>在计算机软件发展早期，一般桌面软件都是采用这种架构，不管是界面还是业务处理还是数据处理都放到一个包中。这种其实谈不上架构，但也可以说是很好的架构，因为它足够简单。</p><br><br><p><img src="http://img.blog.csdn.net/20170103111147803?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p><br><br><br><br><h3 id="mvc架构">mvc架构</h3><br><br><p>但随着浏览器的出现便产生了web应用，web应用的特点是界面部分是显示在浏览器中，服务处理是在服务容器中的，页面显示一般用css+js+html技术来处理，而后端可以用java、php等语言，这就产生了前后端分离。对于web系统，一体架构难以满足前后端分离的开发需求，因而便产生了MVC架构。</p><br><br><p><img src="http://img.blog.csdn.net/20170103111226848?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p><br><br><p>MVC才算的上真正意义上的架构，因为它除了解决了前后端分离问题，还引入了一种全新的开发模式，用一种业务逻辑、数据、界面显示分离的方法组织代码，使得整个应用层次更加分明，而且各个层次之间不但减低了耦合性，还提高了各个层次的可重用性。</p><br><br><p>但随着应用规模的不断扩大，应用模块不断增加，整个应用也显得越来越臃肿，维护起来也更加困难，因此便又产生了多应用架构。</p><br><br><br><br><h3 id="多应用架构">多应用架构</h3><br><br><p>多应用架构很简单，就是把原来的应用按照业务特点拆分成多个应用。比如一个大型电商系统可能包含用户系统、商品系统、订单系统、评价系统等等，我们可以把他们独立出来形成一个个单独的应用。多应用架构的特点是应用之间各自独立 ，不相互调用。</p><br><br><p><img src="http://img.blog.csdn.net/20170103112334944?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p><br><br><p>多应用虽然解决了应用臃肿问题，但应用之间相互独立，有些共同的业务或代码无法复用。</p><br><br><br><br><h3 id="分布式架构">分布式架构</h3><br><br><p>对于一个大型的互联网系统，一般会包含多个应用，而且应用之间往往还存在共同的业务，并且应用之间还存在调用关系。除此之外 ，对于大型的互联网系统还有一些其它的挑战，比如如何应对急剧增长的用户，如何管理好研发团队快速迭代产品研发，如何保持产品升级更加稳定等等 。</p><br><br><p>因此，为了使业务得到很好的复用，模块更加容易拓展和维护，我们希望业务与应用分离，某个业务不再属于一个应用，而是作为一个独立的服务单独进行维护。应用本身不再是一个臃肿的模块堆积，而是由一个个模块化的服务组件组合而成。</p><br><br><p><img src="http://img.blog.csdn.net/20170103142540155?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p><br><br><br><br><h2 id="服务化">服务化</h2><br><br><br><br><h3 id="服务化的特点">服务化的特点</h3><br><br><p>上面介绍的分布式架构即服务化。我们再总结一下，服务化主要有如下特点：</p><br><br><ul><br><li>应用按业务拆分成服务</li><br><li>各个服务均可独立部署</li><br><li>服务可被多个应用共享</li><br><li>服务之间可以通信</li><br></ul><br><br><br><br><h3 id="服务化的好处">服务化的好处</h3><br><br><p>那么企业采用服务化有哪些好处呢？</p><br><br><ul><br><li>架构上系统更加清晰</li><br><li>核心模块稳定，以服务组件为单位进行升级，避免了频繁发布带来的风险</li><br><li>开发管理方便</li><br><li>单独团队维护、工作分明，职责清晰</li><br><li>业务复用、代码复用</li><br><li>非常容易拓展</li><br></ul><br><br><br><br><h3 id="服务化实现方式">服务化实现方式</h3><br><br><p>如果要实现服务化的话，最常用的方式就是利用RPC框架。因为服务组件一般分布在不同的服务器上，所以要实现服务化需要解决的第一个问题就是RPC<strong>远程服务调用</strong>。类似于RPC方案有很多，比如：</p><br><br><ul><br><li>Java RMI</li><br><li>WebService</li><br><li>Hessian</li><br><li>Http</li><br><li>Thrift</li><br><li>… …</li><br></ul><br><br><br><br><h3 id="服务化面临的挑战">服务化面临的挑战</h3><br><br><p>上面提到要实现服务化首先需要解决远程服务调用问题，除此之外，还有很多其他问题需要解决。</p><br><br><ul><br><li>服务越来越多，配置管理复杂</li><br><li>服务间依赖关系复杂</li><br><li>服务之间的负载均衡</li><br><li>服务的拓展</li><br><li>服务监控</li><br><li>服务降级</li><br><li>服务鉴权</li><br><li>服务上线与下线</li><br><li>服务文档</li><br><li>… …</li><br></ul><br><br><br><br><h2 id="服务治理">服务治理</h2><br><br><p>上面提到了服务化，其实要想服务化，<strong>服务治理</strong>是关键。那么有没有好的服务治理方案呢？答案是有的，而且很多人都在用这个框架，他就是-dubbo。dubbo就是一个<strong>带有服务治理功能的RPC框架</strong>。</p><br><br><p><img src="http://img.blog.csdn.net/20170103143859427?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p><br><br><p>dubbo提供了一套较为完整的服务治理方案，所以企业如果要实现服务化的话，dubbo 是很好的一个选择。这里简单介绍一下dubbo服务治理相关方案。</p><br><br><br><br><h4 id="服务发现注册">服务发现注册</h4><br><br><p>服务治理领域最重要的问题就是服务发现与注册。dubbo中引入了一个注册中心的概念，服务的注册与发现主要就依赖这个服务中心。</p><br><br><p><img src="http://img.blog.csdn.net/20170103144218850?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p><br><br><p>dubbo注册中心服务注册发现的具体过程：</p><br><br><ul><br><li>服务提供者启动，向注册中心注册自己提供的服务</li><br><li>消费者启动，向注册中心订阅自己需要的服务</li><br><li>注册中心返回服务提供者的列表给消费者</li><br><li>消费者从服务提供者列表中，按照软负载均衡算法，选择一台发起请求</li><br></ul><br><br><br><br><h4 id="服务监控">服务监控</h4><br><br><p><img src="http://img.blog.csdn.net/20170103144355679?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p><br><br><br><br><h4 id="集群容错">集群容错</h4><br><br><p><img src="http://img.blog.csdn.net/20170103144440554?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p><br><br><br><br><h4 id="负载均衡">负载均衡</h4><br><br><ul><br><li>Random Loadbalance</li><br><li>RoundRobin </li><br><li>LeastActive </li><br><li>ConsistentHash </li><br></ul><br><br><br><br><h4 id="dubbo服务治理优势">dubbo服务治理优势</h4><br><br><ul><br><li>注册中心只负责注册查找，不负责请求转发，压力小</li><br><li>注册中心宕机影响消费者，消费者本地缓存服务地址列表</li><br><li>注册中心对等集群，宕掉一台自动切换到另外 一台</li><br><li>服务提供者无状态，可动态部署，注册中心负责推送</li><br><li>统计无压力，本地内存中累计次数，每分钟发送注册中心</li><br><li>消费者调用服务者，自动软负载均衡</li><br><li>通过服务中心可追踪依赖关系</li><br><li>监控中心为扩容和降级提供依据</li><br><li>可启用acl机制进行鉴权</li><br><li>与Spring整合，接入简单松耦合</li><br><li>多种序列化协议支持</li><br></ul><br><br><br><br><h4 id="dubbo的不足">dubbo的不足</h4><br><br><ul><br><li>消费者仍需要依赖配置中心</li><br><li>消费者仍需要依赖jar包配置provider</li><br><li>提供者文档管理功能缺失</li><br><li>无统一入口</li><br><li>不支持OAuth2.0</li><br><li>内部鉴权不方便管理</li><br><li>无外部应用鉴权</li><br><li>接口基本裸奔，无法直接对外暴露服务</li><br><li>IT治理不方便</li><br></ul><br><br><br><br><h2 id="微服务">微服务</h2><br><br><p>现在很多人都在谈微服务，那么到底什么是微服务呢？这里谈谈我对微服务的理解。</p><br><br><p>微服务有两个核心：</p><br><br><ul><br><li>微：服务的粒度要细，即服务要细化到API</li><br><li>服务：提供好服务，要让用户感到好用(要做到这一点很不容易)</li><br></ul><br><br><p>上面两个核心总结起来，可以用下面这幅图表示：</p><br><br><p><img src="http://img.blog.csdn.net/20170103145438903?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p><br><br><p>从上面这幅图看出，微服务特别简单（好的架构就应该简单），我们把服务再拆分成一个个API，API是一个完整的功能。然后我们把API扔到一个“云上”，然后用户就可以到“云上”获取所有API的服务，这个“云”保证能提供好的服务。</p><br><br><p>我们可以看到，有了微服务之后，服务对用户来说变得特别简单，而且上面dubbo的不足之处在微服务这里都解决了。使用者不再需要依赖任何jar包，不再需要去注册中心查找服务，不再去做鉴权处理，不用担心服务挂掉，不用担心不会使用服务，所有的问题这个“云”都解决了。这也是微服务的核心之一，提供好服务。</p><br><br><p>说到这里，大家就应该大体知道该怎么做微服务了，图中的“云”是关键。下面我们就慢慢拨开这朵云。</p><br><br><br><br><h3 id="微服务的实现">微服务的实现</h3><br><br><p><img src="http://img.blog.csdn.net/20170103150555199?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p><br><br><p>微服务的关键是<strong>服务网关</strong>，所以，上面提到的“云”就是服务网关。要做微服务，我们先定义一下微服务需要具备的特点。</p><br><br><h4 id="微服务的特点">微服务的特点</h4><br><br><p>服务需要再细化成API（服务接口——&gt;服务API）</p><br><br><ul><br><li>每个服务由一组API组成</li><br><li>以API形式对外提供统一格式的服务</li><br><li>使用者无需任何配置，直接调用（http）</li><br><li>完整的API文档</li><br><li>API服务安全可靠稳定</li><br></ul><br><br><br><br><h4 id="微服务要解决的问题">微服务要解决的问题</h4><br><br><p>上面提到了，dubbo还存在一些问题 ，其实dubbo存在的问题 就是 微服务要解决的问题，这里 再总结一下。当然，dubbo和微服务的侧重点不一样，dubbo侧重于内部接口之间的RPC，而微服务则侧重于对外提供服务。</p><br><br><ul><br><li>统一入口</li><br><li>安全控制：防刷限流</li><br><li>统一鉴权：应用鉴权、用户鉴权、OAuth鉴权、ACL</li><br><li>协议转换：http、dubbo、Protobuf</li><br><li>API配置管理</li><br><li>API上线、下线</li><br><li>API与服务接口映射</li><br><li>监控与报警</li><br><li>整体架构的可拓展、高并发、分布式 </li><br><li>服务容器自动收缩、扩容</li><br></ul><br><br><br><br><h4 id="实现方案">实现方案</h4><br><br><p><img src="http://img.blog.csdn.net/20170103151255786?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p><br><br><ul><br><li>负载均衡层：nginx/lvs/F5</li><br><li>微服务层 <br><br><ul><li>高性能服务网关</li><br><li>统一入口、API配置管理、分流鉴权、服务监控、协议转换</li><br><li>API映射、OAuth2.0、API文档管理</li><br><li>分布式、可拓展</li></ul></li><br><li>服务治理层 <br><br><ul><li>成熟的服务治理框架dubbo</li><br><li>MQ服务之间解耦</li></ul></li><br><li>弹性云 <br><br><ul><li>服务docker化</li><br><li>基于访问压力的实时集群调度与管理</li></ul></li><br></ul><br><br><h4 id="弹性云">弹性云</h4><br><br><p>这里简单介绍一下弹性云的概念，微服务要想提供好服务，保证API不能挂掉并且有好的性能，需要很高的运维要求。这里的弹性云便是自动化运维解决方案，对访问压力进行监控，根据监控解决调度应用的发布和回收。</p><br><br><p><img src="http://img.blog.csdn.net/20170103151747772?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvc3VpZmVuZzMwNTE=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述" title=""></p><link rel="stylesheet" href="http://static.blog.csdn.net/public/res-min/markdown_views.css?v=1.0"></div><link rel="stylesheet" href="http://static.blog.csdn.net/public/res-min/markdown_views.css?v=1.0"><br>            </div><br>        <br>        <div class="readall_box tracking-ad" data-mod="popu_376"><br>            <a class="btn btn-large btn-gray-fred read_more_btn" target="_self">阅读全文</a><br>        </div><br>        <div class="article_copyright"><br>            版权声明：本文为博主原创文章，未经博主允许不得转载。<br>            <span class="r_ico"><i class="icon iconfont icon-jubao"></i><span class="txt" id="reportBtn">举报</span></span><br>        </div>
-
 
           
         
@@ -1212,8 +1217,8 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">59</span>
-                <span class="site-state-item-name">posts</span>
+                <span class="site-state-item-count">60</span>
+                <span class="site-state-item-name">Artikel</span>
               </a>
             </div>
           
@@ -1267,7 +1272,7 @@
 
 
 <div class="powered-by">
-  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
 </div>
 
 <div class="theme-info">

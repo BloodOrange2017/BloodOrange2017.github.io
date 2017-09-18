@@ -200,7 +200,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
-            Home
+            Startseite
           </a>
         </li>
       
@@ -210,7 +210,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
-            Archives
+            Archiv
           </a>
         </li>
       
@@ -253,6 +253,119 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/07/31/aop-04/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="XueCheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XueCheng Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/07/31/aop-04/" itemprop="url">转载:Spring实现AOP的4种方式</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-07-31T15:51:08+08:00">
+                2017-07-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <div id="article_content" class="article_content tracking-ad" data-mod="popu_307" data-dsm="post"><br><br><blockquote><br><h1 align="left"><strong>Spring实现AOP的4种方式</strong></h1><br><p align="left">&nbsp;</p><br><p align="left">&nbsp; <span style="font-family:宋体">先了解</span><span style="font-family:Calibri">AOP</span><span style="font-family:宋体">的相关术语</span><span style="font-family:Calibri">:</span><br><br><strong>1.<span style="font-family:宋体">通知</span><span style="font-family:Calibri">(Advice):</span></strong><br><br><span style="font-family:宋体">通知定义了切面是什么以及何时使用。描述了切面要完成的工作和何时需要执行这个工作。</span><br><br><strong>2.<span style="font-family:宋体">连接点</span><span style="font-family:Calibri">(</span><a target="_blank" name="OLE_LINK1">Joinpoint</a>):</strong><br><br><span style="font-family:宋体">程序能够应用通知的一</span> <span style="font-family:宋体">个</span>“<span style="font-family:宋体">时机</span><span style="font-family:Calibri">”</span><span style="font-family:宋体">，这些</span><span style="font-family:Calibri">“</span><span style="font-family:宋体">时机</span><span style="font-family:Calibri">”</span><span style="font-family:宋体">就是连接点，例如方法被调用时、异常被抛出时等等。</span><br><br><strong>3.<span style="font-family:宋体">切入点</span><span style="font-family:Calibri">(Pointcut)</span></strong><br><br><span style="font-family:宋体">通知定义了切面要发生的</span>“<span style="font-family:宋体">故事</span><span style="font-family:Calibri">”</span><span style="font-family:宋体">和时间，那么切入点就定义了</span><span style="font-family:Calibri">“</span><span style="font-family:宋体">故事</span><span style="font-family:Calibri">”</span><span style="font-family:宋体">发生的地点，例如某个类或方法的名称，</span><a target="_blank" href="http://lib.csdn.net/base/javaee" title="Java EE知识库"><strong><u><span style="color:#df3434">spring</span></u></strong></a><span style="font-family:宋体">中允许我们方便的用正则表达式来指定</span><br><br><strong>4.<span style="font-family:宋体">切面</span><span style="font-family:Calibri">(Aspect)</span></strong><br><br><span style="font-family:宋体">通知和切入点共同组成了切面：时间、地点和要发生的</span>“<span style="font-family:宋体">故事</span><span style="font-family:Calibri">”</span><br><br><strong>5.<span style="font-family:宋体">引入</span><span style="font-family:Calibri">(Introduction)</span></strong><br><br><span style="font-family:宋体">引入允许我们向现有的类添加新的方法和属性</span>(Spring<span style="font-family:宋体">提供了一个方法注入的功能）</span><br><br><strong>6.<span style="font-family:宋体">目标</span><span style="font-family:Calibri">(Target)</span></strong><br><br><span style="font-family:宋体">即被通知的对象，如果没有</span>AOP,<span style="font-family:宋体">那么它的逻辑将要交叉别的事务逻辑，有了</span><span style="font-family:Calibri">AOP</span><span style="font-family:宋体">之后它可以只关注自己要做的事（</span><span style="font-family:Calibri">AOP</span><span style="font-family:宋体">让他做爱做的事）</span><br><br><strong>7.<span style="font-family:宋体">代理</span><span style="font-family:Calibri">(proxy)</span></strong><br><br><span style="font-family:宋体">应用通知的对象，详细内容参见设计模式里面的代理模式</span><br><br><strong>8.<span style="font-family:宋体">织入</span><span style="font-family:Calibri">(Weaving)</span></strong><br><br><span style="font-family:宋体">把切面应用到目标对象来创建新的代理对象的过程，织入一般发生在如下几个时机</span>:<br><br>(1)<span style="font-family:宋体">编译时：当一个类文件被编译时进行织入，这需要特殊的编译器才可以做的到，例如</span><span style="font-family:Calibri">AspectJ</span><span style="font-family:宋体">的织入编译器</span><br><br>(2)<span style="font-family:宋体">类加载时：使用特殊的</span><span style="font-family:Calibri">ClassLoader</span><span style="font-family:宋体">在目标类被加载到程序之前增强类的字节代码</span><br><br>(3)<span style="font-family:宋体">运行时：切面在运行的某个时刻被织入</span><span style="font-family:Calibri">,SpringAOP</span><span style="font-family:宋体">就是以这种方式织入切面的，原理应该是使用了</span><span style="font-family:Calibri">JDK</span><span style="font-family:宋体">的动态代理技术</span><br><br><strong><br><br>Spring<span style="font-family:宋体">提供了</span><span style="font-family:Calibri">4</span><span style="font-family:宋体">种实现</span><span style="font-family:Calibri">AOP</span><span style="font-family:宋体">的方式：</span><br><br>1.<span style="font-family:宋体">经典的基于代理的</span><span style="font-family:Calibri">AOP</span><br><br>2.@AspectJ<span style="font-family:宋体">注解驱动的切面</span><br><br>3.<span style="font-family:宋体">纯</span><span style="font-family:Calibri">POJO</span><span style="font-family:宋体">切面</span><br><br>4.<span style="font-family:宋体">注入式</span><span style="font-family:Calibri">AspectJ</span><span style="font-family:宋体">切面</span></strong><br><br><br><br><span style="font-family:宋体">首先看经典的基于代理的</span>AOP:<br><br>Spring<span style="font-family:宋体">支持五种类型的通知：</span><br><br>Before(<span style="font-family:宋体">前</span><span style="font-family:Calibri">)&nbsp; org.apringframework.aop.MethodBeforeAdvice</span><br><br>After-returning(<span style="font-family:宋体">返回后</span><span style="font-family:Calibri">) org.springframework.aop.AfterReturningAdvice</span><br><br>After-throwing(<span style="font-family:宋体">抛出后</span><span style="font-family:Calibri">) org.springframework.aop.ThrowsAdvice</span><br><br>Arround(<span style="font-family:宋体">周围</span><span style="font-family:Calibri">) org.aopaliance.intercept.MethodInterceptor</span><br><br>Introduction(<span style="font-family:宋体">引入</span><span style="font-family:Calibri">) org.springframework.aop.IntroductionInterceptor</span><br><br><br><br><span style="font-family:宋体">&#20540;的说明的是周围通知，他是由</span>AOP Alliance<span style="font-family:宋体">中的接口定义的而非</span><span style="font-family:Calibri">Spring,</span><span style="font-family:宋体">周围通知相当于前通知、返回后通知、抛出后通知的结合（传说中的完全体？好吧，我看日和看多</span><br><br><br><br><span style="font-family:宋体">了）还有引入通知怎么玩我还没搞清楚，等心无杂念的时候玩玩</span><br><br><br><br><span style="font-family:宋体">这东西怎么玩？这么几个步骤：</span><br><br>1.<span style="font-family:宋体">创建通知：实现这几个接口，把其中的方法实现了</span><br><br>2.<span style="font-family:宋体">定义切点和通知者：在</span><span style="font-family:Calibri">Spring</span><span style="font-family:宋体">配制文件中配置这些信息</span><br><br>3.<span style="font-family:宋体">使用</span><span style="font-family:Calibri">ProxyFactoryBean</span><span style="font-family:宋体">来生成代理</span><br><br><br><br><span style="font-family:宋体">具体做法。。。大晚上的就举个睡觉的例子吧</span>:<br><br><br><br><span style="font-family:宋体">首先写一个接口叫</span>Sleepable,<span style="font-family:宋体">这是一个牛</span><span style="font-family:Calibri">X</span><span style="font-family:宋体">的接口</span><span style="font-family:Calibri">,</span><span style="font-family:宋体">所有具有睡觉能力的东西都可以实现该接口（不光生物，包括关机选项里面的休眠）</span><br><br><br><br>package test.spring.aop.bean<br><br>public interface Sleepable{<br><br>&nbsp;&nbsp;&nbsp; void sleep();&nbsp;<br><br>}</p><br><p align="left"><span style="font-family:宋体">然后写一个</span>Human<span style="font-family:宋体">类，他实现了这个接口</span><br><br>package test.spring.aop.bean<br><br>public Human implements Sleepable{<br><br>&nbsp;&nbsp; /<em><span style="font-family:宋体">这人莫非跟寡人差不多？</span><br><br>&nbsp;&nbsp;&nbsp; </em><span style="font-family:宋体">除了睡觉睡的比较好之外其余的什么也不会做？</span><span style="font-family:Calibri"><em>/</em></span><br><br>&nbsp;&nbsp; public void sleep(){<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; System.out.println(&quot;<span style="font-family:宋体">睡觉了！梦中自有颜如玉！</span><span style="font-family:Calibri">&quot;);</span><br><br>&nbsp;&nbsp; }<br><br>}<br><br><br><br><br><br><span style="font-family:宋体">好了，这是主角，不过睡觉前后要做些辅助工作的，最基本的是脱穿衣服，失眠的人还要吃安眠药什么的</span>,<span style="font-family:宋体">但是这些动作与纯粹的睡觉这一</span><span style="font-family:Calibri">“</span><span style="font-family:宋体">业务逻辑</span><span style="font-family:Calibri">”</span><span style="font-family:宋体">是不相干的，如果把</span><br><br><br><br><span style="font-family:宋体">这些代码全部加入到</span>sleep<span style="font-family:宋体">方法中，是不是有违单一职责呢？，这时候我们就需要</span><span style="font-family:Calibri">AOP</span><span style="font-family:宋体">了。</span><br><br><br><br><span style="font-family:宋体">编写一个</span>SleepHelper<span style="font-family:宋体">类，它里面包含了睡觉的辅助工作</span><span style="font-family:Calibri">,</span><span style="font-family:宋体">用</span><span style="font-family:Calibri">AOP</span><span style="font-family:宋体">术语来说它就应该是通知了，我们需要实现上面的接口</span><br><br><br><br>package test.spring.aop.bean;<br><br>import <a target="_blank" href="http://lib.csdn.net/base/javaee" title="Java EE知识库"><br><strong><u><span style="color:#df3434">Java</span></u></strong></a>.lang.reflect.Method;<br><br>import org.springframework.aop.AfterReturningAdvice;<br><br>import org.springframework.aop.MethodBeforeAdvice;<br><br>public class SleepHelper implements MethodBeforeAdvice,AfterReturningAdvice{<br><br>&nbsp;&nbsp;&nbsp; public void before(Method mtd, Object[] arg1, Object arg2)<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; throws Throwable {<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; System.out.println(&quot;<span style="font-family:宋体">通常情况下睡觉之前要脱衣服！</span><span style="font-family:Calibri">&quot;);</span><br><br>&nbsp;&nbsp;&nbsp; }<br><br>&nbsp;&nbsp;&nbsp; public void afterReturning(Object arg0, Method arg1, Object[] arg2,<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; Object arg3) throws Throwable {<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; System.out.println(&quot;<span style="font-family:宋体">起床后要先穿衣服！</span><span style="font-family:Calibri">&quot;);</span><br><br>&nbsp;&nbsp;&nbsp; }<br><br>}<br><br><span style="font-family:宋体; color:#009900">然后在</span><span style="color:#009900">spring<span style="font-family:宋体">配置文件中进行配置</span><span style="font-family:Calibri">:</span></span><br><br>&lt;bean id=&quot;sleepHelper&quot; class=&quot;test.spring.aop.bean.SleepHelper&quot;&gt;<br><br>&lt;/bean&gt;<br><br><span style="color:#009900">OK!<span style="font-family:宋体">现在创建通知的工作就完成了</span><span style="font-family:Calibri">.</span><br><br><span style="font-family:宋体">第二步是进行配置，这是很令人蛋疼的操作，尤其是这么热的天，</span>Spring<span style="font-family:宋体">又把东西的名字起的见&#39740;的长！它为啥不能像</span><span style="font-family:Calibri">usr</span><span style="font-family:宋体">这种风&#26684;呢？</span><br><br><span style="font-family:宋体">首先要做的是配置一个切点</span>,<span style="font-family:宋体">据说切点的表示方式在</span><span style="font-family:Calibri">Spring</span><span style="font-family:宋体">中有好几种，但是常用的只有两种：</span><span style="font-family:Calibri">1.</span><span style="font-family:宋体">使用正则表达式</span><span style="font-family:Calibri">2.</span><span style="font-family:宋体">使用</span><span style="font-family:Calibri">AspectJ</span><span style="font-family:宋体">表达式</span><span style="font-family:Calibri">AspectJ</span><span style="font-family:宋体">我不是很熟悉</span><span style="font-family:Calibri">(</span><span style="font-family:宋体">我也是熟悉</span><br><br><span style="font-family:宋体">党</span> or <span style="font-family:宋体">精通党？</span><span style="font-family:Calibri">),</span><span style="font-family:宋体">我还是习惯用正则表达式</span></span><br><br>Spring<span style="font-family:宋体">使用</span><span style="font-family:Calibri">org.springframework.aop.support.JdkRegexpMethodPointcut</span><span style="font-family:宋体">来定义正则表达式切点</span><br><br>&lt;bean id=&quot;spleepPointcut&quot; class=&quot;org.springframework.aop.support.JdkRegexpMethodPointcut&quot;&gt;<br><br>&nbsp; &lt;property name=&quot;pattern&quot; value=&quot;.sleep&quot;/&gt;<br><br>&lt;/bean&gt;<br><br>pattern<span style="font-family:宋体">属性指定了正则表达式，它匹配所有的</span><span style="font-family:Calibri">sleep</span><span style="font-family:宋体">方法</span><br><br><span style="font-family:宋体">切点仅仅是定义了故事发生的地点，还有故事发生的时间以及最重要的故事的内容</span>,<span style="font-family:宋体">就是通知了，我们需要把通知跟切点结合起来，我们要使用的通知者是</span><span style="font-family:Calibri">:</span><br><br>org.springframework.aop.support.DefaultPointcutAdvisor<br><br>&lt;bean id=&quot;sleepHelperAdvisor&quot; class=&quot;org.springframework.aop.support.DefaultPointcutAdvisor&quot;&gt;<br><br>&nbsp;&nbsp;&nbsp;&nbsp; &lt;property name=&quot;advice&quot; ref=&quot;sleepHelper&quot;/&gt;<br><br>&nbsp;&nbsp;&nbsp;&nbsp; &lt;property name=&quot;pointcut&quot; ref=&quot;sleepPointcut&quot;/&gt;<br><br>&lt;/bean&gt;<br><br><span style="font-family:宋体">切入点和通知都配置完成，接下来该调用</span>ProxyFactoryBean<span style="font-family:宋体">产生代理对象了</span><br><br>&lt;bean id=&quot;humanProxy&quot; class=&quot;org.springframework.aop.framework.ProxyFactoryBean&quot;&gt;<br><br>&nbsp;&nbsp;&nbsp;&nbsp; &lt;property name=&quot;target&quot; ref=&quot;human&quot;/&gt;<br><br>&nbsp;&nbsp;&nbsp;&nbsp; &lt;property name=&quot;interceptorNames&quot; value=&quot;sleepHelperAdvisor&quot; /&gt;<br><br>&nbsp;&nbsp;&nbsp;&nbsp; &lt;property name=&quot;proxyInterfaces&quot; value=&quot;test.spring.aop.bean.Sleepable&quot; /&gt;<br><br>&lt;/bean&gt;<br><br>ProxyFactoryBean<span style="font-family:宋体">是一个代理，我们可以把它转换为</span><span style="font-family:Calibri">proxyInterfaces</span><span style="font-family:宋体">中指定的实现该</span><span style="font-family:Calibri">interface</span><span style="font-family:宋体">的代理对象</span><span style="font-family:Calibri">:</span><br><br>import org.springframework.aop.framework.ProxyFactoryBean;<br><br>import org.springframework.context.ApplicationContext;<br><br>import org.springframework.context.support.ClassPathXmlApplicationContext;<br><br>import test.spring.aop.bean.Sleepable;<br><br>public class Test {<br><br>&nbsp;&nbsp;&nbsp; public static void main(String[] args){<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; ApplicationContext appCtx = new ClassPathXmlApplicationContext(&quot;applicationContext.xml&quot;);<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; Sleepable sleeper = (Sleepable)appCtx.getBean(&quot;humanProxy&quot;);<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; sleeper.sleep();<br><br>&nbsp;&nbsp;&nbsp; }<br><br>}<br><br><span style="font-family:宋体">程序运行产生结果：</span><br><br><span style="font-family:宋体">通常情况下睡觉之前要脱衣服！</span><br><br><span style="font-family:宋体">睡觉啦</span>~<span style="font-family:宋体">梦中自有颜如玉</span><span style="font-family:Calibri">!</span><br><br><span style="font-family:宋体">起床后要先穿衣服！</span><br><br>OK!<span style="font-family:宋体">这是我们想要的结果，但是上面这个过程貌&#20284;有点复杂，尤其是配置切点跟通知</span><span style="font-family:Calibri">,Spring</span><span style="font-family:宋体">提供了一种自动代理的功能，能让切点跟通知自动进行匹配，修改配置文件如下</span><span style="font-family:Calibri">:</span><br><br>&nbsp;&lt;bean id=&quot;sleepHelper&quot; class=&quot;test.spring.aop.bean.SleepHelper&quot;&gt;<br><br>&nbsp; &lt;/bean&gt;<br><br>&nbsp; &lt;bean id=&quot;sleepAdvisor&quot; class=&quot;org.springframework.aop.support.RegexpMethodPointcutAdvisor&quot;&gt;<br><br>&nbsp;&nbsp;&nbsp; &lt;property name=&quot;advice&quot; ref=&quot;sleepHelper&quot;/&gt;<br><br>&nbsp;&nbsp;&nbsp; &lt;property name=&quot;pattern&quot; value=&quot;.<em>sleep&quot;/&gt;<br><br>&nbsp; &lt;/bean&gt;<br><br>&nbsp; &lt;bean id=&quot;human&quot; class=&quot;test.spring.aop.bean.Human&quot;&gt;<br><br>&nbsp; &lt;/bean&gt;<br><br>&nbsp; &lt;bean class=&quot;org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator&quot;/&gt;<br><br><span style="font-family:宋体">执行程序：</span><br><br>public class Test {<br><br>&nbsp;&nbsp;&nbsp; public static void main(String[] args){<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; ApplicationContext appCtx = new ClassPathXmlApplicationContext(&quot;applicationContext.xml&quot;);<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; Sleepable sleeper = (Sleepable)appCtx.getBean(&quot;human&quot;);<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; sleeper.sleep();<br><br>&nbsp;&nbsp;&nbsp; }<br><br>}<br><br><span style="font-family:宋体">成功输出结果跟前面一样</span>!<br><br><span style="font-family:宋体">只要我们声明了</span>org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator(<span style="font-family:宋体">我勒个去的，名太长了</span><span style="font-family:Calibri">)</span><span style="font-family:宋体">就能为方法匹配的</span><span style="font-family:Calibri">bean</span><span style="font-family:宋体">自动创建代理！</span><br><br><span style="font-family:宋体">但是这样还是要有很多工作要做</span>,<span style="font-family:宋体">有更简单的方式吗</span><span style="font-family:Calibri">?</span><span style="font-family:宋体">有！</span><br><br><span style="font-family:宋体">一种方式是使用</span>AspectJ<span style="font-family:宋体">提供的注解</span><span style="font-family:Calibri">:</span><br><br>package test.mine.spring.bean;<br><br>import org.aspectj.lang.annotation.AfterReturning;<br><br>import org.aspectj.lang.annotation.Aspect;<br><br>import org.aspectj.lang.annotation.Before;<br><br>import org.aspectj.lang.annotation.Pointcut;<br><br>@Aspect<br><br>public class SleepHelper {<br><br>&nbsp;&nbsp;&nbsp; public SleepHelper(){<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;<br><br>&nbsp;&nbsp;&nbsp; }<br><br>&nbsp;&nbsp;&nbsp; @Pointcut(&quot;execution(</em> <em>.sleep())&quot;)<br><br>&nbsp;&nbsp;&nbsp; public void sleeppoint(){}<br><br>&nbsp;&nbsp;&nbsp;&nbsp;<br><br>&nbsp;&nbsp;&nbsp; @Before(&quot;sleeppoint()&quot;)<br><br>&nbsp;&nbsp;&nbsp; public void beforeSleep(){<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; System.out.println(&quot;<span style="font-family:宋体">睡觉前要脱衣服</span><span style="font-family:Calibri">!&quot;);</span><br><br>&nbsp;&nbsp;&nbsp; }&nbsp;&nbsp;&nbsp; <br><br>&nbsp;&nbsp;&nbsp; @AfterReturning(&quot;sleeppoint()&quot;)<br><br>&nbsp;&nbsp;&nbsp; public void afterSleep(){<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; System.out.println(&quot;<span style="font-family:宋体">睡醒了要穿衣服！</span><span style="font-family:Calibri">&quot;);</span><br><br>&nbsp;&nbsp;&nbsp; }&nbsp;&nbsp;&nbsp; <br><br>}<br><br><span style="font-family:宋体; color:#009900">用</span><span style="color:#009900">@Aspect<span style="font-family:宋体">的注解来标识切面</span><span style="font-family:Calibri">,</span><span style="font-family:宋体">注意不要把它漏了，否则</span><span style="font-family:Calibri">Spring</span><span style="font-family:宋体">创建代理的时候会找不到它</span><span style="font-family:Calibri">,@Pointcut</span><span style="font-family:宋体">注解指定了切点，</span><span style="font-family:Calibri">@Before</span><span style="font-family:宋体">和</span><span style="font-family:Calibri">@AfterReturning</span><span style="font-family:宋体">指定了运行时的通知，注</span><span style="font-family:宋体">意的是要在注解中传入切点的名称</span><br><br><span style="font-family:宋体">然后我们在</span>Spring<span style="font-family:宋体">配置文件上下点功夫</span><span style="font-family:Calibri">,</span><span style="font-family:宋体">首先是增加</span><span style="font-family:Calibri">AOP</span><span style="font-family:宋体">的</span><span style="font-family:Calibri">XML</span><span style="font-family:宋体">命名空间和声明相关</span><span style="font-family:Calibri">schema</span><br><br><span style="font-family:宋体">命名空间</span>:</span><br><br>xmlns:aop=&quot;<a href="http://www.springframework.org/schema/aop&amp;quot" target="_blank" rel="external">http://www.springframework.org/schema/aop&amp;quot</a>;<br><br>schema<span style="font-family:宋体">声明</span><span style="font-family:Calibri">:</span><br><br><a href="http://www.springframework.org/schema/aop" target="_blank" rel="external">http://www.springframework.org/schema/aop</a><br><br><a href="http://www.springframework.org/schema/aop/spring-aop-2.0.xsd" target="_blank" rel="external">http://www.springframework.org/schema/aop/spring-aop-2.0.xsd</a><br><br><br><br><span style="font-family:宋体">然后加上这个标签</span>:<br><br>&lt;aop:aspectj-autoproxy/&gt; <span style="font-family:宋体">有了这个</span><span style="font-family:Calibri">Spring</span><span style="font-family:宋体">就能够自动扫描被</span><span style="font-family:Calibri">@Aspect</span><span style="font-family:宋体">标注的切面了</span><br><br><br><br><span style="font-family:宋体">最后是运行，很简单方便了：</span><br><br>public class Test {<br><br><br><br>&nbsp;&nbsp;&nbsp; public static void main(String[] args){<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; ApplicationContext appCtx = new ClassPathXmlApplicationContext(&quot;applicationContext.xml&quot;);<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; Sleepable human = (Sleepable)appCtx.getBean(&quot;human&quot;);<br><br>&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; human.sleep();<br><br>&nbsp;&nbsp;&nbsp; }<br><br>}<br><br><span style="font-family:宋体">下面我们来看最后一种常用的实现</span>AOP<span style="font-family:宋体">的方式</span><span style="font-family:Calibri">:</span><span style="font-family:宋体">使用</span><span style="font-family:Calibri">Spring</span><span style="font-family:宋体">来定义纯粹的</span><span style="font-family:Calibri">POJO</span><span style="font-family:宋体">切面</span><br><br><span style="font-family:宋体">前面我们用到了</span>&lt;aop:aspectj-autoproxy/&gt;<span style="font-family:宋体">标签</span><span style="font-family:Calibri">,Spring</span><span style="font-family:宋体">在</span><span style="font-family:Calibri">aop</span><span style="font-family:宋体">的命名空间里面还提供了其他的配置元素</span><span style="font-family:Calibri">:</span><br><br>&lt;aop:advisor&gt; <span style="font-family:宋体">定义一个</span><span style="font-family:Calibri">AOP</span><span style="font-family:宋体">通知者</span><br><br>&lt;aop:after&gt; <span style="font-family:宋体">后通知</span><br><br>&lt;aop:after-returning&gt; <span style="font-family:宋体">返回后通知</span><br><br>&lt;aop:after-throwing&gt; <span style="font-family:宋体">抛出后通知</span><br><br>&lt;aop:around&gt; <span style="font-family:宋体">周围通知</span><br><br>&lt;aop:aspect&gt;<span style="font-family:宋体">定义一个切面</span><br><br>&lt;aop:before&gt;<span style="font-family:宋体">前通知</span><br><br>&lt;aop:config&gt;<span style="font-family:宋体">顶级配置元素，类&#20284;于</span><span style="font-family:Calibri">&lt;beans&gt;</span><span style="font-family:宋体">这种东西</span><br><br>&lt;aop:pointcut&gt;<span style="font-family:宋体">定义一个切点</span><br><br><span style="font-family:宋体">我们用</span>AOP<span style="font-family:宋体">标签来实现睡觉这个过程</span><span style="font-family:Calibri">:</span><br><br><span style="font-family:宋体">代码不变，只是修改配置文件</span>,<span style="font-family:宋体">加入</span><span style="font-family:Calibri">AOP</span><span style="font-family:宋体">配置即可</span><span style="font-family:Calibri">:</span><br><br>&lt;aop:config&gt;<br><br>&nbsp;&nbsp;&nbsp; &lt;aop:aspect ref=&quot;sleepHelper&quot;&gt;<br><br>&nbsp;&nbsp;&nbsp; &lt;aop:before method=&quot;beforeSleep&quot; pointcut=&quot;execution(</em> <em>.sleep(..))&quot;/&gt;<br><br>&nbsp;&nbsp;&nbsp; &lt;aop:after method=&quot;afterSleep&quot; pointcut=&quot;execution(</em> <em>.sleep(..))&quot;/&gt;<br><br>&nbsp;&nbsp;&nbsp; &lt;/aop:aspect&gt;<br><br>&lt;/aop:config&gt;</em></p><br><strong>spring<span style="font-family:宋体">对</span><span style="font-family:Calibri">AOP</span><span style="font-family:宋体">的支持</span><span style="font-family:Calibri">2:</span></strong><br><p align="left"><strong>1<span style="font-family:宋体">、如果目标对象实现了接口，默认情况下会采用</span><span style="font-family:Calibri">JDK</span><span style="font-family:宋体">的动态代理实现</span><span style="font-family:Calibri">AOP</span><br><br>2<span style="font-family:宋体">、如果目标对象实现了接口，可以强制使用</span><span style="font-family:Calibri">CGLIB</span><span style="font-family:宋体">实现</span><span style="font-family:Calibri">AOP</span><br><br>3<span style="font-family:宋体">、如果目标对象没有实现了接口，必须采用</span><span style="font-family:Calibri">CGLIB</span><span style="font-family:宋体">库，</span><span style="font-family:Calibri">spring</span><span style="font-family:宋体">会自动在</span><span style="font-family:Calibri">JDK</span><span style="font-family:宋体">动态代理和</span><span style="font-family:Calibri">CGLIB</span><span style="font-family:宋体">之间转换</span></strong></p><br><p align="left"><strong><br><br><span style="font-family:宋体">在实现接口的情况下</span>,<span style="font-family:宋体">如何强制使用</span><span style="font-family:Calibri">CGLIB</span><span style="font-family:宋体">实现</span><span style="font-family:Calibri">AOP</span><span style="font-family:宋体">？</span><br><br>&nbsp; <span style="font-family:宋体">添加</span><span style="font-family:Calibri">CGLIB</span><span style="font-family:宋体">库，</span><span style="font-family:Calibri">SPRING_HOME/cglib/<em>.jar</em></span><br><br>&nbsp; <span style="font-family:宋体">在</span><span style="font-family:Calibri">spring</span><span style="font-family:宋体">配置文件中加入</span><span style="font-family:Calibri">&lt;aop:aspectj-autoproxy proxy-target-class=&quot;true&quot;/&gt;</span><br><br>&nbsp;<br><br>JDK<span style="font-family:宋体">动态代理和</span><span style="font-family:Calibri">CGLIB</span><span style="font-family:宋体">字节码生成的区别？</span><br><br>&nbsp;<em> JDK<span style="font-family:宋体">动态代理只能对实现了接口的类生成代理，而不能针对类</span><br><br>&nbsp;</em> CGLIB<span style="font-family:宋体">是针对类实现代理，主要是对指定的类生成一个子类，覆盖其中的方法</span><br><br>&nbsp;&nbsp; <span style="font-family:宋体">因为是继承，所以该类或方法最好不要声明成</span><span style="font-family:Calibri">final&nbsp;</span></strong></p><br><p align="left">&nbsp;源码下篇</p><br><p align="left">&nbsp;</p><br></blockquote><br><br></div>
+
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/07/31/aop-03/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -282,7 +395,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-07-31T15:49:17+08:00">
                 2017-07-31
@@ -395,7 +508,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-07-31T15:42:33+08:00">
                 2017-07-31
@@ -543,7 +656,7 @@ http://www.CodeHighlighter.com/<br />
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-07-26T17:54:01+08:00">
                 2017-07-26
@@ -655,7 +768,7 @@ http://www.CodeHighlighter.com/<br />
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-07-20T10:27:33+08:00">
                 2017-07-20
@@ -768,7 +881,7 @@ http://www.CodeHighlighter.com/<br />
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-07-17T15:06:49+08:00">
                 2017-07-17
@@ -881,7 +994,7 @@ http://www.CodeHighlighter.com/<br />
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">Veröffentlicht am</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-07-04T10:49:40+08:00">
                 2017-07-04
@@ -921,119 +1034,6 @@ http://www.CodeHighlighter.com/<br />
         
           
             <div id="article_content" class="article_content tracking-ad" data-mod="popu_307" data-dsm="post"><br><br><h1 style="text-align:center"><span style="font-family:Microsoft YaHei; font-size:48px; font-weight:normal">查找（一）</span></h1><br><p><span style="font-size:18px"><br><br></span></p><br><p><span style="font-size:18px"><br><br></span></p><br><p><span style="font-size:18px">我们使用<strong>符号表</strong>这个词来描述一张抽象的表&#26684;，我们会将信息（<u>&#20540;</u>）存储在其中，然后按照指定的<u>键</u>来搜索并获取这些信息。键和&#20540;的具体意义取决于不同的应用。</span></p><br><p><span style="font-size:18px">符号表中可能会保存很多键和很多信息，因此实现一张高效的符号表也是一项很有挑战性的任务。</span></p><br><p><span style="font-size:18px">我们会用三种经典的数据类型来实现高效的符号表：<strong>二叉查找数</strong>、<strong>红黑树</strong>、<strong>散列表</strong>。</span></p><br><p><span style="font-size:18px"><br><br></span></p><br><p></p><br><h1><span style="font-family:Microsoft YaHei; font-size:32px">二分查找</span></h1><br><p></p><br><p style="font-size:18px"><br><br></p><br><p style="font-size:18px">我们使用有序数组存储键，经典的二分查找能够根据数组的索引大大减少每次查找所需的比较次数。</p><br><p style="font-size:18px">在查找时，我们先将被查找的键和子数组的中间键比较。如果被查找的键小于中间键，我们就在左子数组中继续查找，如果大于我们就在右子数组中继续查找，否则中间键就是我们要找的键。</p><br><p style="font-size:18px">&nbsp;</p><br><p style="font-size:18px">一般情况下二分查找都比顺序查找快的多，它也是众多实际应用程序的最佳选择。对于一个静态表（不允许插入）来说，将其在初始化时就排序是&#20540;得的。</p><br><p style="font-size:18px">&nbsp;</p><br><p style="font-size:18px">当然，二分查找也不适合很多应用。现代应用需要<u>同时</u>能够支持高效的查找和插入两种操作的符号表实现。也就是说，<u>我们需要在构造庞大的符号表的同时能够任意插入（也许还有删除）键&#20540;对，同时也要能够完成查找操作</u>。</p><br><p style="font-size:18px">&nbsp;</p><br><p style="font-size:18px">要支持高效的插入操作，我们&#20284;乎需要一种链式结构。当单链接的链表是无法使用二分查找的，因为二分查找的高效来自于能够快速通过索引取得任何子数组的中间元素。为了将二分查找的效率和链表的灵活性结合起来，我们需要更加复杂的数据结构。</p><br><p style="font-size:18px">能够同时拥有两者的就是<strong>二叉查找树</strong>。</p><br><p style="font-size:18px">&nbsp;</p><br><h1><span style="font-family:Microsoft YaHei; font-size:32px">二叉查找树</span></h1><br><p style="font-size:18px"><br><br></p><br><p style="font-size:18px">一颗二叉查找树（<strong>BST</strong>）是一颗二叉树，其中每个节点都含有一个可比较的键（以及相关联的&#20540;）且<u>每个结点的键都大于其左子树中的任意结点的键而小于右子树的任意结点的键</u>。</p><br><p style="font-size:18px">&nbsp;<img src="http://img.blog.csdn.net/20140517140928015?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWFuZ195dWxlaQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""></p><br><p style="font-size:18px"></p><br><p>一颗二叉查找树代表了一组键（及其相应的&#20540;）的集合，而同一个集合可以用多颗不同的二叉查找树表示。</p><br><p>如果我们将一颗二叉查找树的所有键<strong><u>投影</u></strong>到一条直线上，保证一个结点的左子树中的键出现在它的右边，右子树中的键出现在它的右边，那么我们一定可以得到一条有序的键列。</p><br><p>&nbsp;</p><br><img src="http://img.blog.csdn.net/20140517141025312?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWFuZ195dWxlaQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""><br><br><p style="font-size:18px"><br><br></p><br><p></p><br><p><strong><span style="font-size:24px">查找</span></strong></p><br><p style="font-size:18px"><br><br></p><br><p style="font-size:18px">在二叉查找树中查找一个键的递归算法：</p><br><p style="font-size:18px">如果树是空的，则查找未命中。如果被查找的键和根结点的键相等，查找命中。否则我们就在适当的子树中继续查找。如果被查找的键较小就选择左子树，较大就选择右子树。</p><br><p style="font-size:18px">在二叉查找树中，<u>随着我们不断向下查找，当前结点所表示的子树的大小也在减小</u>（理想情况下是减半）</p><br><p style="font-size:18px">&nbsp;</p><br><p><strong><span style="font-size:24px">插入</span></strong></p><br><p style="font-size:18px"><br><br></p><br><p style="font-size:18px">查找代码几乎和二分查找的一样简单，这种<strong><span style="color:red">简洁性</span></strong>是二叉查找树的重要特性之一。而二叉查找树的另一个更重要的特性就是<u>插入的实现难度和查找差不多</u>。</p><br><p style="font-size:18px">当查找一个不存在于树中的结点并结束于一条空链接时，我们需要做的就是将链接指向一个含有被查找的键的新结点。如果被查找的键小于根结点的键，我们会继续在左子树中插入该键，否则在右子树中插入该键。</p><br><p style="font-size:18px">&nbsp;</p><br><p><strong><span style="font-size:24px">分析</span></strong></p><br><p style="font-size:18px"><br><br></p><br><p style="font-size:18px">使用二叉查找树的算法的运行时间取决于<u>树的形状</u>，而树的形状又取决于键被插入的先后顺序。</p><br><p style="font-size:18px">在最好的情况下，一颗含有N个结点的树是完全平衡的，每条空链接和根结点的距离都为~lgN。在最坏的情况下，搜索路径上可能有N个结点。但在一般情况下树的形状和最好情况更接近。</p><br><span style="font-size:18px"><img src="http://img.blog.csdn.net/20140517141307031?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWFuZ195dWxlaQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""></span><br><br><p style="font-size:18px"><br><br></p><br><p style="font-size:18px"></p><br><p>我们假设键的插入顺序是随机的。对这个模型的分析而言，<u>二叉查找树和快速排序几乎就是“双胞胎”</u>。树的根结点就是快速排序中的第一个切分元素（左侧的键都比它小，右侧的键都比它大），而这对于所有的子树同样适用，这和快速排序中对于子数组的递归排序完全对应。</p><br><p>【在由N个随机键构造的二叉查找树中，查找命中平均所需的比较次数为~2lgN。 N越大这个公式越准确】</p><br><p>&nbsp;</p><br><h1>平衡查找树</h1><br><p><br><br></p><br><p>在一颗含有N个结点的树中，我们希望树高为~lgN，这样我们就能保证所有查找都能在~lgN此比较内结束，就和二分查找一样。不幸的是，在动态插入中保证树的完美平衡的代价太高了。我们放松对完美平衡的要求，使符号表API中所有操作均能够在对数时间内完成。</p><br><p>&nbsp;</p><br><h2><span style="color:red">2-3</span><span style="color:red">查找树</span></h2><br><p><br><br></p><br><p>为了保证查找树的平衡性，我们需要一些灵活性，因此在这里我们允许树中的一个结点保存多个键。</p><br><p><strong>2-结点</strong>：含有一个键(及&#20540;)和两条链接，左链接指向的2-3树中的键都小于该结点，右链接指向的2-3树中的键都大于该结点。</p><br><p><strong>3-结点</strong>：含有两个键(及&#20540;)和三条链接，左链接指向的2-3树中的键都小于该结点，中链接指向的2-3树中的键都位于该结点的两个键之间，右链接指向的2-3树中的键都大于该结点。</p><br><p>（2-3指的是2叉-3叉的意思）</p><br><img src="http://img.blog.csdn.net/20140517141525468?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWFuZ195dWxlaQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""><br><br><span style="font-size:18px"><img src="http://img.blog.csdn.net/20140517141558937?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWFuZ195dWxlaQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""></span><br><br><p><span style="font-size:18px"><br><br></span></p><br><p></p><br><p style="font-size:18px">一颗完美平衡的2-3查找树中的所有空链接到根结点的距离都是相同的。</p><br><p style="font-size:18px">&nbsp;</p><br><p><strong><span style="font-size:24px">查找</span></strong></p><br><p style="font-size:18px"><br><br></p><br><p style="font-size:18px">要判断一个键是否在树中，我们先将它和根结点中的键比较。如果它和其中的任何一个相等，查找命中。否则我们就根据比较的结果找到指向相应区间的链接，并在其指向的子树中递归地继续查找。如果这是个空链接，查找未命中。</p><br><p style="font-size:18px">&nbsp;</p><br><p><strong><span style="color:red"><span style="font-size:24px">插入</span></span></strong></p><br><p style="font-size:18px"><br><br></p><br><p style="font-size:18px">要在2-3树中插入一个新结点，我们可以和二叉查找树一样先进行一次未命中的查找，然后把新结点挂在树的底部。但这样的话树无法保持完美平衡性。我们使用2-3树的主要原因就在于它能够在插入之后继续保持平衡。</p><br><p style="font-size:18px">如果未命中的查找结束于一个2-结点，我们只要把这个2-结点替换为一个3-结点，将要插入的键保存在其中即可。<u>如果未命中的查找结束于一个3-结点</u>，事情就要麻烦一些。</p><br><p style="font-size:18px">&nbsp;</p><br><p><span style="font-size:24px"><strong>热身</strong>：</span></p><br><p style="font-size:18px"><br><br></p><br><p style="font-size:18px">先考虑最简单的例子：只有一个3-结点的树，向其插入一个新键。</p><br><p style="font-size:18px">这棵树唯一的结点中已经没有可插入的空间了。我们又不能把新键插在其空结点上（破坏了完美平衡）。为了将新键插入，我们先临时将新键存入该结点中，使之成为一个4-结点。创建一个4-结点很方便，因为很容易将它转换为一颗由3个2-结点组成的2-3树（如图所示），这棵树既是一颗含有3个结点的二叉查找树，同时也是一颗完美平衡的2-3树，其中所有空链接到根结点的距离都相等。</p><br><span style="font-size:18px"><img src="http://img.blog.csdn.net/20140517141709609?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWFuZ195dWxlaQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""></span><br><br><p><span style="font-size:18px"></span></p><br><p>&nbsp;</p><br><p><strong>向一个父结点为2-结点的3-结点中插入新键</strong></p><br><p>假设未命中的查找结束于一个3-结点，而它的父结点是一个2-结点。在这种情况下我们需要在维持树的完美平衡的前提下为新键腾出空间。</p><br><p>我们先像刚才一样构造一个临时的4-结点并将其分解，但此时我们不会为<u>中键</u>创建一个新结点，而是<u>将其移动至原来的父结点中</u>。（如图所示）</p><br><img src="http://img.blog.csdn.net/20140517141807656?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWFuZ195dWxlaQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""><br><br><p><span style="font-size:18px"></span></p><br><p>这次转换也并不影响（完美平衡的）2-3树的主要性质。树仍然是有序的，因为中键被移动到父结点中去了，树仍然是完美平衡的，插入后所有的空链接到根结点的距离仍然相同。</p><br><p>&nbsp;</p><br><p><strong>向一个父结点为3-结点的3-结点中插入新键</strong></p><br><p>假设未命中的查找结束于一个3-结点，而它的父结点是一个3-结点。</p><br><p><u>我们再次和刚才一样构造一个临时的4-结点并分解它，然后将它的中键插入它的父结点中</u>。但父结点也是一个3-结点，因此我们再用这个中键构造一个新的临时4-结点，然后在这个结点上进行相同的变换，即分解这个父结点并将它的中键插入到它的父结点中去。</p><br><p>我们就这样<u>一直向上不断分解临时的4-结点并将中键插入更高的父结点</u>，直至遇到一个2-结点并将它替换为一个不需要继续分解的3-结点，或者是到达3-结点的根。</p><br><img src="http://img.blog.csdn.net/20140517141942296?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWFuZ195dWxlaQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""><br><br><p></p><br><p><span style="font-size:24px"><strong>总结</strong>：</span></p><br><p style="font-size:18px"><strong>先找插入结点，若结点有空(即2-结点)，则直接插入。如结点没空(即3-结点)，则插入使其临时容纳这个元素，然后分裂此结点，把中间元素移到其父结点中。对父结点亦如此处理。</strong>（中键一直往上移，直到找到空位，在此过程中没有空位就先搞个临时的，再分裂。）</p><br><p style="font-size:18px">&nbsp;</p><br><p style="font-size:18px">&nbsp;</p><br><p style="font-size:18px">★2-3树插入算法的<span style="color:red">根本在于</span>这些变换都是局部的：除了相关的结点和链接之外不必修改或者检查树的其他部分。每次变换中，变更的链接数量不会超过一个很小的常数。所有局部变换都不会影响整棵树的有序性和平衡性。</p><br><p style="font-size:18px">&nbsp;</p><br><p style="font-size:18px"><strong>{你确定理解了2-3树的插入过程了吗？ 如果你理解了，那么你也就基本理解了红黑树的插入}</strong></p><br><p style="font-size:18px">&nbsp;</p><br><p><strong><span style="font-size:24px">构造</span></strong></p><br><p style="font-size:18px"><br><br></p><br><p style="font-size:18px">和标准的二叉查找树由上向下生长不同，<span style="color:red">2-3</span><span style="color:red">树的生长是由下向上的</span>。</p><br><span style="font-size:18px"><img src="http://img.blog.csdn.net/20140517142043906?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWFuZ195dWxlaQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""></span><br><br><p><span style="font-size:18px"><br><br></span></p><br><p></p><br><p><strong><span style="font-size:24px">优点</span></strong></p><br><p style="font-size:18px"><br><br></p><br><p style="font-size:18px">2-3树在最坏情况下仍有较好的性能。每个操作中处理每个结点的时间都不会超过一个很小的常数，且这两个操作都只会访问一条路径上的结点，所以<u>任何查找或者插入的成本都肯定不会超过对数级别</u>。</p><br><p style="font-size:18px">完美平衡的2-3树要平展的多。例如，含有10亿个结点的一颗2-3树的高度仅在19到30之间。我们最多只需要访问30个结点就能在10亿个键中进行任意查找和插入操作。</p><br><p style="font-size:18px">&nbsp;</p><br><p><strong><span style="font-size:24px">缺点</span></strong></p><br><p style="font-size:18px"><br><br></p><br><p style="font-size:18px">我们需要维护两种不同类型的结点，查找和插入操作的实现需要大量的代码，而且它们所产生的额外开销可能会使算法比标准的二叉查找树更慢。</p><br><p style="font-size:18px">平衡一棵树的初衷是为了消除最坏情况，但我们希望这种保障所需的代码能够越少越好。</p><br><p style="font-size:18px">&nbsp;</p><br><p style="font-size:18px"><br><br></p><br><h2><span style="font-family:Microsoft YaHei; font-size:32px">红黑二叉查找树</span></h2><br><p style="font-size:18px"><br><br></p><br><p style="font-size:18px">【前言：本文所讨论的红黑树之目的在于使读者能更简单清晰地了解红黑树的构造，使读者能在纸上清晰快速地画出红黑树，而不是为了写出红黑树的实现代码。</p><br><p style="font-size:18px">若是要在代码级理解红黑树，则势必需要记住其复杂的插入和旋转的各种情况，我认为那只有助于增加大家对红黑树的恐惧，实际面试和工作中几乎不会遇到需要自己动手实现红黑树的情况(很多语言的标准库中就有红黑树的实现)。&nbsp; 若对于红黑树的C代码实现有兴趣的，可移步至July的博客。】</p><br><p style="font-size:18px">&nbsp;</p><br><p style="font-size:18px">（<strong>理解红黑树一句话就够了</strong>：<span style="color:red">红黑树就是用红链接表示3-</span>结点的2-3树。那么红黑树的插入、构造就可转化为2-3树的问题，即：<u>在脑中用2-3树来操作，得到结果，再把结果中的3-结点转化为红链接即可</u>。而2-3树的插入，前面已有详细图文，实际也很简单：有空则插，没空硬插，再分裂。&nbsp; 这样，我们就不用记那么复杂且让人头疼的红黑树插入旋转的各种情况了。只要清楚2-3树的插入方式即可。&nbsp;<br> 下面图文详细演示。）</p><br><p style="font-size:18px">&nbsp;</p><br><p style="font-size:18px"><span style="font-family:Microsoft YaHei"><strong>红黑树的本质</strong>：</span></p><br><p style="font-size:18px">红黑树是对2-3查找树的改进，它能用一种统一的方式完成所有变换。</p><br><p style="font-size:18px">&nbsp;</p><br><p><span style="font-size:24px"><span style="color:red">替换</span><span style="color:red">3-</span><span style="color:red">结点</span></span></p><br><p style="font-size:18px"><br><br></p><br><p style="font-size:18px">★红黑树背后的思想是用标准的二叉查找树（完全由2-结点构成）和一些额外的信息（替换3-结点）来表示2-3树。</p><br><p style="font-size:18px">我们将树中的链接分为两种类型：<span style="color:red">红链接</span>将两个2-结点连接起来构成一个3-结点，黑链接则是2-3树中的普通链接。确切地说，<span style="color:red">我们将</span><span style="color:red">3-</span><span style="color:red">结点表示为由一条<strong><u>左斜</u></strong>的红色链接相连的两个</span><span style="color:red">2-</span><span style="color:red">结点</span>。</p><br><p style="font-size:18px">这种表示法的一个优点是，我们无需修改就可以直接使用标准二叉查找树的get()方法。对于任意的2-3树，只要对结点进行转换，我们都可以立即派生出一颗对应的二叉查找树。我们将用这种方式表示2-3树的二叉查找树称为红黑树。</p><br><span style="font-size:18px"><img src="http://img.blog.csdn.net/20140517142303390?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWFuZ195dWxlaQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""></span><br><br><p><span style="font-size:18px"></span></p><br><p><strong>红黑树的另一种定义</strong>是满足下列条件的二叉查找树：</p><br><p>⑴红链接均为左链接。</p><br><p>⑵没有任何一个结点同时和两条红链接相连。</p><br><p>⑶该树是完美黑色平衡的，即任意空链接到根结点的路径上的黑链接数量相同。</p><br><p>&nbsp;</p><br><p>如果我们<span style="color:red">将一颗红黑树中的红链接画平</span>，那么所有的空链接到根结点的距离都将是相同的。如果我们将由红链接相连的结点合并，得到的就是一颗2-3树。</p><br><p>相反，如果将一颗2-3树中的3-结点画作由红色左链接相连的两个2-结点，那么不会存在能够和两条红链接相连的结点，且树必然是完美平衡的。</p><br><img src="http://img.blog.csdn.net/20140517142543921?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWFuZ195dWxlaQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""><br><br><p></p><br><p style="font-size:18px">&nbsp;</p><br><p style="font-size:18px">无论我们用何种方式去定义它们，<span style="color:red">红黑树都既是二叉查找树，也是</span><span style="color:red">2-3</span><span style="color:red">树</span>。</p><br><p style="font-size:18px">（2-3树的深度很小，平衡性好，效率高，但是其有两种不同的结点，实际代码实现比较复杂。而红黑树用红链接表示2-3树中另类的3-结点，统一了树中的结点类型，使代码实现简单化，又不破坏其高效性。）</p><br><p style="font-size:18px">&nbsp;</p><br><p><span style="font-size:24px"><strong>颜色表示</strong>：</span></p><br><p style="font-size:18px">因为每个结点都只会有一条指向自己的链接（从它的父结点指向它），我们将链接的颜色保存在表示结点的Node数据类型的布尔变量color中（若指向它的链接是红色的，那么该变量为true，黑色则为false）。</p><br><p style="font-size:18px">当我们提到一个结点颜色时，我们指的是指向该结点的链接的颜色。</p><br><p style="font-size:18px">&nbsp;</p><br><p><strong><span style="font-size:24px">旋转</span></strong></p><br><p style="font-size:18px"><br><br></p><br><p style="font-size:18px">在我们实现的某些操作中可能会出现红色右链接或者两条连续的红链接，但在操作完成前这些情况都会被小心地旋转并修复。</p><br><p style="font-size:18px">（我们在这里不讨论旋转的几种情况，把红黑树看做2-3树，自然可以得到正确的旋转后结果）</p><br><p style="font-size:18px">&nbsp;</p><br><p><strong><span style="color:red"><span style="font-size:24px">插入</span></span></strong></p><br><p style="font-size:18px"><br><br></p><br><p style="font-size:18px">在插入时我们可以使用旋转操作帮助我们保证2-3树和红黑树之间的一一对应关系，因为旋转操作可以保持红黑树的两个重要性质：<span style="color:red">有序性</span>和<span style="color:red">完美平衡性</span>。</p><br><p style="font-size:18px">&nbsp;</p><br><p><span style="font-size:24px"><strong>热身</strong>：</span></p><br><p style="font-size:18px"><strong><br><br></strong></p><br><p style="font-size:18px"><strong>向2-结点中插入新键</strong></p><br><p style="font-size:18px">（向红黑树中插入操作时，想想2-3树的插入操作。红黑树与2-3树在本质上是相同的，只是它们对3结点的表示不同。</p><br><p style="font-size:18px">向一个只含有一个2-结点的2-3树中插入新键后，2-结点变为3-结点。我们再把这个3-结点转化为红结点即可）</p><br><span style="font-size:18px"><img src="http://img.blog.csdn.net/20140517143549781?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWFuZ195dWxlaQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""></span><br><br><p><span style="font-size:18px"></span></p><br><p><strong>向一颗双键树（即一个3-结点）中插入新键</strong></p><br><p>（向红黑树中插入操作时，想想2-3树的插入操作。你把红黑树当做2-3树来处理插入，一切都变得简单了）</p><br><p>（向2-3树中的一个3-结点插入新键，这个3结点临时成为4-结点，然后分裂成3个2结点）</p><br><img src="http://img.blog.csdn.net/20140517143641906?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWFuZ195dWxlaQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""><br><br><p><span style="font-size:18px"><br><br></span></p><br><p></p><br><p><strong><span style="font-size:24px">★一颗红黑树的构造全过程</span></strong></p><br><span style="font-size:18px"><img src="http://img.blog.csdn.net/20140517143739453?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQveWFuZ195dWxlaQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt=""></span><br><br><p><span style="font-size:18px"></span></p><br><h2>平衡二叉树（AVL树）</h2><br><p></p><br><p><span style="color:red"><br><br></span></p><br><p><span style="color:red">定义</span>：平衡二叉树(Balance Binary Tree)又称AVL树。它或者是一颗空树，或者是具有下列性质的二叉树：它的左子树和右子树都是平衡二叉树，且左子树和右子树的深度之差的绝对&#20540;不超过1。</p><br><p>若将二叉树上结点的平衡因子BF(BalanceFactor)定义为该结点的左子树深度减去它的右子树深度，则<strong>平衡因子的绝对&#20540;大于1</strong>。</p><br><p>&nbsp;</p><br><p>其旋转操作 用2-3树的分裂来类比想象。</p><br><br><br><p><span style="font-size:18px"><br><br></span></p><br><p><span style="font-size:18px"><br><br></span></p><br><p><span style="font-size:18px"><a target="_blank" href="http://blog.csdn.net/yang_yulei/article/details/26104921">下半部分——散列表、B树、B&#43;树、Trie树。</a></span></p><br><p><span style="font-size:18px"><br><br></span></p><br><p><span style="font-size:18px"><br><br></span></p><br><p><br><br></p><br><p><br><br></p><br><br></div>
-
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/06/26/truncation-01/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="XueCheng">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="XueCheng Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/06/26/truncation-01/" itemprop="url">转载:分布式事务保持最终一致性</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-06-26T15:58:28+08:00">
-                2017-06-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <div id="cnblogs_post_body"><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 目前的应用系统，不管是企业级应用还是互联网应用，<strong>最终数据的一致性</strong>是每个应用系统都要面临的问题，随着分布式的逐渐普及，数据一致性更加艰难，但是也很难有银弹的解决方案，也并不是<strong>引入特定的中间件或者特定的开源框架</strong>能够解决的，更多的还是看<strong>业务场景</strong>，根据场景来给出解决方案。根据笔者最近几年的了解，总结了几个点，更多的应用系统在编码的时候，更加关注数据的一致性，这样系统才是健壮的。</p><br><p>一、基础理论</p><br><p>&nbsp;&nbsp; 目前关于事务的几大理论包括：<strong>ACID事务特性，CAP分布式理论，以及BASE</strong>等。<span style="color: #ff0000;"><strong>ACID在数据库事务中体现</strong></span>，<strong><span style="color: #ff0000;">CAP和BASE则是分布式事务的理论</span></strong>，结合业务系统，例如订单管理，例如仓储管理等，可以借鉴这些理论，从而解决问题。</p><br><p><strong>1、ACID 特性</strong></p><br><p><strong>2、CAP特性</strong></p><br><ul><br><li>C（一致性）一致性是指数据的原子性，在经典的数据库中通过事务来保障，事务完成时，无论成功或回滚，数据都会处于一致的状态，在分布式环境下，一致性是指多个节点数据是否一致；</li><br><li>A（可用性）服务一直保持可用的状态，当用户发出一个请求，服务能在一定的时间内返回结果；</li><br><li>P（分区容忍性）在分布式应用中，可能因为一些分布式的原因导致系统无法运转，好的分区容忍性，使应用虽然是一个分布式系统，但是好像一个可以正常运转的整体</li><br></ul><br><p><strong>3、BASE特性</strong></p><br><ul><br><li>BA: Basic Availability 基本业务可用性；</li><br><li>S: Soft state 柔性状态；</li><br><li>E: Eventual consistency 最终一致性；</li><br></ul><br><p>二、最终一致性的常用做法</p><br><p><img style="margin-right: auto; margin-left: auto; display: block;" src="http://images2015.cnblogs.com/blog/37237/201603/37237-20160329211439738-299763280.png" alt=""></p><br><p>1、<span style="font-size: 14px;">单数据库事务</span></p><br><p><span style="font-size: 14px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 如果应用系统是单一的数据库，那么这个很好保证，利用数据库的事务特性来满足事务的一致性，这时候的一致性是强一致性的。对于java应用系统来讲，很少直接通过事务的start和commit以及rollback来硬编码，大多通过spring的事务模板或者声明式事务来保证；</span></p><br><p><span style="font-size: 14px;">2、多数据库事务</span></p><br><p><span style="font-size: 14px;">&nbsp;&nbsp;&nbsp;&nbsp; 针对多数据库事务可以根据二阶段提交协议，采用spring 3.0 + Atomikos + JTA进行支持； </span></p><br><p><span style="font-size: 14px;">3、基于<strong>事务型消息队列</strong>的最终一致性</span></p><br><p><span style="font-size: 14px;">&nbsp;&nbsp;&nbsp;&nbsp; 借助消息队列，在处理业务逻辑的地方发送消息，业务逻辑处理成功后，提交消息，确保消息是发送成功的，之后消息队列投递来进行处理，如果成功，则结束，如果没有成功，则重试，直到成功，不过仅仅适用业务逻辑中，第一阶段成功，第二阶段必须成功的场景。对应上图中的C流程。</span></p><br><p><span style="font-size: 14px;">4、基于<strong>消息队列+定时补偿机制</strong>的最终一致性</span></p><br><p><span style="font-size: 14px;">&nbsp;&nbsp;&nbsp;&nbsp; 前面部分和上面基于事务型消息的队列，不同的是，第二阶段重试的地方，不再是消息中间件自身的重试逻辑了，而是单独的补偿任务机制。其实在大多数的逻辑中，第二阶段失败的概率比较小，所以单独独立补偿任务表出来，可以更加清晰，能够比较明确的直到当前多少任务是失败的。对应上图的E流程。</span></p><br><p><span style="font-size: 14px;">5、异步回调机制的引入</span></p><br><p><span style="font-size: 14px;">&nbsp;&nbsp;&nbsp;&nbsp; A应用调用B，在同步调用的返回结果中，B返回成功给到A，一般情况下，这时候就结束了，其实在99.99%的情况是没问题的，但是有时候为了确保100%，记住最起码在系统设计中100%，这时候B系统再回调A一下，告诉A，你调用我的逻辑，确实成功了。其实这个逻辑，非常类似TCP协议中的三次握手。上图中的B流程。</span></p><br><p><span style="font-size: 14px;">6、类似double check机制的确认机制</span></p><br><p><span style="font-size: 14px;">&nbsp;&nbsp;&nbsp;&nbsp;还是上图中异步回调的过程，A在同步调用B，B返回成功了。这次调用结束了，但是A为了确保，在过一段时间，这个时间可以是几秒，也可以是每天定时处理，再调用B一次，查询一下之前的那次调用是否成功。例如A调用B更新订单状态，这时候成功了，延迟几秒后，A查询B，确认一下状态是否是自己刚刚期望的。上图中的D流程。</span></p><br><p><span style="font-size: 14px;">三、分布式事务的缺点</span></p><br><p><span style="font-size: 14px;">1、二阶段提交协议缺点</span></p><br><p><span style="font-size: 14px;">&nbsp;&nbsp;&nbsp; 两阶段提交涉及到多个节点的网络通信,通信时间如果过长,事务的相对时间也就会过长,那么锁定资源的时间也就长了.在高并发的服务中,就会存在严重的性能瓶劲</span></p><br><p>&nbsp;2、消息队列</p><br><p>&nbsp;&nbsp; 在高并发的环境中，我们一般会采用消息队列来避免分布式事务的执行。</p><br><p>&nbsp;&nbsp; 在使用消息队列时，我们需要做到可靠凭证的保存（分布式事务的消息），有如下几种方式：</p><br><p>&nbsp;&nbsp; 以支付宝和余额宝为例进行说明.</p><br><p>&nbsp;&nbsp; 支付宝完成扣钱的动作时,记录消息数据,将消息数据和业务数据存在同一个数据库实例中.</p><br><div class="cnblogs_code"><br><pre><span style="color: #000000;">Begin Transaction<br>  update A set amount</span>=amount-1000 where uid=100<span style="color: #000000;">;<br>  insert into message(uid,amount,status) values (</span>1,1000,1<span style="color: #000000;">)<br>End Transaction<br>Commit;</span></pre><br></div><br><p>将支付宝完成扣钱的消息及时发送给余额宝，余额宝完成处理后返回成功消息，支付宝收到消息后，消除消息表中对应的消息记录，即完成本次扣钱操作.</p><br><p><img style="margin-right: auto; margin-left: auto; display: block;" src="http://images2015.cnblogs.com/blog/37237/201604/37237-20160407223903047-1106443422.png" alt=""></p><br><p><span style="font-family: &lsquo;Times New Roman&lsquo;; font-size: 14px;">传统方式是，我做完了，发你消息。解决一致性的方案的意思就是，我先发你消息，我做完了再跟你确认我做完了。这是改进后的有事务的消息中间件。</span></p><br><p><span style="font-family: &lsquo;Times New Roman&lsquo;; font-size: 14px;">参见：<a href="http://coolshell.cn/articles/10910.html" target="_blank" rel="external">http://coolshell.cn/articles/10910.html</a></span></p></div><div id="MySignature"></div><br><div class="clear"></div><br><div id="blog_post_info_block"><br><div id="BlogPostCategory"></div><br><div id="EntryTag"></div><br><div id="blog_post_info"><br></div><br><div class="clear"></div><br><div id="post_next_prev"></div><br></div>
 
 
           
@@ -1118,8 +1118,8 @@ http://www.CodeHighlighter.com/<br />
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">59</span>
-                <span class="site-state-item-name">posts</span>
+                <span class="site-state-item-count">60</span>
+                <span class="site-state-item-name">Artikel</span>
               </a>
             </div>
           
@@ -1173,7 +1173,7 @@ http://www.CodeHighlighter.com/<br />
 
 
 <div class="powered-by">
-  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
 </div>
 
 <div class="theme-info">
