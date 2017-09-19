@@ -200,7 +200,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
-            Startseite
+            Home
           </a>
         </li>
       
@@ -210,7 +210,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
-            Archiv
+            Archives
           </a>
         </li>
       
@@ -253,6 +253,119 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/05/12/class-01/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="XueCheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XueCheng Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/05/12/class-01/" itemprop="url">转载:Java类加载机制</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-12T16:02:45+08:00">
+                2017-05-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <div id="tony_body"><br><h2>一、Java类加载机制</h2><br></div><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">1．概述</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Class文件由类装载器装载后，在JVM中将形成一份描述Class结构的元信息对象，通过该元信息对象可以获知Class的结构信息：如构造函数，属性和方法等，Java允许用户借由这个Class相关的元信息对象间接调用Class对象的功能。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;虚拟机把描述类的数据从class文件加载到内存，并对数据进行校验，转换解析和初始化，最终形成可以被虚拟机直接使用的Java类型，这就是虚拟机的类加载机制。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">2．工作机制</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;类装载器就是寻找类的字节码文件，并构造出类在JVM内部表示的对象组件。在Java中，类装载器把一个类装入JVM中，要经过以下步骤：</span></p><br><p class="p0" style="margin-left: 60px;"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(1)&nbsp;装载：查找和导入Class文件；</span></p><br><p class="p0" style="margin-left: 60px;"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(2)&nbsp;链接：把类的二进制数据合并到JRE中；</span></p><br><p class="p0" style="margin-left: 60px;"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(a)校验：检查载入Class文件数据的正确性；</span></p><br><p class="p0" style="margin-left: 60px;"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(b)准备：给类的静态变量分配存储空间；</span></p><br><p class="p0" style="margin-left: 60px;"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(c)解析：将符号引用转成直接引用；</span></p><br><p class="p0" style="margin-left: 60px;"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(3)&nbsp;初始化：对类的静态变量，静态代码块执行初始化操作</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;"><img style="display: block; margin-left: auto; margin-right: auto;" src="http://images.cnitblog.com/blog/400827/201409/172116264092898.png" alt=""></span></p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp; &nbsp; &nbsp; Java程序可以动态扩展是由运行期动态加载和动态链接实现的；比如：如果编写一个使用接口的应用程序，可以等到运行时再指定其实际的实现(多态)，解析过程有时候还可以在初始化之后执行；比如：动态绑定(多态)；</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="background-color: #ff0000;">【类初始化】</span>&nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(1)&nbsp;遇到new、getstatic、putstatic或invokestatic这4条字节码指令时，如果类没有进行过初始化，则需要先触发其初始化。生成这4条指令的最常见的Java代码场景是：使用new关键字实例化对象的时候，读取或设置一个类的静态字段（被final修饰、已在编译期把结果放入常量池的静态字段除外）的时候，以及调用一个类的静态方法的时候。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(2)&nbsp;使用java.lang.reflect包的方法对类进行反射调用的时候，如果类没有进行过初始化，则需要先触发其初始化。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(3)&nbsp;当初始化一个类的时候，如果发现其父类还没有进行过初始化，则需要先触发其父类的初始化。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp; &nbsp; &nbsp; (4)当虚拟机启动时，用户需要指定一个要执行的主类（包含main()方法的那个类），虚拟机会先初始化这个主类。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">只有上述四种情况会触发初始化，也称为对一个类进行主动引用，除此以外，所有其他方式都不会触发初始化，称为被动引用</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">代码清单1</span></p><br><p class="p0" style="margin-left: 60px;"><span style="font-family: 'courier new', courier; font-size: 16px;"><img style="float: left;" src="http://images.cnitblog.com/blog/400827/201409/172118431435624.png" alt=""></span></p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">上述代码运行后，只会输出【—SuperClass&nbsp;init】,&nbsp;而不会输出【SubClass&nbsp;init】,<span style="background-color: #33cccc;">对于静态字段，只有直接定义这个字段的类才会被初始化</span>,因此，通过子类来调用父类的静态字段，只会触发父类的初始化,但是这是要看不同的虚拟机的不同实现。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">代码清单2</span></p><br><p class="p0" style="margin-left: 60px;"><span style="font-family: 'courier new', courier; font-size: 16px;"><img style="float: left;" src="http://images.cnitblog.com/blog/400827/201409/172122331434025.png" alt=""></span></p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">此处不会引起SuperClass的初始化，但是却触发了【[Ltest.SuperClass】的初始化，通过arr.toString()可以看出，对于用户代码来说，这不是一个合法的类名称，它是由虚拟机自动生成的，直接继承于Object的子类，创建动作由字节码指令newarray触发,此时数组越界检查也会伴随数组对象的所有调用过程，越界检查并不是封装在数组元素访问的类中，而是封装在数组访问的xaload,xastore字节码指令中.</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">代码清单3</span></p><br><p class="p0" style="margin-left: 60px;"><span style="font-family: 'courier new', courier; font-size: 16px;"><img style="float: left;" src="http://images.cnitblog.com/blog/400827/201409/172123338006093.png" alt=""></span></p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">对常量ConstClass.value&nbsp;的引用实际都被转化为NotInitialization类对自身常量池的引用，这两个类被编译成class后不存在任何联系。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="background-color: #ff0000;">【装载】</span></span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp; &nbsp; 在装载阶段，虚拟机需要完成以下3件事情</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(1)&nbsp;通过一个类的全限定名来获取定义此类的二进制字节流</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(2)&nbsp;将这个字节流所代表的静态存储结构转化为方法区的运行时数据结构</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(3)&nbsp;在Java堆中生成一个代表这个类的java.lang.Class对象，作为方法区这些数据的访问入口。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;虚拟机规范中并没有准确说明二进制字节流应该从哪里获取以及怎样获取,这里可以通过定义自己的类加载器去控制字节流的获取方式。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<span style="background-color: #ff0000;">【验证】</span></span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;虚拟机如果不检查输入的字节流，对其完全信任的话，很可能会因为载入了有害的字节流而导致系统奔溃。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<span style="background-color: #ff0000;">【准备】</span></span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp; &nbsp; 准备阶段是正式为类变量分配并设置类变量初始值的阶段，这些内存都将在方法区中进行分配,需要说明的是：</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">这时候进行内存分配的仅包括类变量(被static修饰的变量),而不包括实例变量,实例变量将会在对象实例化时随着对象一起分配在Java堆中;这里所说的初始值&ldquo;通常情况&rdquo;是数据类型的零值，假如:</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">public&nbsp;static&nbsp;int&nbsp;value&nbsp;=&nbsp;123;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">value在准备阶段过后的初始值为0而不是123,而把value赋值的putstatic指令将在初始化阶段才会被执行</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;</span>&nbsp;</p><br><div id="tony_body"><br><h2>二、类加载器与双亲委派模型</h2><br></div><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="background-color: #c0c0c0;">类加载器</span></span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(1)&nbsp;Bootstrap&nbsp;ClassLoader&nbsp;:&nbsp;将存放于&lt;JAVA_HOME&gt;\lib目录中的，或者被-Xbootclasspath参数所指定的路径中的，并且是虚拟机识别的（仅按照文件名识别，如&nbsp;rt.jar&nbsp;名字不符合的类库即使放在lib目录中也不会被加载）类库加载到虚拟机内存中。启动类加载器无法被Java程序直接引用</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(2)&nbsp;Extension&nbsp;ClassLoader&nbsp;:&nbsp;将&lt;JAVA_HOME&gt;\lib\ext目录下的，或者被java.ext.dirs系统变量所指定的路径中的所有类库加载。开发者可以直接使用扩展类加载器。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(3)&nbsp;Application&nbsp;ClassLoader&nbsp;:&nbsp;负责加载用户类路径(ClassPath)上所指定的类库,开发者可直接使用。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></p><br><p class="p0" style="text-align: center;"><span style="font-family: 'courier new', courier; font-size: 16px;">双亲委派模型</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;"><img style="display: block; margin-left: auto; margin-right: auto;" src="http://images.cnitblog.com/blog/400827/201409/172124489257909.png" alt=""></span></p><br><p class="p0">&nbsp;</p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">工作过程：如果一个类加载器接收到了类加载的请求，它首先把这个请求委托给他的父类加载器去完成，每个层次的类加载器都是如此，因此所有的加载请求都应该传送到顶层的启动类加载器中，只有当父加载器反馈自己无法完成这个加载请求（它在搜索范围中没有找到所需的类）时，子加载器才会尝试自己去加载。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;好处：java类随着它的类加载器一起具备了一种带有优先级的层次关系。例如类java.lang.Object，它存放在rt.jar中，无论哪个类加载器要加载这个类，最终都会委派给启动类加载器进行加载，因此Object类在程序的各种类加载器环境中都是同一个类。相反，如果用户自己写了一个名为java.lang.Object的类，并放在程序的Classpath中，那系统中将会出现多个不同的Object类，java类型体系中最基础的行为也无法保证，应用程序也会变得一片混乱。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;java.lang.ClassLoader中几个最重要的方法:</span></p><br><div class="cnblogs_code"><br><pre><span style="font-family: 'courier new', courier; font-size: 16px;"><span style="color: #008000;">//</span><span style="color: #008000;">加载指定名称（包括包名）的二进制类型，供用户调用的接口</span><br><span style="color: #0000ff;">public</span> Class&lt;?&gt;<span style="color: #000000;"> loadClass(String name);<br></span><span style="color: #008000;">//</span><span style="color: #008000;">加载指定名称（包括包名）的二进制类型，同时指定是否解析（但是，这里的resolve参数不一定真正能达到解析的效果），供继承用</span><br><span style="color: #0000ff;">protected</span> synchronized Class&lt;?&gt;<span style="color: #000000;"> loadClass(String name, boolean resolve);<br></span><span style="color: #0000ff;">protected</span> Class&lt;?&gt;<span style="color: #000000;"> findClass(String name)<br></span><span style="color: #008000;">//</span><span style="color: #008000;">定义类型，一般在findClass方法中读取到对应字节码后调用，可以看出不可继承（说明：JVM已经实现了对应的具体功能，解析对应的字节码，产生对应的内部数据结构放置到方法区，所以无需覆写，直接调用就可以了）</span><br><span style="color: #0000ff;">protected</span> final Class&lt;?&gt; defineClass(String name, <span style="color: #0000ff;">byte</span>[] b, <span style="color: #0000ff;">int</span> off, <span style="color: #0000ff;">int</span> len) throws ClassFormatError{}</span></pre><br></div><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">如下是实现双亲委派模型的主要代码：</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;"><img style="float: left;" src="http://images.cnitblog.com/blog/400827/201409/172127007684697.png" alt=""></span></p><br><p>&nbsp;</p><br><div id="tony_body"><br><p>&nbsp;</p><br><p>&nbsp;</p><br><p>&nbsp;</p><br><p>&nbsp;</p><br><p>&nbsp;</p><br><p>&nbsp;</p><br><p>&nbsp;</p><br><p>&nbsp;</p><br><p>&nbsp;</p><br><p>&nbsp;</p><br><h2>三、反射</h2><br></div><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Reflection机制允许程序在正在执行的过程中，利用Reflection&nbsp;APIs取得任何已知名称的类的内部信息，包括：package、&nbsp;type&nbsp;parameters、&nbsp;superclass、&nbsp;implemented&nbsp;interfaces、&nbsp;inner&nbsp;classes、&nbsp;outer&nbsp;classes、&nbsp;fields、&nbsp;constructors、&nbsp;methods、&nbsp;modifiers等，并可以在执行的过程中，动态生成instances、变更fields内容或唤起methods。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1、获取构造方法</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">Class类提供了四个public方法，用于获取某个类的构造方法。</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">Constructor&nbsp;getConstructor(Class[]&nbsp;params) &nbsp; &nbsp;&nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">根据构造函数的参数，返回一个具体的具有public属性的构造函数</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">　　　　Constructor&nbsp;getConstructors() &nbsp; &nbsp;&nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">返回所有具有public属性的构造函数数组</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">　　　　Constructor&nbsp;getDeclaredConstructor(Class[]&nbsp;params) &nbsp; &nbsp;&nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">根据构造函数的参数，返回一个具体的构造函数（不分public和非public属性）</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">　　　　Constructor&nbsp;getDeclaredConstructors() &nbsp; &nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">返回该类中所有的构造函数数组（不分public和非public属性）</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;"><img style="float: left;" src="http://images.cnitblog.com/blog/400827/201409/172128068463077.png" alt=""></span></p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">2、获取类的成员方法</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">与获取构造方法的方式相同，存在四种获取成员方法的方式。</span><span style="font-family: 'courier new', courier; font-size: 16px;">　</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">Method&nbsp;getMethod(String&nbsp;name,&nbsp;Class[]&nbsp;params) &nbsp; &nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">根据方法名和参数，返回一个具体的具有public属性的方法</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">　　　　Method[]&nbsp;getMethods() &nbsp; &nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">返回所有具有public属性的方法数组</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">　　　　Method&nbsp;getDeclaredMethod(String&nbsp;name,&nbsp;Class[]&nbsp;params)&nbsp;&nbsp;&nbsp;&nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">根据方法名和参数，返回一个具体的方法（不分public和非public属性）</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">　　　　Method[]&nbsp;getDeclaredMethods() &nbsp; &nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">返回该类中的所有的方法数组（不分public和非public属性）</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">　　</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;"><img style="float: left;" src="http://images.cnitblog.com/blog/400827/201409/172128597681209.png" alt=""></span></p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0">&nbsp;</p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">3、获取类的成员变量（成员属性）</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">存在四种获取成员属性的方法</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">　　　　Field&nbsp;getField(String&nbsp;name) &nbsp; &nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">根据变量名，返回一个具体的具有public属性的成员变量</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">　　　　Field[]&nbsp;getFields() &nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">返回具有public属性的成员变量的数组</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">　　　　Field&nbsp;getDeclaredField(String&nbsp;name) &nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">根据变量名，返回一个成员变量（不分public和非public属性）</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">　　　　Field[]&nbsp;getDelcaredFields() &nbsp; &nbsp;</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">返回所有成员变量组成的数组（不分public和非public属性）</span></p><br><p class="p0"><span style="font-family: 'courier new', courier; font-size: 16px;">&nbsp;</span></p><br><p><span style="font-size: 16px;">&nbsp;参考：</span></p><br><p><span style="font-size: 16px;">《深入理解JVM虚拟机》</span></p><br><p><span style="font-size: 16px;"><span style="font-family: 'courier new', courier;"><a href="http://unmi.cc/java-reflectasm-bytecode-usage/" target="_blank">Java 下高效的反射工具包 ReflectASM 使用例解</a></span></span>&nbsp;</p><br><p><span style="font-size: 16px;"><a id="cb_post_title_url" href="http://www.cnblogs.com/mengdd/p/3725472.html" target="_blank" rel="external">ReflectUitls类的编写和对反射机制的解析</a></span></p><br><p>&nbsp;<a href="https://github.com/cglib/cglib" target="_blank">Cglib源码</a></p><div id="MySignature"></div><br><div class="clear"></div><br><div id="blog_post_info_block"><br><div id="BlogPostCategory"></div><br><div id="EntryTag"></div><br><div id="blog_post_info"><br></div>
+
+</div>
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/05/11/restful-02/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -282,7 +395,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-11T17:44:30+08:00">
                 2017-05-11
@@ -395,7 +508,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-11T11:52:43+08:00">
                 2017-05-11
@@ -508,7 +621,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-11T10:18:33+08:00">
                 2017-05-11
@@ -621,7 +734,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-10T18:54:50+08:00">
                 2017-05-10
@@ -734,7 +847,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-10T09:46:50+08:00">
                 2017-05-10
@@ -871,7 +984,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-09T18:27:23+08:00">
                 2017-05-09
@@ -911,120 +1024,6 @@
         
           
             <div id="article_content" class="article_content"><br><p><span style="white-space:pre">    </span>在并发读写数据库时，读操作可能会不一致的数据（脏读）。为了避免这种情况，需要实现数据库的并发访问控制，最简单的方式就是加锁访问。由于，加锁会将读写操作串行化，所以不会出现不一致的状态。但是，读操作会被写操作阻塞，大幅降低读性能。在java concurrent包中，有copyonwrite系列的类，专门用于<strong>优化读远大于写</strong>的情况。而其优化的手段就是，在进行写操作时，将数据copy一份，不会影响原有数据，然后进行修改，修改完成后原子替换掉旧的数据，而读操作只会读取原有数据。通过这种方式实现写操作不会阻塞读操作，从而优化读效率。而写操作之间是要互斥的，并且每次写操作都会有一次copy，所以只适合读大于写的情况。</p><p><span style="white-space:pre">    </span>MVCC的原理与copyonwrite类似，全称是Multi-Version Concurrent Control，即多版本并发控制。在MVCC协议下，每个读操作会看到一个一致性的snapshot，并且可以实现非阻塞的读。MVCC允许数据具有多个版本，这个版本可以是时间戳或者是全局递增的事务ID，在同一个时间点，不同的事务看到的数据是不同的。</p><p><span style="white-space:pre">    </span>实现原理：&nbsp;</p><p><span style="white-space:pre">    </span>——————————————————————————————&gt; 时间轴</p><p><span style="white-space:pre">            </span>|——-R(T1)—–|</p><p><span style="white-space:pre">        </span>|———–U(T2)———–|</p><p><span style="white-space:pre">    </span>如上图，假设有两个并发操作R(T1)和U(T2)，T1和T2是事务ID，T1小于T2，系统中包含数据a = 1(T1)，R和W的操作如下：</p><p><span style="white-space:pre">        </span>R：read a (T1)</p><p><span style="white-space:pre">        </span>U：a = 2 &nbsp; &nbsp;(T2)</p><p><span style="white-space:pre">    </span>R（读操作）的版本T1表示要读取数据的版本，而之后写操作才会更新版本，读操作不会。在时间轴上，R晚于U，而由于U在R开始之后提交，所以对于R是不可见的。所以，R只会读取T1版本的数据，即a = 1。</p><p><span style="white-space:pre">    </span>由于在update操作提交之前，不能影响已有数据的一致性，所以不会改变旧的数据，update操作会被拆分成insert + delete。需要标记删除旧的数据，insert新的数据。只有update提交之后，才会影响后续的读操作。而对于读操作而且，只能读到在其之前的所有的写操作，正在执行中的写操作对其是不可见的。</p><p><span style="white-space:pre">    </span>上面说了一堆的虚的理论，下面来点干活，看一下mysql的innodb引擎是如何实现MVCC的。innodb会为每一行添加两个字段，分别表示该行<strong>创建的版本</strong>和<strong>删除的版本</strong>，填入的是事务的版本号，这个版本号随着事务的创建不断递增。在repeated read的隔离级别（<a target="_blank" href="http://blog.csdn.net/chosen0ne/article/details/10036775">事务的隔离级别请看这篇文章</a>）下，具体各种数据库操作的实现：</p><p><span style="white-space:pre">    </span>select：满足以下两个条件innodb会返回该行数据：（1）该行的创建版本号小于等于当前版本号，用于保证在select操作之前所有的操作已经执行落地。（2）该行的删除版本号大于当前版本或者为空。删除版本号大于当前版本意味着有一个并发事务将该行删除了。</p><p><span style="white-space:pre">    </span>insert：将新插入的行的创建版本号设置为当前系统的版本号。</p><p><span style="white-space:pre">    </span>delete：将要删除的行的删除版本号设置为当前系统的版本号。</p><p><span style="white-space:pre">    </span>update：不执行原地update，而是转换成insert + delete。将旧行的删除版本号设置为当前版本号，并将新行insert同时设置创建版本号为当前版本号。</p><p><span style="white-space:pre">    </span>其中，写操作（insert、delete和update）执行时，需要将系统版本号递增。</p><p><span style="white-space:pre">    </span>由于旧数据并不真正的删除，所以必须对这些数据进行清理，innodb会开启一个后台线程执行清理工作，具体的规则是将删除版本号小于当前系统版本的行删除，这个过程叫做purge。</p><p><span style="white-space:pre">    </span>通过MVCC很好的实现了事务的隔离性，可以达到repeated read级别，要实现serializable还必须加锁。</p><br></div>
-
-
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/05/09/innoDB-01/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="XueCheng">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="XueCheng Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/05/09/innoDB-01/" itemprop="url">转载:Mysql技术内幕InnoDB存储引擎——InnoDB存储引擎</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Veröffentlicht am</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-09T15:51:17+08:00">
-                2017-05-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <div id="article_content" class="article_content"><br>    <h1>一．mysql体系结构和存储引擎</h1><br>    <h2>1.1、数据库和实例的区别</h2><br>    <p></p><br>    <p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>数据库：物理操作系统或其他形式文件类型的集合。在mysql下数据库文件可以是frm，myd，myi，ibd结尾的文件。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 数据库实例：由数据库后台进程/线程以及一个共享内存区组成。数据库实例才是真正用来操作数据库文件的。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mysql数据库是单进程多线程的程序，与sql server比较类&#20284;。也就是说，Mysql数据库实例在系统上的表现就是一个进程。</p><br>    <h2>1.2、mysql的体系结构</h2><br>    <p style="text-align:center"><strong><img src="http://img.my.csdn.net/uploads/201212/07/1354848770_3087.jpg" alt=""><br><br>    </strong></p><br>    <p></p><br>    <p>mysql由连接池组件、管理服务和工具组件、sql接口组建、查询分析器组件、优化器组件、缓存组件、插件是存储引擎、物理文件。</p><br>    <h2>1.3、mysql存储引擎</h2><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.3.1、innodb存储引擎，特点支持外键、行锁、非锁定读(默认情况下读取不会产生锁)、mysql-4.1开始支持每个innodb引擎的表单独放到一个表空间里。innodb通过使用MVCC来获取高并发性，并且实现sql标准的4种隔离级别，同时使用一种被称成next-key locking的策略来避免换读(phantom)现象。除此之外innodb引擎还提供了插入缓存(insert buffer)、二次写(double write)、自适应哈西索引(adaptive hash index)、预读(read<br>    ahead)等高性能技术。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.3.2、myisam存储引擎，myisam特点是不支持事物，适合olap应用，myisam表由MYD和MYI组成。mysql-5.0版本之前，myisam默认支持的表大小为4G，从mysql-5.0以后，myisam默认支持256T的表单数据。myisam只缓存索引数据。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.3.3、NDB存储引擎，特点是数据放在内存中，mysql-5.1版本开始可以将非索引数据放到磁盘上。NDB之前的缺陷是join查询是mysql数据库层完成的，而不是存储引擎完成的，复杂的join查询需要巨大的网络开销，速度很慢。当前mysql cluster7.2版本中已经解决此问题，join查询效率提高了70倍。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.3.4、memeory存储引擎，将数据放到内存中，默认使用hash索引，不支持text和blob类型，varchara是按照char的方式来存储的。mysql数据库使用memory存储引擎作为临时表还存储中间结果集(intermediate result)，如果中间集结果大于memorg表的容量设置，又或者中间结果集包含text和blog列类型字段，则mysql会把他们转换到myisam存储引擎表而放到磁盘上，会对查询产生性能影响。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.3.5、archive存储引擎，压缩能力较强，主要用于归档存储。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.3.6、federated存储引擎，不存储数据，他指向一台远程mysql数据库上的表。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.3.7、maria存储引擎，myisam的后续版本,支持缓存数据和索引，行锁设计，支持mvcc，支持事务和非事务安全的选项，以及更好的BLOG字符类型的处理性能。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.3.8、其他存储引擎，sphinx用于全文索引，infobright用于数据仓库。</p><br>    <h2>1.4连接Mysql</h2><br>    <p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>1.4.1、TCP/IP：基于网络的连接，连接进行权限检查。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.4.2、命名管道和共享内存：Windows系统上同一服务器上的两进程可通过命名管道连接，需在配置文件中启用–enable-named-pipe选项。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.4.3、Unix套接字：客户端与服务端位于同一服务器时才可使用，可以在my.cnf中指定-socket=/tmp/mysql.sock，连接时指定./mysql -S/tmp/mysql.sock。</p><br>    <h1>二．InnoDB存储引擎</h1><br>    <h2>2.2、innodb引擎架构</h2><br>    <p>&nbsp; &nbsp; &nbsp; &nbsp;InnoDB的多个内存块组成了内存池，负责如下工作：</p><br>    <p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>1)<strong>.</strong>维护所有进程/线程需要访问的多个内部数据结构。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2).缓存磁盘上的数据，方便快速的读取，并且在对磁盘文件的数据进行修改之前在这里缓存。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3).重做日志缓存。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 后台线程的主要作用是负责刷新内存池中的数据，保证缓冲池中的内存缓存是最近的数据，此外、将已经修改的数据文件刷新到磁盘文件</p><br>    <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.2.1、后台线程</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; innodb存储引擎后台有7个线程，—–4个IO线程(insert buffer thread,log thread,read thread,write thread)，1个master thread，一个lock监控线程，一个错误监控线程。</p><br>    <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.2.2、内存</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; innodb存储引擎内存由以下三个部分组成：缓冲池(buffer pool),重做日志缓存(redo log buffer),额外的内存池(additional memory pool)。可以使用 show engine innodb status来查看innodb_buffer_pool的使用情况。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; innodb_buffer_pool_size：具体看，缓冲池中的数据库类型有：索引页、数据库页、undo页、插入缓存页(insert buffer)、自适应hash(adaptive hashindex)、innodb存储的锁信息(lock info)、数据字典信息(data dictionary)。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; InnoDB工作方式：将数据文件按页(每页16K)读入InnoDBbuffer pool，然后按最近最少使用算法(LRU)保留缓存数据，最后通过一定频率将脏页刷新到文件。</p><br>    <p style="text-align:center"><img src="http://img.my.csdn.net/uploads/201212/07/1354848800_2688.jpg" alt=""><br><br>    </p><br>    <p></p><br>    <h2>2.3、master thread</h2><br>    <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.3.1、master thread源码分析</h3><br>    <p style="text-align:center"><img src="http://img.my.csdn.net/uploads/201212/07/1354848808_4628.jpg" alt=""><br><br>    </p><br>    <p></p><br>    <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.3.2、master thread的潜在问题</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1、由于硬件的发展，现在的硬件性能已经提高了很多，如果innodb每秒最大刷新100个脏页，那么效率会很低，为了解决这个问题，innodb plugin提供了一个参数innodb_io_capacity，用来表示磁盘IO的吞吐量，默认&#20540;是200，规则如下：在合并插入缓存时，合并插入缓存的数量为innodb_io_capacity的5%；在从缓冲区刷新脏页时，啥新脏页的数量为innodb_io_capacity。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2、关于innodb_max_dirty_pages_pct&#20540;的争议，如果&#20540;过大，内存也很大或者服务器压力很大，那么效率很降低，如果设置的&#20540;过小，那么硬盘的压力会增加，建议是在75-80.并且innodb plugin引进了innodb_adaptive_flushng(自适应的刷新)，该&#20540;影响每秒刷新脏页的数量。</p><br>    <h2>2.4、关键特性,为innodb提高性能的技术</h2><br>    <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.4.1、插入缓存</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 当一个表有非聚集索引时，对于非聚集索引的叶子节点的插入不是顺序的，这时候需要离散的访问非聚集索引页，性能就在这里降低了，这是由于b&#43;树的原理导致的。插入缓存就是用来解决这个问题的。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 对于非聚集索引的插入和更新操作，不是每一次都直接插入索引页，而是先判断插入的非聚集索引页是否在缓存中，如果在就直接插入，如果不在就放入到一个插入缓冲区中，好&#20284;欺骗数据库这个非聚集索引已经插入到叶子节点了。然后再以一定的频率插入缓存和非聚集索引页字节点的合并操作。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 插入缓存的使用需要满足以下两个条件(也就是非唯一的辅助索引)：索引是辅助索引；索引不是唯一的。</p><br>    <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.4.2、两次写</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 两次写给innodb带来的是可靠性，主要用来解决部分写失败(partial page write)。在应用重做日之前，我们需要一个页的副本，当写入失效发生时，先通过页的副本来还原该页，再进行重做，这就是doublewrite。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; doublewrite有两部分组成，一部分是内存中的doublewrite buffer，大小为2M，另外一部分就是物理磁盘上的共享表空间中联系的128个页，即两个区，大小同样为2M。当缓冲池的张也刷新时，并不直接写硬盘，而是回通过memcpy函数将脏页先拷贝到内存中的doublewrite buffer，之后通过doublewrite buffer再分两次写，每次写入1M到共享表空间的物理磁盘上，然后马上调用fsync函数，同步磁盘。</p><br>    <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.4.3、自适应哈西索引</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 由于innodb不支持hash索引，但是在某些情况下hash索引的效率很高，于是出现了 adaptive hash index功能，innodb存储引擎会监控对表上索引的查找，如果观察到建立hash索引可以提高性能的时候，则自动建立hash索引。</p><br>    <h2>2.5、启动、关闭、恢复</h2><br>    <p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>innodb_fast_shutdown影响InnoDB表关闭。该参数有0、1、2三个参数。</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0 MySQL关闭时&nbsp; 完成所有的full purge和merge insertbuffer操作</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1默认&#20540; 只将缓冲池内的一些脏页刷新至磁盘</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2将日志都写入日志文件不会有任何事务丢失但下次启动时会进行recovery</p><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; innodb_force_recovery影响整个innodb存储引擎的恢复状况，该&#20540;默认为0，表示当需要恢复时，需要执行所有的恢复操作，当不能进行有效恢复时，如数据页发生了corruption，mysql数据库可能宕机，并把错误写入错误日志中。</p><br>    <h1>三．文件</h1><br>    <h2>3.1参数文件</h2><br>    <p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Mysql实例可以不需要参数文件，这是所有的参数&#20540;取决于编译Mysql时指定的默认&#20540;和源代码中指定参数的默认&#20540;。其参数文件是Mysql.cnf。</strong></p><br>    <h3>3.1.1、什么是参数</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 参数是一个键/&#20540;对。可以使用show variables like命令查看，也可以通过information_schema的GLOBAL_VARIABLES视图来查找。</p><br>    <h3>3.1.2、参数类型</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 参数文件分为两类：动态参数和静态参数。动态参数意味着你可以在Mysql实例运行中进行更改；静态参数说明在整个实例生命周期内都不得进行更改，好像是只读的。对于动态参数，又可以分为global和session关键字，表明该参数的修改是基于当前会话还是真&#26684;实例的生命周期。有些动态参数只能在会话中进行修改，如autocommit；有些参数修改完后，在整个实例生命周期中都会生效，如binlog_cache_size；而有些参数既可以在会话又可以在整个实例的生命周期内生效，如read_buffer_size。</p><br>    <h2>3.2、日志文件</h2><br>    <h3>3.2.1、错误日志</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 错误日志对Mysql的启动、运行、关闭过程进行了记录。出现Mysql不能正常启动时，第一个必须查找的文件应该就是错误日志文件。使用show variables like ‘log_error’来定位文件。</p><br>    <h3>3.2.2、慢查询日志</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 慢查询能为SQL语句的优化带来很好的帮助。设定一个阀&#20540;，将运行时间超过该&#20540;的所有SQL语句都记录到慢查询日志文件中。用参数long_query_time来设置。另一个参数log_queries_not_using_indexes，若运行的SQL语句没有使用索引，则这条SQL语句会被记录下来。</p><br>    <h3>3.2.3、查询日志</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 查询日志记录了所有对Mysql请求的信息，不论这些请求是否得到正确的执行。默认文件名为：主机名.log。</p><br>    <h3>3.2.4、二进制日志</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 二进制记录了对数据库执行更改的所有操作，但是不包括SELECT和SHOW操作，还包括了执行时间和更改操作时间。可用来恢复某些数据，同时也可以用来复制同步远程数据库。将binlog_format设置成row，可以支持事务隔离级别为READ COMMITTED，以获得更好的并发性。在使用MIXED&#26684;式下，mysql采用STATEMENT&#26684;式进行二进制日志文件的记录，但是有一些情况下会使用ROW&#26684;式，可能的情况如下：</p><br>    <p>1、表的存储引擎为NDB，这个时候DML操作都会以ROW&#26684;式记录。</p><br>    <p>2、使用了uuid()、user(),current_user(),found_rows(),row_count(),等不确定函数。</p><br>    <p>3、使用了insert delay语句</p><br>    <p>4、使用了用户定于的函数(UDF)</p><br>    <p>5、使用了临时表(temporary table)</p><br>    <p>注意：针对系统库mysql里面的表发生变化的处理规则如下：</p><br>    <p>1、 如果采用insert，update，delete直接操作表，则日志根据binlog_format设定的&#26684;式记录。</p><br>    <p>2、 如果使用grant，revoke，set password等DCL语句，那么无论如何都会使用SBR模式记录。</p><br>    <p>3、 blockhole引擎不支持row&#26684;式，ndb引擎不支持statement&#26684;式。</p><br>    <h2>3.3、套件字文件</h2><br>    <p><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>&nbsp;Unix系统下本地连接Mysql可以采用Unix套接字方法，需要一个套接字文件，可以使用show variableslike ‘socket’查询。</p><br>    <h2>3.4、pid文件和表结构定义文件</h2><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pid文件是实例启动是记录自己进程ID号的文件，表结构定义文件是以frm为后缀名的文件，还可以用来存放视图的定义。</p><br>    <h3>3.5、innodb引擎文件</h3><br>    <h3>3.5.1、表空间文件</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 默认表空间文件为ibdata1文件innodb_data_file_path存储数据，innodb_file_per_table可以按表分别产生一个表空间.db文件，但仅存该表的数据索引和插入缓冲等信息，其他信息如undo信息，系统事务信息，double write buffer等还是存放在默认表空间(ibdata1或表空间组)里。</p><br>    <h3>3.5.2、重做日志文件</h3><br>    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; redo log是在实例或者介质失败的时候，用来保证数据完整性。每个innodb存储引擎至少有一个重做日志组,每个重做日志文件组下至少又2个重做日志文件，如默认的ib_logfile0、ib_logfile1.为了得到更高的可靠性，你可以设置多个重做镜像日志组。</p><br>    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 因为重做日志条目先被写到日志缓冲中，然后根据一定条件刷新到磁盘重做日志文件中。与redo log相关的就是innodb_flush_log_at_trx_commit的&#20540;，对innodb的性能影响很大。他有0，1，2三个&#20540;，0代表提交事务时，并不同步写redo log，而是等master threas每秒写。1代表commit的时候就将redo log缓存写入磁盘，2代表commit的时候将redo log缓存异步的写入磁盘。<br>    <p></p><br><br>    </div> 
 
 
 
@@ -1110,8 +1109,8 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">60</span>
-                <span class="site-state-item-name">Artikel</span>
+                <span class="site-state-item-count">61</span>
+                <span class="site-state-item-name">posts</span>
               </a>
             </div>
           
@@ -1165,7 +1164,7 @@
 
 
 <div class="powered-by">
-  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
 </div>
 
 <div class="theme-info">

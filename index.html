@@ -200,7 +200,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
-            Startseite
+            Home
           </a>
         </li>
       
@@ -210,7 +210,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
-            Archiv
+            Archives
           </a>
         </li>
       
@@ -282,7 +282,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2099-09-09T12:00:00+08:00">
                 2099-09-09
@@ -395,7 +395,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2099-09-08T15:56:57+08:00">
                 2099-09-08
@@ -507,7 +507,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2099-09-07T11:45:53+08:00">
                 2099-09-07
@@ -619,7 +619,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2099-09-07T10:13:49+08:00">
                 2099-09-07
@@ -702,6 +702,119 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/09/19/serialization-02/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="XueCheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XueCheng Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/09/19/serialization-02/" itemprop="url">转载：Java Serializable接口（序列化）理解及自定义序列化</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-19T11:43:17+08:00">
+                2017-09-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <div class="postBody"><br>            <div id="cnblogs_post_body"><p><em><strong>&nbsp; 1&nbsp;Serializable接口</strong></em></p><br><p>&nbsp; （1）简单地说，就是可以将一个对象(标志对象的类型)及其状态转换为字节码，保存起来（可以保存在数据库，内存，文件等）,然后可以在适当的时候再将其状态恢复(也就是反序列化)。serialization 不但可以在本机做，而且可以经由网络操作。它自动屏蔽了操作系统的差异，字节顺序等。比如，在 Windows 平台生成一个对象并序列化之，然后通过网络传到一台 Unix 机器上，然后可以在这台Unix机器上正确地重构（deserialization）这个对象。 不必关心数据在不同机器上如何表示，也不必关心字节的顺序或者其他任何细节。<br>&nbsp;<br>另外，还应明白以下几点：<br>&nbsp;<br>&nbsp; &nbsp; a. java.io.Serializable接口没有任何方法属性域，实现它的类只是从语义上表明自己是可以序列化的。<br>&nbsp;<br>&nbsp; &nbsp; b. 在对一个 Serializable（可序列化）对象进行重新装配的过程中，不会调用任何构建器（甚至默认构建器）。整个对象都是通过从 InputStream 中取得数据恢复的。<br>&nbsp;<br>&nbsp; &nbsp; c. 如是要一个类是可序列化的，那么它的子类也是可序列化的。</p><br><p>（2）serialVersionUID</p><br><p>serialVersionUID的取值是Java运行时环境根据类的内部细节自动生成的。如果对类的源代码作了修改，再重新编译，新生成的类文件的serialVersionUID的取值有可能也会发生变化。<br>类的serialVersionUID的默认值完全依赖于Java编译器的实现，对于同一个类，用不同的Java编译器编译，有可能会导致不同的serialVersionUID，也有可能相同。为了提高哦啊serialVersionUID的独立性和确定性，强烈建议在一个可序列化类中显示的定义serialVersionUID，为它赋予明确的值。显式地定义serialVersionUID有两种用途：<br>&nbsp;<br>　　a. 在某些场合，希望类的不同版本对序列化兼容，因此需要确保类的不同版本具有相同的serialVersionUID；<br>&nbsp;<br>　　b. 在某些场合，不希望类的不同版本对序列化兼容，因此需要确保类的不同版本具有不同的serialVersionUID。</p><br><p>&nbsp;</p><br><p><em><strong>2 自定义序列化：</strong></em></p><br><p>&nbsp; &nbsp; &nbsp; 自定义序列化是由ObjectInput/OutputStream在序列化/反序列化时候通过反射检查该类是否存在以下方法（0个或多个）：执行顺序从上往下，序列化调用1和2，反序列调用3和4；transient关键字当某个字段被声明为transient后，默认序列化机制就会忽略该字段。</p><br><p>1Object writeReplace() throws ObjectStreamException;可以通过此方法修改序列化的对象</p><br><p>2void&nbsp;writeObject(java.io.ObjectOutputStream out) throws IOException; 方法中调用defaultWriteObject（） 使用writeObject的默认的序列化方式，除此之外可以加上一些其他的操作，如添加额外的序列化对象到输出：out.writeObject(“XX”)</p><br><p>3void readObject(java.io.ObjectInputStream in) throws Exception; 方法中调用defaultReadObject（）使用readObject默认的反序列化方式，除此之外可以加上一些其他的操作，如读入额外的序列化对象到输入：in.readObject()</p><br><p>4Object readResolve() throws ObjectStreamException;可以通过此方法修改返回的对象</p><br><p>&nbsp;</p><br><p>例子：单例模式的类实现序列化接口，若使用默认的序列化策略，则在反序列化返回的对象不符合单利模式（反射创建了新的对象，如下PersonSington对象），可以通过修改序列化的readResolve来实现自定义序列化返回结果来实现单例对象唯一（相当于1,2,3方法对4的结果毫无作用）。</p><br><div class="cnblogs_code"><br><pre><span style="color: #0000ff">public</span> <span style="color: #0000ff">class</span> PersonSingleton <span style="color: #0000ff">implements</span><span style="color: #000000"> Serializable {</span><br>    <span style="color: #0000ff">private</span> <span style="color: #0000ff">static</span> <span style="color: #0000ff">final</span> <span style="color: #0000ff">long</span> serialVersionUID = 1L<span style="color: #000000">;<br>    </span><span style="color: #0000ff">private</span><span style="color: #000000"> String name;<br>    </span><span style="color: #0000ff">private</span><span style="color: #000000"> PersonSingleton(String name) {<br>        </span><span style="color: #0000ff">this</span>.name =<span style="color: #000000"> name;<br>    };<br>    </span><span style="color: #0000ff">private</span> <span style="color: #0000ff">static</span> PersonSingleton person = <span style="color: #0000ff">null</span>;<br><br>    <span style="color: #0000ff">public</span> <span style="color: #0000ff">static</span> <span style="color: #0000ff">synchronized</span><span style="color: #000000"> PersonSingleton getInstance() {<br>        </span><span style="color: #0000ff">if</span> (person == <span style="color: #0000ff">null</span><span style="color: #000000">)<br>            </span><span style="color: #0000ff">return</span> person = <span style="color: #0000ff">new</span> PersonSingleton(“cgl”<span style="color: #000000">);<br>        </span><span style="color: #0000ff">return</span><span style="color: #000000"> person;<br>    }<br><br>    </span><span style="color: #0000ff">private</span> Object writeReplace() <span style="color: #0000ff">throws</span><span style="color: #000000"> ObjectStreamException {<br>        System.out.println(</span>“1 write replace start”<span style="color: #000000">);<br>        </span><span style="color: #0000ff">return</span> <span style="color: #0000ff">this</span><span style="color: #000000">;//可修改为其他对象<br>    }<br><br>    </span><span style="color: #0000ff">private</span> <span style="color: #0000ff">void</span> writeObject(java.io.ObjectOutputStream out) <span style="color: #0000ff">throws</span><span style="color: #000000"> IOException {<br>        System.out.println(</span>“2 write object start”<span style="color: #000000">);<br>        out.defaultWriteObject();<br>       //out.writeInt(1);<br>    }<br><br>    </span><span style="color: #0000ff">private</span> <span style="color: #0000ff">void</span> readObject(java.io.ObjectInputStream in) <span style="color: #0000ff">throws</span><span style="color: #000000"> IOException, ClassNotFoundException {<br>        System.out.println(</span>“3 read object start”<span style="color: #000000">);<br>        in.defaultReadObject();<br>       //int i=in.readInt();<br>    }<br><br>    </span><span style="color: #0000ff">private</span> Object readResolve() <span style="color: #0000ff">throws</span><span style="color: #000000"> ObjectStreamException {<br>        System.out.println(</span>“4 read resolve start”<span style="color: #000000">);<br>        </span><span style="color: #0000ff">return</span><span style="color: #000000"> PersonSingleton.getInstance();//不管序列化的操作是什么，返回的都是本地的单例对象<br>    }<br><br>    </span><span style="color: #0000ff">public</span> <span style="color: #0000ff">static</span> <span style="color: #0000ff">void</span> main(String[] args) <span style="color: #0000ff">throws</span><span style="color: #000000"> Exception {<br><br>        FileOutputStream out </span>= <span style="color: #0000ff">new</span> FileOutputStream(<span style="color: #0000ff">new</span> File(“D://person.dat”<span style="color: #000000">));<br>        ObjectOutputStream op </span>= <span style="color: #0000ff">new</span><span style="color: #000000"> ObjectOutputStream(out);<br>        op.writeObject(PersonSingleton.getInstance());<br>        op.close();<br><br>        FileInputStream in </span>= <span style="color: #0000ff">new</span> FileInputStream(<span style="color: #0000ff">new</span> File(“D://person.dat”<span style="color: #000000">));<br>        ObjectInputStream oi </span>= <span style="color: #0000ff">new</span><span style="color: #000000"> ObjectInputStream(in);<br>        Object person </span>=<span style="color: #000000"> oi.readObject();<br>        in </span>= <span style="color: #0000ff">new</span> FileInputStream(<span style="color: #0000ff">new</span> File(“D://person.dat”<span style="color: #000000">));<br>        oi </span>= <span style="color: #0000ff">new</span><span style="color: #000000"> ObjectInputStream(in);<br>        PersonSinglton person1 </span>=<span style="color: #000000"> (PersonSinglton) oi.readObject();<br><br>        System.out.println(</span>“sington person hashcode:” +<span style="color: #000000"> person.hashCode());<br>        System.out.println(</span>“sington person1 hashcode:” +<span style="color: #000000"> person1.hashCode());<br>        System.out.println(</span>“singleton getInstance hashcode:” +<span style="color: #000000"> PersonSingleton.getInstance().hashCode());<br>        System.out.println(</span>“singleton person equals:” + (person ==<span style="color: #000000"> PersonSingleton.getInstance()));<br>        System.out.println(</span>“person equals1:” + (person1 ==<span style="color: #000000"> person));<br>    }<br>}</span></pre><br></div><br><p>&nbsp;</p><br><p>运行结果：</p><br><hr><br><p>&nbsp;</p><br><p>1 write replace start<br>2 write object start<br>3 read object start<br>4 read resolve start<br>3 read object start<br>4 read resolve start<br>sington person hashcode:1550089733<br>sington person1 hashcode:1550089733<br>sington getInstance hashcode:1550089733<br>sington person equals:true<br>person equals1:true</p><br><hr><br><p>&nbsp;</p><br><p><em><strong>3&nbsp;Externalizable接口</strong></em></p><br><p>&nbsp; &nbsp;Externalizable继承于Serializable，当使用该接口时，序列化的细节需要由程序员去完成。若writeExternal()与readExternal()方法未作任何处理，那么该序列化行为将不会保存/读取任何一个字段。出结果中所有字段的值均为空。<br>&nbsp;&nbsp;&nbsp; 另外，若使用Externalizable进行序列化，当读取对象时，会调用被序列化类的无参构造器去创建一个新的对象，然后再将被保存对象的字段的值分别填充到新对象中。由于这个原因，实现Externalizable接口的类必须要提供一个无参的构造器，且它的访问权限为public。</p><br><p>&nbsp;</p></div><div id="MySignature"></div><br><div class="clear"></div><br><div id="blog_post_info_block"><br><div id="BlogPostCategory"></div><br><div id="EntryTag"></div><br><div id="blog_post_info"><br></div>
+
+</div></div>
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/09/18/serialization-01/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -731,7 +844,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-18T11:27:22+08:00">
                 2017-09-18
@@ -846,7 +959,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-15T11:08:16+08:00">
                 2017-09-15
@@ -1051,120 +1164,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/09/12/esb/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="XueCheng">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="XueCheng Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/09/12/esb/" itemprop="url">转载：企业数据总线(ESB)和注册服务管理(dubbo)的区别</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Veröffentlicht am</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-12T11:44:29+08:00">
-                2017-09-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <div class="Blog_tit4 Blog_tit5" style="word-wrap:break-word; border-bottom-width:0px; padding:0px 0px 11px; color:rgb(86,86,86); font-family:宋体,Arial"><br>&nbsp;<a target="_blank" href="http://blog.itpub.net/29754888/viewspace-1452858/" style="word-wrap:break-word; text-decoration:none; color:rgb(156,36,35); font-family:微软雅黑,黑体,Verdana; font-size:20px">企业数据总线(ESB)和注册服务管理(dubbo)的区别</a>&nbsp;<span style="word-wrap:break-word; margin-left:22px; color:rgb(187,186,186); font-family:Arial">2015-03-09<br> 08:49:28</span></div><br><div class="Blog_con2" style="word-wrap:break-word; color:rgb(102,102,102); line-height:26px; height:auto; overflow:hidden; font-family:宋体,Arial"><br><div class="Blog_con3" style="word-wrap:break-word; margin-top:10px; line-height:22px"><br><p style="word-wrap:break-word; margin-top:0px; margin-bottom:0px; padding-top:0px; padding-bottom:0px; color:rgb(142,3,0)"><br>分类：&nbsp;<span style="word-wrap:break-word; color:rgb(187,186,186); margin-right:25px">Web开发</span></p><br><p style="word-wrap:break-word; margin-top:0px; margin-bottom:0px; padding-top:0px; padding-bottom:0px; color:rgb(142,3,0)"><br></p><br></div><br><div class="Blog_wz1" style="word-wrap:break-word"><br><p style="word-wrap:break-word; margin-top:0px; margin-bottom:0px; padding-top:0px; padding-bottom:0px; font-family:Arial; font-size:14px; line-height:26px"><br><br style="word-wrap:break-word"><br></p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br><span style="word-wrap:break-word">一、概述</span></p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>1、什么是ESB</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>就是企业数据总线的意思，他的核心功能就是兼容各种协议接口，可以将数据在各种协议之间进行流转，并且可以针对数据&#26684;式进行编排转换。（&#26684;式转换、协议转换、代理、编排、安全控制、监控、不支持高并发，类&#20284;于路由器维护着一张路由表进行路由转发）</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>代表性的项目有：JBOSS ESB,Mule,Camel 以及一些其他的esb项目</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>&nbsp;</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>2、什么是服务注册</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>就是将所有的服务接口（很多时候是hession协议的接口）,注册到一个中心的分布式服务集群上（你可以考虑成apache的zookeeper服务实现的效果）。各个业务系统直接访问分布式服务查找需要调用的接口位置，进而调用。（注册目录服务、监控、负载均衡、安全控制、分布式强健壮、适用于高并发）</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>代表性开源项目有：阿里的dubbo，淘宝的HSF(现在不知道是否继续开源了)</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>&nbsp;</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br><span style="word-wrap:break-word">二、双方特点</span></p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>1、ESB</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>ESB一般采用集中式转发请求，适合大量异构系统集成，并且压力不大的情况</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>&nbsp;</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>但集中式转发也是有优势的，比如调用方用http协议，提供方用rmi协议，转发就可以转换协议，对双方都透明。另外，在总线上还可以执行流程引擎，做服务编排，比如A和B两个服务经常一起调，就可以编排成服务C，而不用再单独启一个服务去做。还有，安全，流控，做起来也更方便。</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>支持groovy类型的脚本语言，在总线上可以给数据&#26684;式做转换</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>2、服务注册管理</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>采用的是分布式调用，注册中心只记录地址信息，然后直连调用，适合并发及压力比较大的情况。</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>对于网站应用，大多是垂直业务，直接从数据库拉数据展示。</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>&nbsp;</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br><span style="word-wrap:break-word">三、应用场景</span></p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>1、ESB</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>esb最常见的场景是，把系统里的集成逻辑，单拉出来， 放到esb容器里来部署，并跟应用系统适配。 这样让应用系统变得只有自己的业务逻辑，简单、轻薄。</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>劣势：在所有的服务上增加了一个总线作为沟通的渠道。对于较大的并发量会将瓶颈推到ESB总线上。很多时候ESB总线都采用MQ类的消息服务器来异步处理缓解压力</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>2、服务注册</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>淘宝和阿里的各个业务系统提供了很多的接口，这个时候需要统一管理提供个各子业务系统使用，让各个子业务系统可以通过注册中心很快找到对应的服务</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>劣势：服务编排和协议转换还是靠各个业务子系统了</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>&nbsp;</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br><span style="word-wrap:break-word">四、综述</span></p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>1、两类开源项目侧重点不同，ESB侧重任务的编排，性能问题可通过异构的方式来进行规避。无法支持特别大的并发</p><br><p style="word-wrap:break-word; margin-top:5px; margin-bottom:5px; padding-top:0px; padding-bottom:0px"><br>2、服务注册侧重服务的治理，将各个服务颗粒化，各个子业务系统在程序逻辑上完成业务的编排。但是比较实用较大的并发量，因为dubbo类的只是存放服务地址。有zookeeper类的分布式通讯框架，能保证单点的失败不影响整个系统的业务调用，因为业务接口都是在各个提供服务的子系统中</p><br></div><br></div>
-
-<p></p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -1214,8 +1213,8 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">60</span>
-                <span class="site-state-item-name">Artikel</span>
+                <span class="site-state-item-count">61</span>
+                <span class="site-state-item-name">posts</span>
               </a>
             </div>
           
@@ -1269,7 +1268,7 @@
 
 
 <div class="powered-by">
-  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
 </div>
 
 <div class="theme-info">
