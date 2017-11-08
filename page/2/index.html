@@ -200,7 +200,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
-            Startseite
+            Home
           </a>
         </li>
       
@@ -210,7 +210,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
-            Archiv
+            Archives
           </a>
         </li>
       
@@ -253,6 +253,121 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/09/18/serialization-01/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="XueCheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XueCheng Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/09/18/serialization-01/" itemprop="url">转载:java序列化机制及原理</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-18T11:27:22+08:00">
+                2017-09-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p></p><p>&nbsp;<strong><span>Java</span></strong><strong><span>序列化算法透析</span></strong></p> <p><strong><span></span></strong><span>&nbsp; Serialization</span><span>（序列化）是一种将对象以一连串的字节描述的过程；反序列化</span><span><span>deserialization</span></span><span>是一种将这些字节重建成一个对象的过程。</span><span>Java</span><span>序列化</span><span>API</span><span>提供一种处理对象序列化的标准机制。在这里你能学到如何序列化一个对象，什么时候需要序列化以及</span><span>Java</span><span>序列化的算法，我们用一个实例来示范序列化以后的字节是如何描述一个对象的信息的。</span></p> <p><span></span><strong><span>序列化的必要性</span></strong></p> <p><strong><span></span></strong><span>Java</span><span>中，一切都是对象，在分布式环境中经常需要将</span><span>Object</span><span>从这一端网络或设备传递到另一端。 <br>这就需要有一种可以在两端传输数据的协议。</span><span>Java</span><span>序列化机制就是为了解决这个问题而产生。</span></p> <p><span></span><strong><span>如何序列化一个对象</span></strong></p> <p><strong><span></span></strong><span>一个对象能够序列化的前提是实现</span><span><span>Serializable</span></span><span>接口，</span><span><span>Serializable</span></span><span>接口没有方法，更像是个标记。 <br>有了这个标记的</span><span>Class</span><span>就能被序列化机制处理。</span></p> <div style="border-bottom: silver 1px solid; text-align: left; border-left: silver 1px solid; padding-bottom: 4px; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; padding-left: 4px; width: 97.5%; padding-right: 4px; font-family: 'Courier New', courier, monospace; direction: ltr; max-height: 200px; font-size: 8pt; overflow: auto; border-top: silver 1px solid; cursor: text; border-right: silver 1px solid; padding-top: 4px" id="codeSnippetWrapper"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px" id="codeSnippet"><span style="color: #006080">import java.io.Serializable;</span>   <br>class TestSerial implements Serializable {          <br>    public byte version <span style="color: #006080">= 100;</span>         <br>    public byte count <span style="color: #006080">= 0;</span>   <br>} </pre><br></div><p></p>
+<p></p><p><span>然后我们写个程序将对象序列化并输出。</span><span><span>ObjectOutputStream</span></span><span>能把</span><span>Object</span><span>输出成</span><span>Byte</span><span>流。 <br>我们将</span><span>Byte</span><span>流暂时存储到</span><span><span>temp.out</span></span><span>文件里。</span><span>&nbsp;</span></p><p></p>
+<div style="border-bottom: silver 1px solid; text-align: left; border-left: silver 1px solid; padding-bottom: 4px; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; padding-left: 4px; width: 97.5%; padding-right: 4px; font-family: 'Courier New', courier, monospace; direction: ltr; max-height: 200px; font-size: 8pt; overflow: auto; border-top: silver 1px solid; cursor: text; border-right: silver 1px solid; padding-top: 4px" id="codeSnippetWrapper"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px" id="codeSnippet">public static void main(String args[]) throws IOException {          <br>    FileOutputStream fos = new FileOutputStream(“temp<span style="color: #cc6633">.out</span>“);         <br>    ObjectOutputStream oos = new ObjectOutputStream(fos);          <br>    TestSerial ts = new TestSerial();          <br>    oos<span style="color: #cc6633">.writeObject</span>(ts);          <br>    oos<span style="color: #cc6633">.flush</span>();          <br>    oos<span style="color: #cc6633">.close</span>(); <br>}</pre><br></div><br><ul class="con"><pre><span>如果要从持久的文件中读取</span><span>Bytes</span><span>重建对象，我们可以使用</span><span><span>ObjectInputStream</span></span><span>。</span>  </pre><br><div style="border-bottom: silver 1px solid; text-align: left; border-left: silver 1px solid; padding-bottom: 4px; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; padding-left: 4px; width: 97.5%; padding-right: 4px; font-family: 'Courier New', courier, monospace; direction: ltr; max-height: 200px; font-size: 8pt; overflow: auto; border-top: silver 1px solid; cursor: text; border-right: silver 1px solid; padding-top: 4px" id="codeSnippetWrapper"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px" id="codeSnippet">public static void main(String args[]) throws IOException {     <br>    FileInputStream fis = new FileInputStream(“temp<span style="color: #cc6633">.out</span>“);          <br>    ObjectInputStream oin = new ObjectInputStream(fis);           <br>    TestSerial ts = (TestSerial) oin<span style="color: #cc6633">.readObject</span>();           <br>    System<span style="color: #cc6633">.out</span><span style="color: #cc6633">.println</span>(“version=”+ts<span style="color: #cc6633">.version</span>);    <br>} </pre><br></div><pre>执行结果为 <span>100.</span> </pre><pre><strong><span>对象的序列化格式</span></strong></pre><pre><span>将一个对象序列化后是什么样子呢？打开刚才我们将对象序列化输出的</span><span><span>temp.out</span></span><span>文件</span></pre><pre><span></span><span>以</span><span>16</span><span>进制方式显示。内容应该如下：</span> </pre><pre><span>AC ED 00 05 73 72 00 0A 53 65 72 69 61 6C 54 65<br>73 74 A0 0C 34 00 FE B1 DD F9 02 00 02 42 00 05<br>63 6F 75 6E 74 42 00 07 76 65 72 73 69 6F 6E 78<br>70 00 64<br></span><span><span></span></span></pre><pre><span><span>这一坨字节就是用来描述序列化以后的</span><span><span>TestSerial</span></span><span>对象的，我们注意到</span><span><span>TestSerial</span></span><span>类中只有两个域：</span></span></pre><pre><span><span></span></span><em><span><span>public</span></span><span><span>&nbsp;</span>byte version = 100;</span></em></pre><pre><em><span></span></em><em><span><span>public</span></span><span><span>&nbsp;</span>byte count = 0;</span></em></pre><pre><span>且都是</span><span>byte</span><span>型，理论上存储这两个域只需要</span><span>2</span><span>个</span><span>byte</span><span>，但是实际上</span><span><span>temp.out</span></span><span>占据空间为</span><span>51bytes</span><span>，也就是说除了数据以外，还包括了对序列化对象的其他描述</span></pre><pre><span></span><strong><span>Java</span></strong><strong><span>的序列化算法</span></strong></pre><pre><strong><span></span></strong><span>序列化算法一般会按步骤做如下事情：</span></pre><pre><span></span><span><span>◆</span></span><span>将对象实例相关的类元数据输出。</span></pre><pre><span></span><span><span>◆</span></span><span>递归地输出类的超类描述直到不再有超类。</span></pre><pre><span></span><span><span>◆</span></span><span>类元数据完了以后，开始从最顶层的超<span>类开始</span>输出对象实例的实际数据值。</span></pre><pre><span></span><span><span>◆</span></span><span>从上至下递归输出实例的数据</span></pre><pre><span></span><span>我们用另一个更完整覆盖所有可能出现的情况的例子来说明：</span></pre><br><ol class="dp-j"><br><div style="border-bottom: silver 1px solid; text-align: left; border-left: silver 1px solid; padding-bottom: 4px; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; padding-left: 4px; width: 97.5%; padding-right: 4px; font-family: 'Courier New', courier, monospace; direction: ltr; max-height: 200px; font-size: 8pt; overflow: auto; border-top: silver 1px solid; cursor: text; border-right: silver 1px solid; padding-top: 4px" id="codeSnippetWrapper"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px" id="codeSnippet">class parent implements Serializable {          <br>    int parentVersion <span style="color: #006080">= 10;</span>   <br>} </pre><br></div><span class="keyword"><strong><span style="color: #006699"></span></strong></span></ol></ul><br><ul class="con"><br><div style="border-bottom: silver 1px solid; text-align: left; border-left: silver 1px solid; padding-bottom: 4px; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; padding-left: 4px; width: 97.5%; padding-right: 4px; font-family: 'Courier New', courier, monospace; direction: ltr; max-height: 200px; font-size: 8pt; overflow: auto; border-top: silver 1px solid; cursor: text; border-right: silver 1px solid; padding-top: 4px" id="codeSnippetWrapper"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px" id="codeSnippet">class contain implements Serializable{          <br>    Int containVersion <span style="color: #006080">= 11;</span>   <br>}  </pre><br></div><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; height: 244px; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px" id="codeSnippet">public class SerialTest extends parent implements Serializable {   <br>       int version <span style="color: #006080">= 66;</span>   <br>       contain con = new contain();   <br>       public int getVersion() <span style="color: #006080">{  <br>              return version;</span>   <br>       }  <br>       public static void main(String args[]) throws IOException {  <br>              FileOutputStream fos = new FileOutputStream(“temp<span style="color: #cc6633">.out</span>“);  <br>              ObjectOutputStream oos = new ObjectOutputStream(fos);  <br>              SerialTest st = new SerialTest();  <br>              oos<span style="color: #cc6633">.writeObject</span>(st);  <br>              oos<span style="color: #cc6633">.flush</span>();  <br>              oos<span style="color: #cc6633">.close</span>();  <br>       }  <br>}  </pre><br><li>&nbsp; <ol><br><li><br><div><span>AC ED: STREAM_MAGIC.<span>&nbsp;</span></span><span>声明使用了序列化协议</span><span>.</span></div><br></li><li><br><div><span>00 05: STREAM_VERSION.<span>&nbsp;</span></span><span>序列化协议版本</span><span>.</span></div><br></li><li><br><div><span><span>0x73: TC_OBJECT.</span></span><span><span>&nbsp;</span></span><span>声明这是一个新的对象</span><span>.</span>&nbsp;<span>&nbsp;</span></div></li></ol><br><ol><br><li><br><div><span><span>0x72: TC_CLASSDESC.</span><span>&nbsp;</span></span><span>声明这里开始一个新</span><span>Class</span><span>。</span></div><br></li><li><br><div><span>00 0A: Class</span><span>名字的长度</span><span>.</span></div><br></li><li><br><div><span>53 65 72 69 61 6c 54 65 73 74:<span>&nbsp;</span><span>SerialTest,Class</span></span><span>类名</span><span>.</span></div><br></li><li><br><div><span>05 52 81 5A AC 66 02 F6:<span>&nbsp;</span><span>SerialVersionUID</span>,<span>&nbsp;</span></span><span>序列化</span><span>ID</span><span>，如果没有指定， <br>则会由算法随机生成一个</span><span>8byte</span><span>的</span><span>ID.</span></div><br></li><li><br><div><span>0x02:<span>&nbsp;</span></span><span>标记号</span><span>.<span>&nbsp;</span></span><span>该值声明该对象支持序列化。</span></div><br></li><li><br><div><span>00 02:<span>&nbsp;</span></span><span>该类所包含的域个数。</span></div></li></ol><br><ol><br><li><br><div><span>0x49:<span>&nbsp;</span></span><span>域类型</span><span>. 49<span>&nbsp;</span></span><span>代表</span><span>“I”,<span>&nbsp;</span></span><span>也就是</span><span>Int.</span></div><br></li><li><br><div><span>00 07:<span>&nbsp;</span></span><span>域名字的长度</span><span>.</span></div><br></li><li><br><div><span>76 65 72 73 69 6F 6E: version,</span><span>域名字描述</span><span>.</span></div></li></ol><br><ol><br><li><br><div><span>0x4C:<span>&nbsp;</span></span><span>域的类型</span><span>.</span></div><br></li><li><br><div><span>00 03:<span>&nbsp;</span></span><span>域名字长度</span><span>.</span></div><br></li><li><br><div><span>63 6F 6E:<span>&nbsp;</span></span><span>域名字描述，</span><span>con</span></div><br></li><li><br><div><span><span>0x74: TC_STRING.</span><span>&nbsp;</span></span><span>代表一个</span><span>new String.</span><span>用</span><span>String</span><span>来引用对象。</span></div><br></li><li><br><div><span>00 09:<span>&nbsp;</span></span><span>该</span><span>String</span><span>长度</span><span>.</span></div><br></li><li><br><div><span>4C 63 6F 6E 74 61 69 6E 3B:<span>&nbsp;</span><span>Lcontain</span>;, JVM</span><span>的标准对象签名表示法</span><span>.</span></div><br></li><li><br><div><span>0x78: TC_ENDBLOCKDATA,</span><span>对象数据块结束的标志</span></div></li></ol><br><ol><br><li><br><div><span><span>0x72: TC_CLASSDESC.</span><span>&nbsp;</span></span><span>声明这个是个新类</span><span>.</span></div><br></li><li><br><div><span>00 06:<span>&nbsp;</span></span><span>类名长度</span><span>.</span></div><br></li><li><br><div><span>70 61 72 65 6E 74: parent,</span><span>类名描述。</span></div><br></li><li><br><div><span>0E DB D2 BD 85 EE 63 7A:<span>&nbsp;</span><span>SerialVersionUID</span>,<span>&nbsp;</span></span><span>序列化</span><span>ID.</span></div><br></li><li><br><div><span>0x02:<span>&nbsp;</span></span><span>标记号</span><span>.<span>&nbsp;</span></span><span>该值声明该对象支持序列化</span><span>.</span></div><br></li><li><br><div><span>00 01:<span>&nbsp;</span></span><span>类中域的个数</span><span>.</span></div></li></ol><br><ol><br><li><br><div><span>0x49:<span>&nbsp;</span></span><span>域类型</span><span>. 49<span>&nbsp;</span></span><span>代表</span><span>“I”,<span>&nbsp;</span></span><span>也就是</span><span>Int.</span></div><br></li><li><br><div><span>00 0D:<span>&nbsp;</span></span><span>域名字长度</span><span>.</span></div><br></li><li><br><div><span>70 61 72 65 6E 74 56 65 72 73 69 6F 6E:<span>&nbsp;</span><span>parentVersion</span></span><span>，域名字描述。</span></div><br></li><li><br><div><span>0x78: TC_ENDBLOCKDATA,</span><span>对象块结束的标志。</span></div><br></li><li><br><div><span>0x70: TC_NULL,<span>&nbsp;</span></span><span>说明没有其他超类的标志。</span><span>.</span></div></li></ol><br><ol><br><li><br><div><span><span>00<span>&nbsp;</span><span>00</span><span>&nbsp;</span></span></span><span><span>00</span></span><span><span>&nbsp;</span>0A: 10,<span>&nbsp;</span><span>parentVersion</span></span><span>域的值</span><span>.</span></div></li></ol><br><ol><br><li><br><div><span><span>00<span>&nbsp;</span><span>00</span><span>&nbsp;</span></span></span><span><span>00</span></span><span><span>&nbsp;</span>42: 66, version</span><span>域的值</span><span>.</span></div></li></ol><br><ol><br><li><br><div><span>0x73: TC_OBJECT,<span>&nbsp;</span></span><span>声明这是一个新的对象</span><span>.</span></div><br></li><li><br><div><span>0x72: TC_CLASSDESC</span><span>声明这里开始一个新</span><span>Class.</span></div><br></li><li><br><div><span>00 07:<span>&nbsp;</span></span><span>类名的长度</span><span>.</span></div><br></li><li><br><div><span>63 6F 6E 74 61 69 6E: contain,</span><span>类名描述</span><span>.</span></div><br></li><li><br><div><span>FC BB E6 0E FB CB 60 C7:<span>&nbsp;</span><span>SerialVersionUID</span>,<span>&nbsp;</span></span><span>序列化</span><span>ID.</span></div><br></li><li><br><div><span><span>0x02: Various flags.</span><span>&nbsp;</span></span><span>标记号</span><span>.<span>&nbsp;</span></span><span>该值声明该对象支持序列化</span></div><br></li><li><br><div><span>00 01:<span>&nbsp;</span></span><span>类内的域个数。</span></div></li></ol><br><ol><br><li><br><div><span>0x49:<span>&nbsp;</span></span><span>域类型</span><span>. 49<span>&nbsp;</span></span><span>代表</span><span>“I”,<span>&nbsp;</span></span><span>也就是</span><span>Int..</span></div><br></li><li><br><div><span>00 0E:<span>&nbsp;</span></span><span>域名字长度</span><span>.</span></div><br></li><li><br><div><span>63 6F 6E 74 61 69 6E 56 65 72 73 69 6F 6E:<span>&nbsp;</span><span>containVersion</span>,<span>&nbsp;</span></span><span>域名字描述</span><span>.</span></div><br></li><li><br><div><span>0x78: TC_ENDBLOCKDATA</span><span>对象块结束的标志</span><span>.</span></div></li></ol><br><ol><br><li><br><div><span>0x70:TC_NULL</span><span>，没有超类了。</span></div></li></ol><br><ol><br><li><br><div><span><span>00<span>&nbsp;</span><span>00</span><span>&nbsp;</span></span></span><span><span>00</span></span><span><span>&nbsp;</span>0B: 11,<span>&nbsp;</span><span>containVersion</span></span><span>的值</span><span>.</span></div></li></ol><br><p><span>这个例子是相当的直白啦。</span><span><span>SerialTest</span></span><span><span>类实现</span></span><span>了</span><span>Parent</span><span>超类，内部还持有一个</span><span>Container</span><span>对象。</span></p><br><p><span>序列化后的格式如下：</span></p><br><p><span style="background-color: yellow; background-origin: initial; background-clip: initial">AC ED 00 05 73</span><span><span>&nbsp;</span><span style="background-color: lime; background-origin: initial; background-clip: initial">72 00 0A 53 65 72 69 61 6C 54 65</span></span></p><br><p><span style="background-color: lime; background-origin: initial; background-clip: initial">73 74 05 52 81 5A AC 66 02 F6 02 00 02</span><span><span>&nbsp;</span><span style="background-color: aqua; background-origin: initial; background-clip: initial">49 00 07</span></span></p><br><p><span style="background-color: aqua; background-origin: initial; background-clip: initial">76 65 72 73 69 6F 6E</span><span><span>&nbsp;</span><span style="background-color: silver; background-origin: initial; background-clip: initial">4C</span><span style="background-color: silver; background-origin: initial; background-clip: initial"><span>&nbsp;</span>00 03 63 6F 6E</span><span>&nbsp;</span><span style="background-color: silver; background-origin: initial; background-clip: initial">74 00 09</span></span></p><br><p><span style="background-color: silver; background-origin: initial; background-clip: initial">4C</span><span style="background-color: silver; background-origin: initial; background-clip: initial"><span>&nbsp;</span>63 6F 6E 74 61 69 6E 3B 78</span><span><span>&nbsp;</span><span style="background-color: red; background-origin: initial; background-clip: initial">72 00 06 70 61 72</span></span></p><br><p><span style="background-color: red; background-origin: initial; background-clip: initial">65 6E 74 0E DB D2 BD 85 EE 63 7A 02 00 01</span><span><span>&nbsp;</span><span style="background-color: red; background-origin: initial; background-clip: initial">49 00</span></span></p><br><p><span style="background-color: red; background-origin: initial; background-clip: initial">0D 70 61 72 65 6E 74 56 65 72 73 69 6F 6E 78 70</span></p><br><p><span style="background-color: teal; background-origin: initial; background-clip: initial">00<span>&nbsp;</span><span>00</span><span>&nbsp;</span><span>00</span><span>&nbsp;</span>0A 00<span>&nbsp;</span><span>00</span><span>&nbsp;</span><span>00</span><span>&nbsp;</span>42</span><span><span>&nbsp;</span><span style="background-color: green; background-origin: initial; background-clip: initial">73 72 00 07 63 6F 6E 74</span></span></p><br><p><span style="background-color: green; background-origin: initial; background-clip: initial">61 69 6E FC BB E6 0E FB CB 60 C7 02 00 01</span><span><span>&nbsp;</span><span style="background-color: green; background-origin: initial; background-clip: initial">49 00</span></span></p><br><p><span style="background-color: green; background-origin: initial; background-clip: initial">0E 63 6F 6E 74 61 69 6E 56 65 72 73 69 6F 6E 78</span></p><br><p><span style="background-color: green; background-origin: initial; background-clip: initial">70</span><span><span>&nbsp;</span><span style="background-color: green; background-origin: initial; background-clip: initial">00<span>&nbsp;</span><span>00</span><span>&nbsp;</span><span>00</span><span>&nbsp;</span>0B</span></span></p><br><p><span>我们来仔细看看这些字节都代表了啥。开头部分，见<span style="background-color: yellow; background-origin: initial; background-clip: initial">颜色</span>：</span></p><br><p><span>序列化算法的第一步就是输出对象相关类的描述。例子所示对象为</span><span><span>SerialTest</span></span><span>类实例， <br>因此接下来输出</span><span><span>SerialTest</span></span><span>类的描述。见<span style="background-color: lime; background-origin: initial; background-clip: initial">颜色</span>：</span></p><br><p><span>接下来，算法输出其中的一个域，</span><span><span>int</span></span><span><span>&nbsp;</span>version=66</span><span>；见<span style="background-color: aqua; background-origin: initial; background-clip: initial">颜色</span>：</span></p><br><p><span>然后，算法输出下一个域，</span><span>contain con = new contain();</span><span>这个有点特殊，是个对象。 <br>描述对象类型引用时需要使用</span><span>JVM</span><span>的标准对象签名表示法，见<span style="background-color: silver; background-origin: initial; background-clip: initial">颜色</span>：</span></p><br><p><span>.</span><span>接下来算法就会输出超类也就是</span><span>Parent</span><span>类描述了，见<span style="background-color: red; background-origin: initial; background-clip: initial">颜色</span>：</span></p><br><p><span>下一步，输出</span><span>parent</span><span>类的域描述，</span><span><span>int</span></span><span><span>&nbsp;</span><span>parentVersion</span>=100;</span><span>同见<span style="background-color: red; background-origin: initial; background-clip: initial">颜色</span>：</span></p><br><p><span>到此为止，算法已经对所有的类的描述都做了输出。下一步就是把实例对象的实际值输出了。这时候是从</span><span>parent Class</span><span>的域开始的，见<span style="background-color: teal; background-origin: initial; background-clip: initial">颜色</span>：</span></p><br><p><span>还有</span><span><span>SerialTest</span></span><span>类的域：</span></p><br><p><span>再往后的</span><span>bytes</span><span>比较有意思，算法需要描述</span><span>contain</span><span>类的信息，要记住， <br>现在还没有对</span><span>contain</span><span>类进行过描述，见<span style="background-color: green; background-origin: initial; background-clip: initial">颜色</span>：</span></p><br><p><span>.</span><span>输出</span><span>contain</span><span>的唯一的域描述，</span><span><span>int</span></span><span><span>&nbsp;</span><span>containVersion</span>=11</span><span>；</span></p><br><p><span>这时，序列化算法会检查</span><span>contain</span><span>是否有超类，如果有的话会接着输出。</span></p><br><p><span>最后，将</span><span>contain</span><span>类实际域值输出。</span></p><br><p><span>OK,</span><span>我们讨论了</span><span>java</span><span>序列化的机制和原理，希望能对同学们有所帮助。</span></p></li></ul><br><div><span style="white-space: pre"></span>&nbsp; 转自 <a href="http://www.java3z.com/cwbwebhome/article/article8/862.html" target="_blank" rel="external">http://www.java3z.com/cwbwebhome/article/article8/862.html</a></div><br><div><strong>serialVersionUID值的重要作用</strong></div><br><div><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </strong>根据上面的分析,可以发现如果一个类可序列化,serialVersionUID建议给一个确定的值,不要由系统自动生成,否则在增减字段(不能修改字段类型及长度)时,如果两边的类的版本不同会导致反序列化失败.</div><br><div></div><br><div><strong>注意问题</strong></div><br><div>如果序列化时代码这样写:</div><br><div style="border-bottom: silver 1px solid; text-align: left; border-left: silver 1px solid; padding-bottom: 4px; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; padding-left: 4px; width: 97.5%; padding-right: 4px; font-family: 'Courier New', courier, monospace; direction: ltr; max-height: 200px; font-size: 8pt; overflow: auto; border-top: silver 1px solid; cursor: text; border-right: silver 1px solid; padding-top: 4px" id="codeSnippetWrapper"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px" id="codeSnippet">SerialTest st = new SerialTest(); <br>oos<span style="color: #cc6633">.writeObject</span>((parent)st);</pre><br></div><br><div>会发现序列化的对象依然是SerialTest,如果在分布式环境中用Parent反序列化(调用段不存在SerialTest),会造成ClassNotFoundException.</div><div id="MySignature"></div><br><div class="clear"></div><br><div id="blog_post_info_block"><br><div id="BlogPostCategory"></div><br><div id="EntryTag"></div><br><div id="blog_post_info"><br></div><br><div class="clear"></div><br><div id="post_next_prev"></div><br></div>
+
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/09/15/spring-beans/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -282,7 +397,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-15T11:08:16+08:00">
                 2017-09-15
@@ -525,7 +640,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-12T11:44:29+08:00">
                 2017-09-12
@@ -639,7 +754,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-12T09:32:44+08:00">
                 2017-09-12
@@ -752,7 +867,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-11T16:55:07+08:00">
                 2017-08-11
@@ -865,7 +980,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-09T11:19:51+08:00">
                 2017-08-09
@@ -978,7 +1093,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-08T17:18:00+08:00">
                 2017-08-08
@@ -1025,119 +1140,6 @@
 <p><pre class="brush: java">package&nbsp;com.dtb.member.activemq;<br><br><br><br>import&nbsp;javax.jms.JMSException;<br><br>import&nbsp;javax.jms.Session;<br><br><br><br>import&nbsp;org.apache.activemq.command.ActiveMQTextMessage;<br><br>import&nbsp;org.springframework.jms.listener.SessionAwareMessageListener;<br><br>import&nbsp;org.springframework.stereotype.Component;<br><br><br><br>/<strong><br><br>&nbsp;<em>&nbsp;Description:&nbsp;&lt;br/&gt;<br><br>&nbsp;</em>&nbsp;消息队列监听器<br><br>&nbsp;<em>&nbsp;<br><br>&nbsp;</em>&nbsp;@author&nbsp;xuecheng<br><br>&nbsp;*&nbsp;@date&nbsp;2016年4月25日&nbsp;上午10:32:14<br><br>&nbsp;</strong>/<br><br>@Component(“queueReceiver1”)<br><br>public&nbsp;class&nbsp;QueueReceiver1&nbsp;implements&nbsp;SessionAwareMessageListener&lt;ActiveMQTextMessage&gt;{<br><br><br><br>    @Override<br><br>    public&nbsp;void&nbsp;onMessage(ActiveMQTextMessage&nbsp;message,&nbsp;Session&nbsp;session)&nbsp;throws&nbsp;JMSException&nbsp;{<br><br>        try&nbsp;{<br><br>            System.out.println(“QueueReceiver1接收到消息：”&nbsp;+&nbsp;message.getText());<br><br>            //throw&nbsp;new&nbsp;Exception();//回滚测试<br><br>        }&nbsp;catch&nbsp;(Exception&nbsp;e)&nbsp;{<br><br>            session.rollback();<br><br>            e.printStackTrace();<br><br>        }<br><br>        session.commit();<br><br>    }<br><br><br><br>}<br><br></pre></p>
 <p></p><h3>ActiveMQ依赖</h3><br> <pre class="brush: java">&lt;!–ActiveMQ依赖&nbsp;–&gt;<br><br>        &lt;dependency&gt;<br><br>            &lt;groupId&gt;org.apache.activemq&lt;/groupId&gt;<br><br>            &lt;artifactId&gt;activemq-all&lt;/artifactId&gt;<br><br>            &lt;version&gt;5.14.3&lt;/version&gt;<br><br>        &lt;/dependency&gt;<br><br>        &lt;!–&nbsp;Spring整合ActiveMQ所需依赖&nbsp;–&gt;<br><br>        &lt;dependency&gt;<br><br>            &lt;groupId&gt;org.springframework&lt;/groupId&gt;<br><br>            &lt;artifactId&gt;spring-jms&lt;/artifactId&gt;<br><br>            &lt;version&gt;4.1.4.RELEASE&lt;/version&gt;<br><br>        &lt;/dependency&gt;<br><br>        &lt;dependency&gt;<br><br>            &lt;groupId&gt;org.springframework&lt;/groupId&gt;<br><br>            &lt;artifactId&gt;spring-messaging&lt;/artifactId&gt;<br><br>            &lt;version&gt;4.1.4.RELEASE&lt;/version&gt;<br><br>        &lt;/dependency&gt;</pre><p></p>
 <p></p><h3>事务所需jar</h3><br><a href="https://bloodorange2017.github.io//software/activeMQ事务jar.zip">Jar下载</a><br><a href="https://bloodorange2017.github.io//software/ActiveMQ代码.zip">测试代码下载</a><p></p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/08/08/activeMq-04/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="XueCheng">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="XueCheng Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/08/08/activeMq-04/" itemprop="url">转载:ActiveMQ -JMS事务与XA事务</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Veröffentlicht am</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-08T14:32:03+08:00">
-                2017-08-08
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <div id="article_content" class="article_content tracking-ad" data-mod="popu_307" data-dsm="post"><br><br><h3><span style="font-family:Microsoft YaHei; font-size:14px">1.为什么要用事务？</span></h3><br><p></p><br><div><span style="font-family:Microsoft YaHei; font-size:14px">&nbsp; &nbsp; &nbsp; &nbsp;消息事务是在生产者producer到broker或broker到consumer过程中同一个session中发生的，保证几条消息在发送过程中的原子性。</span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px">&nbsp; &nbsp; &nbsp; &nbsp;可以在connection的createSession方法中指定一个布尔&#20540;开启，如果消息确认机制是事务确认，那么在发送message的过程中session就会开启事务（实际上broker的），不用用户显示调用 beginTransaction，这时所有通过session发送的消息都被缓存下来，用户调用session.commit时会发送所有消息，当发送出现异常时用户可以调用rollback进行回滚操作，只有在开启事务状态下有效。</span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px">&nbsp;</span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px"></span><br><p>为什么commit之后，不会有持久的消息重新传送呢?</p><br><p>&nbsp; &nbsp; &nbsp; &nbsp;原因在于commit操作会自动将为签收确认的消息进行签收确认，如果是当前接收但未签收确认的消息，都会被确认处理。因而在commit之后不会有持久化的消息出现。</p><br><br><br></div><br><h3><span style="font-family:Microsoft YaHei; font-size:14px">2.activeMQ支持的事务：</span></h3><br><div><span style="font-family:Microsoft YaHei; font-size:14px"></span><br><p style="font-family:verdana,arial,helvetica,sans-serif; margin-top:3px; line-height:24px"><br>ActiveMQ有支持两种事务，</p><br><ul style="font-family:verdana,arial,helvetica,sans-serif; margin-left:15px; margin-top:5px; margin-bottom:5px; line-height:24px"><br><li>JMS transactions - the commit() / rollback() methods on a Session (which is like doing commit() / rollback() on a JDBC connection)</li><li>XA Transactions - where the&nbsp;<a target="_blank" href="http://activemq.apache.org/maven/activemq-core/apidocs/org/apache/activemq/ActiveMQXASession.html" class="external-link" style="color:#880055">XASession</a>&nbsp;acts as an&nbsp;<a target="_blank" href="http://java.sun.com/j2ee/1.4/docs/api/javax/transaction/xa/XAResource.html" class="external-link" style="color:#880055">XAResource</a>&nbsp;by<br> communicating with the Message Broker, rather like a JDBC Connection takes place in an XA transaction by communicating with the database.</li></ul><br><p style="margin-top:10px; line-height:24px">在支持事务的session中，producer发送message时在message中带有transaction ID。broker收到message后判断是否有transaction ID，如果有就把message保存在transaction store中，等待commit或者rollback消息。所以<span style="line-height:1.5">ActiveMq的事务是针对broker而不是producer的，不管session是否commit，broker都会收到message。</span></p><br><p style="margin-top:10px; line-height:24px"><span style="line-height:1.5em">如果producer发送模式选择了persistent，那么message过期后会进入死亡队列。在message进入死亡队列之前，ActiveMQ会删除message中的transaction ID，这样过期的message就不在事务中了，不会保存在</span><span style="line-height:1.5em">transaction store中，会直接进入死亡队列。具体删除transaction<br> ID的地方是在：</span><span style="line-height:1.5em">org.apache.activemq.util.</span><span style="line-height:1.5em">BrokerSupport的doResend，将transaction ID保存在了originalTransactionID中，删除了transaction ID。</span></p><br><p style="margin-top:10px; line-height:24px"><span style="line-height:1.5em">&nbsp; &nbsp; &nbsp; &nbsp;在下面的介绍中我用的是<span style="font-family:verdana,arial,helvetica,sans-serif; font-size:14px">JMS transactions.</span></span></p><br><p style="margin-top:10px; line-height:24px"><span style="font-family:verdana,arial,helvetica,sans-serif; font-size:14px">JMS transactions事务的配置：</span><br><br></p><br><p style="margin-top:10px; line-height:24px"><span style="font-family:verdana,arial,helvetica,sans-serif; font-size:14px">&nbsp; &nbsp; &nbsp; ①建立JMS事务，并引入关联链接事务。</span></p><br><p style="margin-top:10px; line-height:24px">&nbsp; &nbsp; &nbsp; &nbsp;<span style="font-size:14px"> &nbsp;②.设置一个jmsTamplat，并关联监听容器。</span></p><br><p style="margin-top:10px; line-height:24px"><pre name="code" class="html">&lt;!– jms事务 –&gt;<br>    &lt;bean id=&quot;jmsTransactionManager&quot;<br>        class=&quot;org.springframework.jms.connection.JmsTransactionManager&quot;&gt;<br>        &lt;property name=&quot;connectionFactory&quot; ref=&quot;connectionFactory&quot; /&gt;<br>    &lt;/bean&gt;<br>    &lt;tx:annotation-driven transaction-manager=&quot;jmsTransactionManager&quot; /&gt;<br><br><br>&lt;!– 消息监听容器 消息接收监听器用于异步接收消息 –&gt;<br>    &lt;bean id=&quot;jmsContainerOne&quot; class=&quot;org.springframework.jms.listener.DefaultMessageListenerContainer&quot;&gt;<br>        &lt;property name=&quot;connectionFactory&quot; ref=&quot;connectionFactory&quot; /&gt;<br>        &lt;property name=&quot;destination&quot; ref=&quot;destinationOne&quot; /&gt;<br>        &lt;property name=&quot;messageListener&quot; ref=&quot;consumerMessageListenerOfOne&quot; /&gt;<br>        &lt;!– &lt;property name=&quot;sessionTransacted&quot; value=&quot;true&quot;/&gt; –&gt;  &lt;!– 给listener添加事务，只负责接收消息的回滚 （有了transactionManager就不用这个了，这个功能不全） 设置后好像并没有起作用 不知道为啥 –&gt;<br>        &lt;!– &lt;property name=&quot;transactionManager&quot; ref=&quot;jtaTransactionManager&quot;/&gt; –&gt; &lt;!– 接收消息和数据库访问处于同一事务中 jta –&gt;<br>        &lt;property name=&quot;transactionManager&quot; ref=&quot;jmsTransactionManager&quot; /&gt; &lt;!–jms事务 –&gt;<br>        &lt;property name=&quot;sessionAcknowledgeMode&quot; value=&quot;4&quot;&gt;&lt;/property&gt;   &lt;!– 应答模式是 INDIVIDUAL_ACKNOWLEDGE <a href="http://blog.csdn.net/yueding_h/article/details/54944254" target="_blank" rel="external">http://blog.csdn.net/yueding_h/article/details/54944254</a> –&gt;<br>        &lt;!– ActiveMQ:设置多个并行的消费者 –&gt;<br>        &lt;property name=&quot;concurrency&quot; value=&quot;2-3&quot; /&gt;<br>    &lt;/bean&gt;</pre><br><br></p><br></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px">上面配置文件配置完成后，在接收着那边接受消息失败后，进行事务回滚。</span><pre name="code" class="html">session.rollback();</pre></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px">&nbsp; &nbsp;具体实现：</span><pre name="code" class="html"> public void onMessage(Message message, Session session) {<br>          TextMessage textMsg = (TextMessage) message;<br>            try {<br>                    System.out.println(1);<br>                    String endStr = textMsg.getText();<br>                    Integer endInt = Integer.parseInt(endStr);<br>                    System.out.println(&quot;消息：===&quot;+endInt);<br>                    //只要被确认后   就会出队，接受失败没有确认成功，会在原队列里面<br>                        textMsg.acknowledge();<br><br>            } catch (Exception e) {<br>                try {<br>                    session.rollback();<br>                    System.out.println(&quot;测试回滚&quot;);<br>                                      e.printStackTrace();<br>                                 System.out.println(&quot;异常信息是：===：&quot; + e.getMessage());<br>                      }<br>        }<br><br></pre>&nbsp; 这就介绍完了。</div><br><div><span style="font-family:Microsoft YaHei; font-size:14px">&nbsp; 另外，activeMQ还有一种JtaTransactionManager 事务控制。</span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px">&nbsp;&nbsp;事务控制： （这里让接收消息和数据库访问处于同一事务中）我们就可以配置一个外部的事务管理同时配置一个支持外部事务管理的消息监听容器（如DefaultMessageListenerContainer）&nbsp;。要配置这样一个参与分布式事务管理的消息监听容器，我们可以配置一个JtaTransactionManager，当然底层的JMS ConnectionFactory需要能够支持分布式事务管理，&nbsp;并正确地注册我们的JtaTransactionManager。这样消息监听器进行消息接收和对应的数据库访问就会处于同一数据库控制下，当消息接收失败或数据库访问失败都会进行事务回滚操作。&nbsp;</span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px">&nbsp; &nbsp;这种事务控制，我在配置的时候，失败了，所以选用了JMS事务控制。<br><br>&nbsp; &nbsp;待我详细了解<span style="font-family:&quot;Microsoft YaHei&quot;; font-size:14px">JtaTransactionManager 后，再说吧。</span></span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px"><br><br></span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px"><br><br></span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px"><br><br></span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px"><br><br></span></div><br><div><span style="font-family:Microsoft YaHei; font-size:14px"><br><br></span></div><br><p></p><br><br></div>
-
 
           
         
@@ -1221,8 +1223,8 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">62</span>
-                <span class="site-state-item-name">Artikel</span>
+                <span class="site-state-item-count">63</span>
+                <span class="site-state-item-name">posts</span>
               </a>
             </div>
           
@@ -1276,7 +1278,7 @@
 
 
 <div class="powered-by">
-  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
 </div>
 
 <div class="theme-info">

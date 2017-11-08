@@ -200,7 +200,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
-            Startseite
+            Home
           </a>
         </li>
       
@@ -210,7 +210,7 @@
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
             
-            Archiv
+            Archives
           </a>
         </li>
       
@@ -282,7 +282,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2099-09-09T12:00:00+08:00">
                 2099-09-09
@@ -395,7 +395,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2099-09-08T15:56:57+08:00">
                 2099-09-08
@@ -507,7 +507,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2099-09-07T11:45:53+08:00">
                 2099-09-07
@@ -619,7 +619,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2099-09-07T10:13:49+08:00">
                 2099-09-07
@@ -702,6 +702,144 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/11/08/hdAlgorithm/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="XueCheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XueCheng Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/11/08/hdAlgorithm/" itemprop="url">转载:[JAVA加解密]DH算法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-11-08T17:05:44+08:00">
+                2017-11-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <div id="article_content" class="article_content csdn-tracking-statistics" data-mod="popu_519" data-dsm="post"><br><br><p>一、算法描述：</p><br><p>1.简介：</p><br><p>Diffie-Hellman:一种确保共享KEY安全穿越不安全网络的方法。Whitefield与Martin Hellman在1976年提出了一个奇妙的密钥交换协议，称为Diffie-Hellman密钥交换协议/算法(Diffie-Hellman Key Exchange/Agreement Algorithm).这个机制的巧妙在于需要安全通信的双方可以<span style="color:#ff0000">用这个方法确定<strong>对称密钥</strong></span>。然后可以用这个密钥进行加密和解密。但是注意，<span style="color:#ff0000">这个密钥交换协议/算法只能用于密钥的交换，而不能进行消息的加密和解密</span>。双方确定要用的密钥后，要使用其他对称密钥操作加密算法实际加密和解密消息。<br><br></p><br><p>就是说，DH算法是用来安全地交换密钥的</p><br><p>2.算法描述：</p><br><p>基于原根的定义及性质，可以定义Diffie-Hellman密钥交换算法.该算法描述如下：<br><br>1，有两个全局公开的参数，一个素数q和一个整数a,a是q的一个原根.<br><br>2，假设用户A和B希望交换一个密钥，用户A选择一个作为私有密钥的随机数XA(XA&lt;q)，并计算公开密钥YA=a^XA mod q。A对XA的&#20540;保密存放而使YA能被B公开获得。类&#20284;地，用户B选择一个私有的随机数XB&lt;q，并计算公开密钥YB=a^XB mod q。B对XB的&#20540;保密存放而使YB能被A公开获得.<br><br>3，用户A产生共享秘密密钥的计算方式是K = (YB)^XA mod q.同样，用户B产生共享秘密密钥的计算是K = (YA)^XB mod q.这两个计算产生相同的结果： K = (YB)^XA mod q = (a^XB mod q)^XA mod q = (a^XB)^XA mod q （根据取模运算规则得到） = a^(XBXA) mod q = (a^XA)^XB mod q = (a^XA mod q)^XB mod q = (YA)^XB mod q 因此相当于双方已经交换了一个相同的秘密密钥.<br><br>4，因为XA和XB是保密的，一个敌对方可以利用的参数只有q,a,YA和YB.因而敌对方被迫取离散对数来确定密钥.例如，要获取用户B的秘密密钥，敌对方必须先计算 XB = inda,q(YB) 然后再使用用户B采用的同样方法计算其秘密密钥K. Diffie-Hellman密钥交换算法的安全性依赖于这样一个事实：<span style="color:#ff0000">虽然计算以一个素数为模的指数相对容易，但计算离散对数却很困难</span>.对于大的素数，计算出离散对数几乎是不可能的. 下面给出例子.密钥交换基于素数q<br> = 97和97的一个原根a = 5.A和B分别选择私有密钥XA = 36和XB = 58.每人计算其公开密钥 YA = 5^36 = 50 mod 97 YB = 5^58 = 44 mod 97 在他们相互获取了公开密钥之后，各自通过计算得到双方共享的秘密密钥如下： K = (YB)^XA mod 97 = 44^36 = 75 mod 97 K = (YA)^XB mod 97 = 50^58 = 75 mod 97 从|50,44|出发，攻击者要计算出75很不容易. 下图给出了一个利用Diffie-Hellman计算的简单协议.<br><br></p><br><p><br><br></p><br><p>二、算法JAVA实现：</p><br><p>开始之前声明一下有一点还是不太明白：</p><br><p>假设甲方给乙方传数据，算法的实现要求乙方构建密钥时必须用甲方公钥构建乙方密钥。我自己是这样理解的：在实际实现的过程中，很难传递双方共享素数q及其元根α，因此采取这样的措施。</p><br><p>那么我们在接下的实现约定以下几个原则：</p><br><p>1.本地密钥：加密数据用的密钥</p><br><p>2.密钥=公钥&#43;私钥，甲乙有自己的不相同的密钥，用来加密本地密钥</p><br><p>3.一方的密钥由Init()直接产生，另一方的密钥构建需用到已构建方的公钥</p><br><p><br><br></p><br><p>首先，对全局变量声明：</p><br><p><pre name="code" class="java">&lt;span style=&quot;white-space:pre&quot;&gt;    &lt;/span&gt;private static final String KEY_ALGORITHM = &quot;DH&quot;;<br>    private static final String SECRET_ALGORITHM = &quot;AES&quot;;<br>    private static final int KEY_SIZE=512;<br>    private static final String PUBLIC_KEY=&quot;DHPublicKey&quot;;<br>    private static final String PRIVATE_KEY=&quot;DHPrivateKey&quot;;</pre><br><br></p><br><p>复习一下对称加密中产生密钥的三种方法：</p><br><p><pre name="code" class="plain">产生secretKey的三种方法：<br>a.凭空产生：KeyGenerator类对象获得SecretKey类对象：init()-&gt;generatorKey()<br>b.通过byte[]数组产生：密钥工厂利用密钥材料生成SecretKey：secretKeyFactory.generateSecretKey(dks);<br>c.通过byte[]数组产生：密钥材料类初始化成父类SecretKey</pre><br><br><br><br></p><br><p>构建DH甲方密钥对：凭空产生：<strong><span style="color:#ff0000">keyGenerator </span></strong>-&gt; keyPair -&gt;publicKey,privateKey. 最后用map对象返回，分别对应键: PUBLIC_KEY,PRIVATE_KEY</p><br><p><pre name="code" class="java">&lt;span style=&quot;white-space:pre&quot;&gt;    &lt;/span&gt;public static Map&lt;String,Object&gt; initKey() throws NoSuchAlgorithmException{<br>        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(KEY_ALGORITHM);<br>        keyPairGenerator.initialize(KEY_SIZE);<br>        KeyPair keyPair = keyPairGenerator.generateKeyPair();<br>        PublicKey publicKey = keyPair.getPublic();<br>        PrivateKey privateKey = keyPair.getPrivate();<br>        Map&lt;String,Object&gt; keyMap = new HashMap&lt;String,Object&gt;(2);<br>        keyMap.put(PUBLIC_KEY, publicKey);<br>        keyMap.put(PRIVATE_KEY, privateKey);<br>        return keyMap;<br>    }</pre><br><br>构建DH乙方密钥对：由甲方公钥产生：由byte[]-&gt;密钥材料-&gt;密钥工厂还原甲方公钥-&gt;-&gt;密钥材料DHParameterSpec-&gt;keyPariGenerator初始化成keyPairGenerator</p><br><p>就是一个byte[]-&gt;材料-&gt;密钥-&gt;材料-&gt;密钥；2.3步为还原甲密钥，4.5步产生乙密钥</p><br><p><strong><span style="color:#ff0000">至此得出一个结论：密钥共厂可以把密钥材料转换成密钥</span></strong></p><br><p><strong><span style="color:#ff0000"><em>Spec这样的材料类可以把byte[]或密钥转成密钥材料</em></span></strong></p><br><p><pre name="code" class="java">public static Map&lt;String,Object&gt; initKey(byte[] key) throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidAlgorithmParameterException{<br>        //拿到传进来的公钥<br>        X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(key);<br>        KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);<br>        PublicKey pubKey = keyFactory.generatePublic(x509EncodedKeySpec);//Cannot make a static reference to the non-static method generatePublic(KeySpec) from the type KeyFactory<br><br>        //传进来的公钥构造密钥材料<br>        DHParameterSpec dhParameter = ((DHPublicKey)pubKey).getParams();<br><br>        //产生乙方公钥，私钥<br>        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(keyFactory.getAlgorithm());<br>        keyPairGenerator.initialize(dhParameter);<br>        KeyPair keyPair = keyPairGenerator.genKeyPair();<br>        DHPublicKey publicKey = (DHPublicKey)keyPair.getPublic();<br>        DHPrivateKey privateKey = (DHPrivateKey)keyPair.getPrivate();<br><br>        Map&lt;String,Object&gt; keyMap = new HashMap&lt;String,Object&gt;(2);<br>        keyMap.put(PUBLIC_KEY, publicKey);<br>        keyMap.put(PRIVATE_KEY, privateKey);<br>        return keyMap;<br>    }</pre><br><br>构建本地密钥代码：</p><br><p><pre name="code" class="java">&lt;span style=&quot;white-space:pre&quot;&gt;    &lt;/span&gt;public static byte[] getSecretKey(byte[] publicKey,byte[] privateKey) throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException{<br>        //通过KeyFactory还原密钥，注意公私钥的材料类<br>        //byte[] -&gt;密钥材料-&gt;密钥<br>        KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);<br>        X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(publicKey);<br>        PublicKey pubKey = keyFactory.generatePublic(x509EncodedKeySpec);<br><br>        PKCS8EncodedKeySpec  pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(privateKey);<br>        PrivateKey priKey = keyFactory.generatePrivate(pkcs8EncodedKeySpec);<br><br>        //实例化<br>        KeyAgreement keyAgree = KeyAgreement.getInstance(KEY_ALGORITHM);<br>        keyAgree.init(priKey);<br>        keyAgree.doPhase(pubKey, true);<br><br>        SecretKey secretKey = keyAgree.generateSecret(SECRET_ALGORITHM);<br>        return secretKey.getEncoded();<br>    }</pre><br><br>keyAgreement类实现公钥密码学产生本地密钥SecretKey</p><br><p>keyAgree,init(私钥)-&gt;doPhase(公钥，true)-&gt;generateSecretKey()</p><br><p><br><br></p><br><p>DHCoder实现：</p><br><p><pre name="code" class="java">public abstract class DHCoder {<br>    private static final String KEY_ALGORITHM = &quot;DH&quot;;<br>    private static final String SECRET_ALGORITHM = &quot;AES&quot;;<br>    private static final int KEY_SIZE=512;<br>    private static final String PUBLIC_KEY=&quot;DHPublicKey&quot;;<br>    private static final String PRIVATE_KEY=&quot;DHPrivateKey&quot;;<br><br>    public static Map&lt;String,Object&gt; initKey() throws NoSuchAlgorithmException{<br>        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(KEY_ALGORITHM);<br>        keyPairGenerator.initialize(KEY_SIZE);<br>        KeyPair keyPair = keyPairGenerator.generateKeyPair();<br>        PublicKey publicKey = keyPair.getPublic();<br>        PrivateKey privateKey = keyPair.getPrivate();<br>        Map&lt;String,Object&gt; keyMap = new HashMap&lt;String,Object&gt;(2);<br>        keyMap.put(PUBLIC_KEY, publicKey);<br>        keyMap.put(PRIVATE_KEY, privateKey);<br>        return keyMap;<br>    }<br><br>    public static Map&lt;String,Object&gt; initKey(byte[] key) throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidAlgorithmParameterException{<br>        //拿到传进来的公钥<br>        X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(key);<br>        KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);<br>        PublicKey pubKey = keyFactory.generatePublic(x509EncodedKeySpec);//Cannot make a static reference to the non-static method generatePublic(KeySpec) from the type KeyFactory<br><br>        //传进来的公钥构造密钥材料<br>        DHParameterSpec dhParameter = ((DHPublicKey)pubKey).getParams();<br><br>        //产生乙方公钥，私钥<br>        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(keyFactory.getAlgorithm());<br>        keyPairGenerator.initialize(dhParameter);<br>        KeyPair keyPair = keyPairGenerator.genKeyPair();<br>        DHPublicKey publicKey = (DHPublicKey)keyPair.getPublic();<br>        DHPrivateKey privateKey = (DHPrivateKey)keyPair.getPrivate();<br><br>        Map&lt;String,Object&gt; keyMap = new HashMap&lt;String,Object&gt;(2);<br>        keyMap.put(PUBLIC_KEY, publicKey);<br>        keyMap.put(PRIVATE_KEY, privateKey);<br>        return keyMap;<br><br><br>    }<br><br><br>    public static byte[] encrypt(byte[] data,byte[]key) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException{<br>        SecretKey secretKey = new SecretKeySpec(key,SECRET_ALGORITHM);<br>        Cipher cipher = Cipher.getInstance(SECRET_ALGORITHM);<br>        cipher.init(Cipher.ENCRYPT_MODE, secretKey);<br>        return cipher.doFinal(data);<br>    }<br><br>    public static byte[] decrypt(byte[] data,byte[]key) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException{<br>        SecretKey secretKey = new SecretKeySpec(key,SECRET_ALGORITHM);<br>        Cipher cipher = Cipher.getInstance(SECRET_ALGORITHM);<br>        cipher.init(Cipher.DECRYPT_MODE, secretKey);<br>        return cipher.doFinal(data);<br>    }<br><br>    public static byte[] getSecretKey(byte[] publicKey,byte[] privateKey) throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException{<br>        //通过KeyFactory还原密钥，注意公私钥的材料类<br>        //byte[] -&gt;密钥材料-&gt;密钥<br>        KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);<br>        X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(publicKey);<br>        PublicKey pubKey = keyFactory.generatePublic(x509EncodedKeySpec);<br><br>        PKCS8EncodedKeySpec  pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(privateKey);<br>        PrivateKey priKey = keyFactory.generatePrivate(pkcs8EncodedKeySpec);<br><br>        //实例化<br>        KeyAgreement keyAgree = KeyAgreement.getInstance(KEY_ALGORITHM);<br>        keyAgree.init(priKey);<br>        keyAgree.doPhase(pubKey, true);<br><br>        SecretKey secretKey = keyAgree.generateSecret(SECRET_ALGORITHM);<br>        return secretKey.getEncoded();<br>    }<br><br>    public static byte[] getPrivateKey(Map&lt;String,Object&gt; keyMap){<br>        Key key = (Key)keyMap.get(PRIVATE_KEY);<br>        return key.getEncoded();<br>    }<br><br>    public static byte[] getPublicKey(Map&lt;String,Object&gt; keyMap){<br>        Key key = (Key)keyMap.get(PUBLIC_KEY);<br>        return key.getEncoded();<br>    }<br><br><br><br>}</pre><br><br><br><br></p><br><p>三、DH算法测试用例：</p><br><p>测试两个东西：</p><br><p>1.甲乙方本地密钥应相同；</p><br><p>2.加解密能否互相实现；</p><br><p><pre name="code" class="java">public class DHCoderTest {<br>    private byte[] publicKey1;<br>    private byte[] privateKey1;<br>    private byte[] key1;<br>    private byte[] publicKey2;<br>    private byte[] privateKey2;<br>    private byte[] key2;<br><br>    @Before<br>    public final void initKey() throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidAlgorithmParameterException, InvalidKeyException{<br>        Map&lt;String,Object&gt; keyMap1 = DHCoder.initKey();<br>        publicKey1 = DHCoder.getPublicKey(keyMap1);<br>        privateKey1 = DHCoder.getPrivateKey(keyMap1);<br>        System.err.println(&quot;甲方公钥：\n&quot;+Base64.encodeBase64String(publicKey1));<br>        System.err.println(&quot;甲方私钥：\n&quot;+Base64.encodeBase64String(privateKey1));<br><br>        //甲方公钥产生乙方公私钥<br>        Map&lt;String,Object&gt; keyMap2 = DHCoder.initKey(publicKey1);<br>        publicKey2 = DHCoder.getPublicKey(keyMap2);<br>        privateKey2 = DHCoder.getPrivateKey(keyMap2);<br>        System.err.println(&quot;乙方公钥：\n&quot;+Base64.encodeBase64String(publicKey2));<br>        System.err.println(&quot;乙方私钥：\n&quot;+Base64.encodeBase64String(privateKey2));<br><br>        key1 = DHCoder.getSecretKey(publicKey2, privateKey1);<br>        key2 = DHCoder.getSecretKey(publicKey1, privateKey2);<br>        System.err.println(&quot;甲方本地密钥：\n&quot;+Base64.encodeBase64String(key1));<br>        System.err.println(&quot;乙方本地密钥：\n&quot;+Base64.encodeBase64String(key2));<br><br>        assertArrayEquals(key1,key2);<br><br>    }<br><br>    @Test<br>    public final void test() throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {<br>        System.err.println(&quot;\n=====甲方向乙方发送加密数据=====&quot;);<br>        String input1=&quot;密钥交换算法&quot;;<br>        System.err.println(&quot;原文： &quot;+input1);<br>        System.err.println(&quot;—使用甲方密钥对本地数据加密—&quot;);<br><br>        byte[] code1=DHCoder.encrypt(input1.getBytes(), key1);<br>        System.err.println(&quot;加密： &quot;+Base64.encodeBase64String(code1));<br>        System.err.println(&quot;—使用乙方密钥对本地数据解密—&quot;);<br><br>        byte[] decode1 = DHCoder.decrypt(code1, key2);<br>        String output1= new String(decode1);<br>        System.err.println(&quot;解密：  &quot;+output1);<br><br>        assertEquals(input1,output1);<br><br>        System.err.println(&quot;\n=====乙方向甲方发送加密数据=====&quot;);<br>        String input2=&quot;DH&quot;;<br>        System.err.println(&quot;原文： &quot;+input2);<br>        System.err.println(&quot;—使用乙方密钥对本地数据加密—&quot;);<br><br>        byte[] code2=DHCoder.encrypt(input2.getBytes(), key2);<br>        System.err.println(&quot;加密： &quot;+Base64.encodeBase64String(code2));<br>        System.err.println(&quot;—使用甲方密钥对本地数据解密—&quot;);<br><br>        byte[] decode2 = DHCoder.decrypt(code2, key1);<br>        String output2= new String(decode2);<br>        System.err.println(&quot;解密：  &quot;+output2);<br><br>        assertEquals(input2,output2);<br><br>    }<br></pre><br><br><strong>输出：</strong></p><br><p>甲方公钥：<br><br>MIHgMIGXBgkqhkiG9w0BAwEwgYkCQQD8poLOjhLKuibvzPcRDlJtsHiwXt7LzR60ogjzrhYXrgHzW5Gkfm32NBPF4S7QiZvNEyrNUNmRUb3EPuc3WS4XAkBnhHGyepz0TukaScUUfbGpqvJE8FpDTWSGkx0tFCcbnjUDC3H9c9oXkGmzLik1Yw4cIGI1TQ2iCmxBblC&#43;eUykAgIBgANEAAJBAJv7XJrlaOYCIPZ1vZc2Ol5GnvYQNWWcoeNPjNbzPW5keT5p1rl3mwLJdDnOI1Qwh9pw3vmQirNsBMhacKvu0I4=<br><br>甲方私钥：<br><br>MIHSAgEAMIGXBgkqhkiG9w0BAwEwgYkCQQD8poLOjhLKuibvzPcRDlJtsHiwXt7LzR60ogjzrhYXrgHzW5Gkfm32NBPF4S7QiZvNEyrNUNmRUb3EPuc3WS4XAkBnhHGyepz0TukaScUUfbGpqvJE8FpDTWSGkx0tFCcbnjUDC3H9c9oXkGmzLik1Yw4cIGI1TQ2iCmxBblC&#43;eUykAgIBgAQzAjEA9dZOTVebQERSfblRNYIRob8g6g24V2DINCnEXwJTlYVdHIV5PLyjbWzn48eb2NIg<br><br>乙方公钥：<br><br>MIHgMIGXBgkqhkiG9w0BAwEwgYkCQQD8poLOjhLKuibvzPcRDlJtsHiwXt7LzR60ogjzrhYXrgHzW5Gkfm32NBPF4S7QiZvNEyrNUNmRUb3EPuc3WS4XAkBnhHGyepz0TukaScUUfbGpqvJE8FpDTWSGkx0tFCcbnjUDC3H9c9oXkGmzLik1Yw4cIGI1TQ2iCmxBblC&#43;eUykAgIBgANEAAJBAJZ304pW1u5XRkEgyasNNV3Vy74yPPjTCNU5tbqbSnGDKKsBhjagSoMdJ21HiAPeU0NFIeZdPPYI2vu55ETQJOA=<br><br>乙方私钥：<br><br>MIHSAgEAMIGXBgkqhkiG9w0BAwEwgYkCQQD8poLOjhLKuibvzPcRDlJtsHiwXt7LzR60ogjzrhYXrgHzW5Gkfm32NBPF4S7QiZvNEyrNUNmRUb3EPuc3WS4XAkBnhHGyepz0TukaScUUfbGpqvJE8FpDTWSGkx0tFCcbnjUDC3H9c9oXkGmzLik1Yw4cIGI1TQ2iCmxBblC&#43;eUykAgIBgAQzAjEA2jSKn/s21Yirb9HBIxrH2l9B6HI59s7Nvk5FOafpr0VqpigbdFV6fLUDURUUWOdb<br><br>甲方本地密钥：<br><br>gJyxRUpxSSxl6ibLr6LfIs9rTr7k9XxFKwhGqaOFy5U=<br><br>乙方本地密钥：<br><br>gJyxRUpxSSxl6ibLr6LfIs9rTr7k9XxFKwhGqaOFy5U=<br><br><br><br><br><br>=====甲方向乙方发送加密数据=====<br><br>原文： 密钥交换算法<br><br>—使用甲方密钥对本地数据加密—<br><br>加密： VqM0WkF0M8j1UURMOd9QRg==<br><br>—使用乙方密钥对本地数据解密—<br><br>解密： &nbsp;密钥交换算法<br><br><br><br><br><br>=====乙方向甲方发送加密数据=====<br><br>原文： DH<br><br>—使用乙方密钥对本地数据加密—<br><br>加密： faq8AO4Joy1s6k6/k3JVUw==<br><br>—使用甲方密钥对本地数据解密—<br><br>解密： &nbsp;DH<br><br></p><br><p><br><br></p><br><p>这里选择的密钥长度是512位，若选择1024位就更长了</p><br><p>DH算法支持密钥长度为64倍数，512~1024.长度与安全强度正比，运算时间反比</p><br><p>对称加密算法可选择DES，DESede,AES 等</p><br><p>合理选择密钥长度及算法是构建DH算法密码系统关键。</p><br><p><br><br></p><br><p>四、System.out.println()与System.err.println();</p><br><p>System.out.println();是标准输出，输出黑色<br><br>System.err.println();是标准错误输出，输出红色<br><br><br><br><br><br>默认的话都是写往控制台，从操作系统的实现上讲<br><br>标准输出 一般有默认有缓存<br><br>标准错误输出 一般没有缓存<br><br></p><br><p><br><br></p><br><p>System.out.println 能重定向到别的输出流，这样的话你在屏幕上将看不到打印的东西了，<br><br>而System.err.println只能在屏幕上实现打印，即使你重定向了也一样。<br><br></p><br><link rel="stylesheet" href="http://static.blog.csdn.net/public/res-min/markdown_views.css?v=2.0"><br>            </div><br>        <br>        <div class="readall_box csdn-tracking-statistics" data-mod="popu_376"><br>            <div class="read_more_mask"></div><br>            <a class="btn btn-large btn-gray-fred read_more_btn" target="_self">阅读全文</a><br>        </div><br>        <div class="article_copyright"><br>            <h4>实例代码</h4><br>    DHCoder.java<br>    <pre name="code" class="java"><br>      package com.dtb.member.test;<br><br>import java.security.Key;<br>import java.security.KeyFactory;<br>import java.security.KeyPair;<br>import java.security.KeyPairGenerator;<br>import java.security.PrivateKey;<br>import java.security.PublicKey;<br>import java.security.spec.PKCS8EncodedKeySpec;<br>import java.security.spec.X509EncodedKeySpec;<br>import java.util.HashMap;<br>import java.util.Map;<br><br>import javax.crypto.Cipher;<br>import javax.crypto.KeyAgreement;<br>import javax.crypto.SecretKey;<br>import javax.crypto.interfaces.DHPrivateKey;<br>import javax.crypto.interfaces.DHPublicKey;<br>import javax.crypto.spec.DHParameterSpec;<br>import javax.crypto.spec.SecretKeySpec;<br><br>import com.sun.org.apache.xml.internal.security.utils.Base64;<br><br>public class DHCoder {<br>    /<strong><br>     <em> 非对称加密密钥算法 
+     </em>/<br>    private static final String KEY_ALGORITHM = “DH”;<br>    /</strong><br>     <em> 本地密钥算法，即对称加密密钥算法 
+     </em> 可选DES、DESede或者AES<br>     <em>/<br>    private static final String SELECT_ALGORITHM = “AES”;<br>    /** 
+     </em> 密钥长度<br>     <em>/<br>    private static final int KEY_SIZE = 512;<br>    //公钥<br>    private static final String PUBLIC_KEY = “DHPublicKey”;<br>    //私钥<br>    private static final String PRIVATE_KEY = “DHPrivateKey”;<br><br>    /** 
+     </em> 初始化甲方密钥<br>     <em> @return Map 甲方密钥Map 
+     </em> @throws Exception<br>     <em>/<br>    public static Map<string, object=""> initKey() throws Exception{<br>        //实例化密钥对生成器<br>        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(KEY_ALGORITHM);<br>        //初始化密钥对生成器<br>        keyPairGenerator.initialize(KEY_SIZE);<br>        //生成密钥对<br>        KeyPair keyPair = keyPairGenerator.generateKeyPair();<br>        //甲方公钥<br>        DHPublicKey publicKey = (DHPublicKey)keyPair.getPublic();<br>        //甲方私钥<br>        DHPrivateKey privateKey = (DHPrivateKey)keyPair.getPrivate();<br>        //将密钥对存储在Map中<br>        Map<string, object=""> keyMap = new HashMap<string, object="">(2);<br>        keyMap.put(PUBLIC_KEY, publicKey);<br>        keyMap.put(PRIVATE_KEY, privateKey);<br>        return keyMap;<br>    }<br><br>    /** 
+     </string,></string,></string,></em> 初始化乙方密钥<br>     <em> @param key 甲方公钥 
+     </em> @return Map 乙方密钥Map<br>     <em> @throws Exception 
+     </em>/<br>    public static Map<string, object=""> initKey(byte[] key) throws Exception{<br>        //解析甲方公钥<br>        //转换公钥材料<br>        X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(key);<br>        //实例化密钥工厂<br>        KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);<br>        //产生公钥<br>        PublicKey pubKey = keyFactory.generatePublic(x509KeySpec);<br>        //由甲方公钥构建乙方密钥<br>        DHParameterSpec dhParameterSpec = ((DHPublicKey)pubKey).getParams();<br>        //实例化密钥对生成器<br>        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(KEY_ALGORITHM);<br>        //初始化密钥对生成器<br>        keyPairGenerator.initialize(dhParameterSpec);<br>        //产生密钥对<br>        KeyPair keyPair = keyPairGenerator.generateKeyPair();<br>        //乙方公钥<br>        DHPublicKey publicKey = (DHPublicKey) keyPair.getPublic();<br>        //乙方私约<br>        DHPrivateKey privateKey = (DHPrivateKey) keyPair.getPrivate();<br>        //将密钥对存储在Map中<br>        Map<string, object=""> keyMap = new HashMap<string, object="">(2);<br>        keyMap.put(PUBLIC_KEY, publicKey);<br>        keyMap.put(PRIVATE_KEY, privateKey);<br>        return keyMap;<br>    }<br><br>    /<strong><br>     <em> 加密 
+     </em> @param data 待加密数据<br>     <em> @param key 密钥 
+     </em> @return byte[] 加密数据<br>     <em> @throws Exception 
+     </em>/<br>    public static byte[] encrypt(byte[] data, byte[] key) throws Exception{<br>        //生成本地密钥<br>        SecretKey secretKey = new SecretKeySpec(key, SELECT_ALGORITHM);<br>        //数据加密  -这里使用到加密算法超长，所以简单用代码演示加密解密 ，其重点在于 双方都能使用同一个密匙<br>//        Cipher cipher = Cipher.getInstance(SELECT_ALGORITHM);<br>//        cipher.init(Cipher.ENCRYPT_MODE, secretKey);<br>//        return cipher.doFinal(data);<br>        return (new String(data)+Base64.encode(key)).getBytes();<br>    }<br><br>    /</strong><br>     <em> 解密 
+     </em> @param data 待解密数据<br>     <em> @param key 密钥 
+     </em> @return byte[] 解密数据<br>     <em> @throws Exception 
+     </em>/<br>    public static byte[] decrypt(byte[] data, byte[] key) throws Exception{<br>        //生成本地密钥<br>        SecretKey secretKey = new SecretKeySpec(key, SELECT_ALGORITHM);<br>        //数据揭秘  -这里使用到加密算法超长，所以简单用代码演示加密解密 ，其重点在于 双方都能使用同一个密匙<br>//        Cipher cipher = Cipher.getInstance(secretKey.getAlgorithm());<br>//        cipher.init(Cipher.DECRYPT_MODE, secretKey);<br>//        return cipher.doFinal(data);<br>        String encode = Base64.encode(key);<br>        String dataStr = new String(data);<br>        String resultStr = dataStr.split(encode)[0];<br>        return resultStr.getBytes();<br>    }<br><br>    /<strong><br>     <em> 构建密钥 
+     </em> @param publicKey 公钥<br>     <em> @param privateKey 私钥 
+     </em> @return byte[] 本地密钥<br>     <em> @throws Exception 
+     </em>/<br>    public static byte[] getSecretKey(byte[] publicKey, byte[] privateKey) throws Exception{<br>        //实例化密钥工厂<br>        KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);<br>        //初始化公钥<br>        //密钥材料转换<br>        X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(publicKey);<br>        //产生公钥<br>        PublicKey pubKey = keyFactory.generatePublic(x509KeySpec);<br>        //初始化私钥<br>        //密钥材料转换<br>        PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(privateKey);<br>        //产生私钥<br>        PrivateKey priKey = keyFactory.generatePrivate(pkcs8KeySpec);<br>        //实例化<br>        KeyAgreement keyAgree = KeyAgreement.getInstance(keyFactory.getAlgorithm());<br>        //初始化<br>        keyAgree.init(priKey);<br>        keyAgree.doPhase(pubKey, true);<br>        //生成本地密钥<br>        SecretKey secretKey = keyAgree.generateSecret(SELECT_ALGORITHM);<br>        return secretKey.getEncoded();<br>    }<br><br>    /</strong><br>     <em> 取得私钥 
+     </em> @param keyMap 密钥Map<br>     <em> @return byte[] 私钥 
+     </em> @throws Exception<br>     <em>/<br>    public static byte[] getPrivateKey(Map<string, object=""> keyMap) throws Exception{<br>        Key key = (Key) keyMap.get(PRIVATE_KEY);<br>        return key.getEncoded();<br>    }<br><br>    /** 
+     </string,></em> 取得公钥<br>     <em> @param keyMap 密钥Map 
+     </em> @return byte[] 公钥<br>     <em> @throws Exception 
+     </em>/<br>    public static byte[] getPublicKey(Map<string, object=""> keyMap) throws Exception{<br>        Key key = (Key) keyMap.get(PUBLIC_KEY);<br>        return key.getEncoded();<br>    }<br>}<br><br>    </string,></string,></string,></string,></pre><br>    DHTest.java<br>    <pre name="code" class="java"><br>    package com.dtb.member.test;<br><br>import java.util.Map;<br><br>import com.sun.org.apache.xml.internal.security.utils.Base64;<br><br><br>public class DHTest {<br>    //甲方公钥<br>    private static byte[] publicKey1;<br>    //甲方私钥<br>    private static byte[] privateKey1;<br>    //甲方本地密钥<br>    private static byte[] key1;<br>    //乙方公钥<br>    private static byte[] publicKey2;<br>    //乙方私钥<br>    private static byte[] privateKey2;<br>    //乙方本地密钥<br>    private static byte[] key2;<br><br>    /<strong><br>     <em> 初始化密钥 
+     </em> @throws Exception<br>     */<br>    public static final void initKey() throws Exception{<br>        //生成甲方密钥对<br>        Map<string, object=""> keyMap1 = DHCoder.initKey();<br>        publicKey1 = DHCoder.getPublicKey(keyMap1);<br>        privateKey1 = DHCoder.getPrivateKey(keyMap1);<br>//        System.out.println(“甲方公钥:\n” + Base64.encodeBase64String(publicKey1));<br>//        System.out.println(“甲方私钥:\n” + Base64.encodeBase64String(privateKey1));<br>        System.out.println(“甲方公钥:\n” + Base64.encode(publicKey1));<br>        System.out.println(“甲方私钥:\n” + Base64.encode(privateKey1));<br>        //由甲方公钥产生本地密钥对<br>        Map<string, object=""> keyMap2 = DHCoder.initKey(publicKey1);<br>        publicKey2 = DHCoder.getPublicKey(keyMap2);<br>        privateKey2 = DHCoder.getPrivateKey(keyMap2);<br>        System.out.println(“乙方公钥:\n” + Base64.encode(publicKey2));<br>        System.out.println(“乙方私钥:\n” + Base64.encode(privateKey2));<br>        key1 = DHCoder.getSecretKey(publicKey2, privateKey1);<br>        System.out.println(“甲方本地密钥:\n” + Base64.encode(key1));<br>        key2 = DHCoder.getSecretKey(publicKey1, privateKey2);<br>        System.out.println(“乙方本地密钥:\n” + Base64.encode(key2));<br>    }<br><br>    /</string,></string,></strong><br>     <em> 主方法 
+     </em> @param args<br>     <em> @throws Exception 
+     </em>/<br>    public static void main(String[] args) throws Exception {<br>        // TODO Auto-generated method stub<br>        initKey();<br>        System.out.println();<br>        System.out.println(“===甲方向乙方发送加密数据===”);<br>        String input1 = “求知若饥，虚心若愚。”;<br>        System.out.println(“原文:\n” + input1);<br>        System.out.println(“—使用甲方本地密钥对数据进行加密—“);<br>        //使用甲方本地密钥对数据加密<br>        byte[] encode1 = DHCoder.encrypt(input1.getBytes(), key1);<br>        System.out.println(“加密:\n” + Base64.encode(encode1));<br>        System.out.println(“—使用乙方本地密钥对数据库进行解密—“);<br>        //使用乙方本地密钥对数据进行解密<br>        byte[] decode1 = DHCoder.decrypt(encode1, key2);<br>        String output1 = new String(decode1);<br>        System.out.println(“解密:\n” + output1);<br><br>        System.out.println(“/~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~..~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~.~/“);<br>        initKey();<br>        System.out.println(“===乙方向甲方发送加密数据===”);<br>        String input2 = “好好学习，天天向上。”;<br>        System.out.println(“原文:\n” + input2);<br>        System.out.println(“—使用乙方本地密钥对数据进行加密—“);<br>        //使用乙方本地密钥对数据进行加密<br>        byte[] encode2 = DHCoder.encrypt(input2.getBytes(), key2);<br>        System.out.println(“加密:\n” + Base64.encode(encode2));<br>        System.out.println(“—使用甲方本地密钥对数据进行解密—“);<br>        //使用甲方本地密钥对数据进行解密<br>        byte[] decode2 = DHCoder.decrypt(encode2, key1);<br>        String output2 = new String(decode2);<br>        System.out.println(“解密:\n” + output2);<br>    }<br>}<br><br>    </pre><br>        </div>
+
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/10/13/zookeeper-01/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -731,7 +869,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-10-13T15:11:38+08:00">
                 2017-10-13
@@ -844,7 +982,7 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Veröffentlicht am</span>
+                <span class="post-meta-item-text">Posted on</span>
               
               <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-19T11:43:17+08:00">
                 2017-09-19
@@ -886,121 +1024,6 @@
             <div class="postBody"><br>            <div id="cnblogs_post_body"><p><em><strong>&nbsp; 1&nbsp;Serializable接口</strong></em></p><br><p>&nbsp; （1）简单地说，就是可以将一个对象(标志对象的类型)及其状态转换为字节码，保存起来（可以保存在数据库，内存，文件等）,然后可以在适当的时候再将其状态恢复(也就是反序列化)。serialization 不但可以在本机做，而且可以经由网络操作。它自动屏蔽了操作系统的差异，字节顺序等。比如，在 Windows 平台生成一个对象并序列化之，然后通过网络传到一台 Unix 机器上，然后可以在这台Unix机器上正确地重构（deserialization）这个对象。 不必关心数据在不同机器上如何表示，也不必关心字节的顺序或者其他任何细节。<br>&nbsp;<br>另外，还应明白以下几点：<br>&nbsp;<br>&nbsp; &nbsp; a. java.io.Serializable接口没有任何方法属性域，实现它的类只是从语义上表明自己是可以序列化的。<br>&nbsp;<br>&nbsp; &nbsp; b. 在对一个 Serializable（可序列化）对象进行重新装配的过程中，不会调用任何构建器（甚至默认构建器）。整个对象都是通过从 InputStream 中取得数据恢复的。<br>&nbsp;<br>&nbsp; &nbsp; c. 如是要一个类是可序列化的，那么它的子类也是可序列化的。</p><br><p>（2）serialVersionUID</p><br><p>serialVersionUID的取值是Java运行时环境根据类的内部细节自动生成的。如果对类的源代码作了修改，再重新编译，新生成的类文件的serialVersionUID的取值有可能也会发生变化。<br>类的serialVersionUID的默认值完全依赖于Java编译器的实现，对于同一个类，用不同的Java编译器编译，有可能会导致不同的serialVersionUID，也有可能相同。为了提高哦啊serialVersionUID的独立性和确定性，强烈建议在一个可序列化类中显示的定义serialVersionUID，为它赋予明确的值。显式地定义serialVersionUID有两种用途：<br>&nbsp;<br>　　a. 在某些场合，希望类的不同版本对序列化兼容，因此需要确保类的不同版本具有相同的serialVersionUID；<br>&nbsp;<br>　　b. 在某些场合，不希望类的不同版本对序列化兼容，因此需要确保类的不同版本具有不同的serialVersionUID。</p><br><p>&nbsp;</p><br><p><em><strong>2 自定义序列化：</strong></em></p><br><p>&nbsp; &nbsp; &nbsp; 自定义序列化是由ObjectInput/OutputStream在序列化/反序列化时候通过反射检查该类是否存在以下方法（0个或多个）：执行顺序从上往下，序列化调用1和2，反序列调用3和4；transient关键字当某个字段被声明为transient后，默认序列化机制就会忽略该字段。</p><br><p>1Object writeReplace() throws ObjectStreamException;可以通过此方法修改序列化的对象</p><br><p>2void&nbsp;writeObject(java.io.ObjectOutputStream out) throws IOException; 方法中调用defaultWriteObject（） 使用writeObject的默认的序列化方式，除此之外可以加上一些其他的操作，如添加额外的序列化对象到输出：out.writeObject(“XX”)</p><br><p>3void readObject(java.io.ObjectInputStream in) throws Exception; 方法中调用defaultReadObject（）使用readObject默认的反序列化方式，除此之外可以加上一些其他的操作，如读入额外的序列化对象到输入：in.readObject()</p><br><p>4Object readResolve() throws ObjectStreamException;可以通过此方法修改返回的对象</p><br><p>&nbsp;</p><br><p>例子：单例模式的类实现序列化接口，若使用默认的序列化策略，则在反序列化返回的对象不符合单利模式（反射创建了新的对象，如下PersonSington对象），可以通过修改序列化的readResolve来实现自定义序列化返回结果来实现单例对象唯一（相当于1,2,3方法对4的结果毫无作用）。</p><br><div class="cnblogs_code"><br><pre><span style="color: #0000ff">public</span> <span style="color: #0000ff">class</span> PersonSingleton <span style="color: #0000ff">implements</span><span style="color: #000000"> Serializable {</span><br>    <span style="color: #0000ff">private</span> <span style="color: #0000ff">static</span> <span style="color: #0000ff">final</span> <span style="color: #0000ff">long</span> serialVersionUID = 1L<span style="color: #000000">;<br>    </span><span style="color: #0000ff">private</span><span style="color: #000000"> String name;<br>    </span><span style="color: #0000ff">private</span><span style="color: #000000"> PersonSingleton(String name) {<br>        </span><span style="color: #0000ff">this</span>.name =<span style="color: #000000"> name;<br>    };<br>    </span><span style="color: #0000ff">private</span> <span style="color: #0000ff">static</span> PersonSingleton person = <span style="color: #0000ff">null</span>;<br><br>    <span style="color: #0000ff">public</span> <span style="color: #0000ff">static</span> <span style="color: #0000ff">synchronized</span><span style="color: #000000"> PersonSingleton getInstance() {<br>        </span><span style="color: #0000ff">if</span> (person == <span style="color: #0000ff">null</span><span style="color: #000000">)<br>            </span><span style="color: #0000ff">return</span> person = <span style="color: #0000ff">new</span> PersonSingleton(“cgl”<span style="color: #000000">);<br>        </span><span style="color: #0000ff">return</span><span style="color: #000000"> person;<br>    }<br><br>    </span><span style="color: #0000ff">private</span> Object writeReplace() <span style="color: #0000ff">throws</span><span style="color: #000000"> ObjectStreamException {<br>        System.out.println(</span>“1 write replace start”<span style="color: #000000">);<br>        </span><span style="color: #0000ff">return</span> <span style="color: #0000ff">this</span><span style="color: #000000">;//可修改为其他对象<br>    }<br><br>    </span><span style="color: #0000ff">private</span> <span style="color: #0000ff">void</span> writeObject(java.io.ObjectOutputStream out) <span style="color: #0000ff">throws</span><span style="color: #000000"> IOException {<br>        System.out.println(</span>“2 write object start”<span style="color: #000000">);<br>        out.defaultWriteObject();<br>       //out.writeInt(1);<br>    }<br><br>    </span><span style="color: #0000ff">private</span> <span style="color: #0000ff">void</span> readObject(java.io.ObjectInputStream in) <span style="color: #0000ff">throws</span><span style="color: #000000"> IOException, ClassNotFoundException {<br>        System.out.println(</span>“3 read object start”<span style="color: #000000">);<br>        in.defaultReadObject();<br>       //int i=in.readInt();<br>    }<br><br>    </span><span style="color: #0000ff">private</span> Object readResolve() <span style="color: #0000ff">throws</span><span style="color: #000000"> ObjectStreamException {<br>        System.out.println(</span>“4 read resolve start”<span style="color: #000000">);<br>        </span><span style="color: #0000ff">return</span><span style="color: #000000"> PersonSingleton.getInstance();//不管序列化的操作是什么，返回的都是本地的单例对象<br>    }<br><br>    </span><span style="color: #0000ff">public</span> <span style="color: #0000ff">static</span> <span style="color: #0000ff">void</span> main(String[] args) <span style="color: #0000ff">throws</span><span style="color: #000000"> Exception {<br><br>        FileOutputStream out </span>= <span style="color: #0000ff">new</span> FileOutputStream(<span style="color: #0000ff">new</span> File(“D://person.dat”<span style="color: #000000">));<br>        ObjectOutputStream op </span>= <span style="color: #0000ff">new</span><span style="color: #000000"> ObjectOutputStream(out);<br>        op.writeObject(PersonSingleton.getInstance());<br>        op.close();<br><br>        FileInputStream in </span>= <span style="color: #0000ff">new</span> FileInputStream(<span style="color: #0000ff">new</span> File(“D://person.dat”<span style="color: #000000">));<br>        ObjectInputStream oi </span>= <span style="color: #0000ff">new</span><span style="color: #000000"> ObjectInputStream(in);<br>        Object person </span>=<span style="color: #000000"> oi.readObject();<br>        in </span>= <span style="color: #0000ff">new</span> FileInputStream(<span style="color: #0000ff">new</span> File(“D://person.dat”<span style="color: #000000">));<br>        oi </span>= <span style="color: #0000ff">new</span><span style="color: #000000"> ObjectInputStream(in);<br>        PersonSinglton person1 </span>=<span style="color: #000000"> (PersonSinglton) oi.readObject();<br><br>        System.out.println(</span>“sington person hashcode:” +<span style="color: #000000"> person.hashCode());<br>        System.out.println(</span>“sington person1 hashcode:” +<span style="color: #000000"> person1.hashCode());<br>        System.out.println(</span>“singleton getInstance hashcode:” +<span style="color: #000000"> PersonSingleton.getInstance().hashCode());<br>        System.out.println(</span>“singleton person equals:” + (person ==<span style="color: #000000"> PersonSingleton.getInstance()));<br>        System.out.println(</span>“person equals1:” + (person1 ==<span style="color: #000000"> person));<br>    }<br>}</span></pre><br></div><br><p>&nbsp;</p><br><p>运行结果：</p><br><hr><br><p>&nbsp;</p><br><p>1 write replace start<br>2 write object start<br>3 read object start<br>4 read resolve start<br>3 read object start<br>4 read resolve start<br>sington person hashcode:1550089733<br>sington person1 hashcode:1550089733<br>sington getInstance hashcode:1550089733<br>sington person equals:true<br>person equals1:true</p><br><hr><br><p>&nbsp;</p><br><p><em><strong>3&nbsp;Externalizable接口</strong></em></p><br><p>&nbsp; &nbsp;Externalizable继承于Serializable，当使用该接口时，序列化的细节需要由程序员去完成。若writeExternal()与readExternal()方法未作任何处理，那么该序列化行为将不会保存/读取任何一个字段。出结果中所有字段的值均为空。<br>&nbsp;&nbsp;&nbsp; 另外，若使用Externalizable进行序列化，当读取对象时，会调用被序列化类的无参构造器去创建一个新的对象，然后再将被保存对象的字段的值分别填充到新对象中。由于这个原因，实现Externalizable接口的类必须要提供一个无参的构造器，且它的访问权限为public。</p><br><p>&nbsp;</p></div><div id="MySignature"></div><br><div class="clear"></div><br><div id="blog_post_info_block"><br><div id="BlogPostCategory"></div><br><div id="EntryTag"></div><br><div id="blog_post_info"><br></div>
 
 </div></div>
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/09/18/serialization-01/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="XueCheng">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="XueCheng Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/09/18/serialization-01/" itemprop="url">转载:java序列化机制及原理</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Veröffentlicht am</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-18T11:27:22+08:00">
-                2017-09-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p></p><p>&nbsp;<strong><span>Java</span></strong><strong><span>序列化算法透析</span></strong></p> <p><strong><span></span></strong><span>&nbsp; Serialization</span><span>（序列化）是一种将对象以一连串的字节描述的过程；反序列化</span><span><span>deserialization</span></span><span>是一种将这些字节重建成一个对象的过程。</span><span>Java</span><span>序列化</span><span>API</span><span>提供一种处理对象序列化的标准机制。在这里你能学到如何序列化一个对象，什么时候需要序列化以及</span><span>Java</span><span>序列化的算法，我们用一个实例来示范序列化以后的字节是如何描述一个对象的信息的。</span></p> <p><span></span><strong><span>序列化的必要性</span></strong></p> <p><strong><span></span></strong><span>Java</span><span>中，一切都是对象，在分布式环境中经常需要将</span><span>Object</span><span>从这一端网络或设备传递到另一端。 <br>这就需要有一种可以在两端传输数据的协议。</span><span>Java</span><span>序列化机制就是为了解决这个问题而产生。</span></p> <p><span></span><strong><span>如何序列化一个对象</span></strong></p> <p><strong><span></span></strong><span>一个对象能够序列化的前提是实现</span><span><span>Serializable</span></span><span>接口，</span><span><span>Serializable</span></span><span>接口没有方法，更像是个标记。 <br>有了这个标记的</span><span>Class</span><span>就能被序列化机制处理。</span></p> <div style="border-bottom: silver 1px solid; text-align: left; border-left: silver 1px solid; padding-bottom: 4px; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; padding-left: 4px; width: 97.5%; padding-right: 4px; font-family: 'Courier New', courier, monospace; direction: ltr; max-height: 200px; font-size: 8pt; overflow: auto; border-top: silver 1px solid; cursor: text; border-right: silver 1px solid; padding-top: 4px" id="codeSnippetWrapper"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px" id="codeSnippet"><span style="color: #006080">import java.io.Serializable;</span>   <br>class TestSerial implements Serializable {          <br>    public byte version <span style="color: #006080">= 100;</span>         <br>    public byte count <span style="color: #006080">= 0;</span>   <br>} </pre><br></div><p></p>
-<p></p><p><span>然后我们写个程序将对象序列化并输出。</span><span><span>ObjectOutputStream</span></span><span>能把</span><span>Object</span><span>输出成</span><span>Byte</span><span>流。 <br>我们将</span><span>Byte</span><span>流暂时存储到</span><span><span>temp.out</span></span><span>文件里。</span><span>&nbsp;</span></p><p></p>
-<div style="border-bottom: silver 1px solid; text-align: left; border-left: silver 1px solid; padding-bottom: 4px; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; padding-left: 4px; width: 97.5%; padding-right: 4px; font-family: 'Courier New', courier, monospace; direction: ltr; max-height: 200px; font-size: 8pt; overflow: auto; border-top: silver 1px solid; cursor: text; border-right: silver 1px solid; padding-top: 4px" id="codeSnippetWrapper"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px" id="codeSnippet">public static void main(String args[]) throws IOException {          <br>    FileOutputStream fos = new FileOutputStream(“temp<span style="color: #cc6633">.out</span>“);         <br>    ObjectOutputStream oos = new ObjectOutputStream(fos);          <br>    TestSerial ts = new TestSerial();          <br>    oos<span style="color: #cc6633">.writeObject</span>(ts);          <br>    oos<span style="color: #cc6633">.flush</span>();          <br>    oos<span style="color: #cc6633">.close</span>(); <br>}</pre><br></div><br><ul class="con"><pre><span>如果要从持久的文件中读取</span><span>Bytes</span><span>重建对象，我们可以使用</span><span><span>ObjectInputStream</span></span><span>。</span>  </pre><br><div style="border-bottom: silver 1px solid; text-align: left; border-left: silver 1px solid; padding-bottom: 4px; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; padding-left: 4px; width: 97.5%; padding-right: 4px; font-family: 'Courier New', courier, monospace; direction: ltr; max-height: 200px; font-size: 8pt; overflow: auto; border-top: silver 1px solid; cursor: text; border-right: silver 1px solid; padding-top: 4px" id="codeSnippetWrapper"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px" id="codeSnippet">public static void main(String args[]) throws IOException {     <br>    FileInputStream fis = new FileInputStream(“temp<span style="color: #cc6633">.out</span>“);          <br>    ObjectInputStream oin = new ObjectInputStream(fis);           <br>    TestSerial ts = (TestSerial) oin<span style="color: #cc6633">.readObject</span>();           <br>    System<span style="color: #cc6633">.out</span><span style="color: #cc6633">.println</span>(“version=”+ts<span style="color: #cc6633">.version</span>);    <br>} </pre><br></div><pre>执行结果为 <span>100.</span> </pre><pre><strong><span>对象的序列化格式</span></strong></pre><pre><span>将一个对象序列化后是什么样子呢？打开刚才我们将对象序列化输出的</span><span><span>temp.out</span></span><span>文件</span></pre><pre><span></span><span>以</span><span>16</span><span>进制方式显示。内容应该如下：</span> </pre><pre><span>AC ED 00 05 73 72 00 0A 53 65 72 69 61 6C 54 65<br>73 74 A0 0C 34 00 FE B1 DD F9 02 00 02 42 00 05<br>63 6F 75 6E 74 42 00 07 76 65 72 73 69 6F 6E 78<br>70 00 64<br></span><span><span></span></span></pre><pre><span><span>这一坨字节就是用来描述序列化以后的</span><span><span>TestSerial</span></span><span>对象的，我们注意到</span><span><span>TestSerial</span></span><span>类中只有两个域：</span></span></pre><pre><span><span></span></span><em><span><span>public</span></span><span><span>&nbsp;</span>byte version = 100;</span></em></pre><pre><em><span></span></em><em><span><span>public</span></span><span><span>&nbsp;</span>byte count = 0;</span></em></pre><pre><span>且都是</span><span>byte</span><span>型，理论上存储这两个域只需要</span><span>2</span><span>个</span><span>byte</span><span>，但是实际上</span><span><span>temp.out</span></span><span>占据空间为</span><span>51bytes</span><span>，也就是说除了数据以外，还包括了对序列化对象的其他描述</span></pre><pre><span></span><strong><span>Java</span></strong><strong><span>的序列化算法</span></strong></pre><pre><strong><span></span></strong><span>序列化算法一般会按步骤做如下事情：</span></pre><pre><span></span><span><span>◆</span></span><span>将对象实例相关的类元数据输出。</span></pre><pre><span></span><span><span>◆</span></span><span>递归地输出类的超类描述直到不再有超类。</span></pre><pre><span></span><span><span>◆</span></span><span>类元数据完了以后，开始从最顶层的超<span>类开始</span>输出对象实例的实际数据值。</span></pre><pre><span></span><span><span>◆</span></span><span>从上至下递归输出实例的数据</span></pre><pre><span></span><span>我们用另一个更完整覆盖所有可能出现的情况的例子来说明：</span></pre><br><ol class="dp-j"><br><div style="border-bottom: silver 1px solid; text-align: left; border-left: silver 1px solid; padding-bottom: 4px; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; padding-left: 4px; width: 97.5%; padding-right: 4px; font-family: 'Courier New', courier, monospace; direction: ltr; max-height: 200px; font-size: 8pt; overflow: auto; border-top: silver 1px solid; cursor: text; border-right: silver 1px solid; padding-top: 4px" id="codeSnippetWrapper"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px" id="codeSnippet">class parent implements Serializable {          <br>    int parentVersion <span style="color: #006080">= 10;</span>   <br>} </pre><br></div><span class="keyword"><strong><span style="color: #006699"></span></strong></span></ol></ul><br><ul class="con"><br><div style="border-bottom: silver 1px solid; text-align: left; border-left: silver 1px solid; padding-bottom: 4px; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; padding-left: 4px; width: 97.5%; padding-right: 4px; font-family: 'Courier New', courier, monospace; direction: ltr; max-height: 200px; font-size: 8pt; overflow: auto; border-top: silver 1px solid; cursor: text; border-right: silver 1px solid; padding-top: 4px" id="codeSnippetWrapper"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px" id="codeSnippet">class contain implements Serializable{          <br>    Int containVersion <span style="color: #006080">= 11;</span>   <br>}  </pre><br></div><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; height: 244px; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px" id="codeSnippet">public class SerialTest extends parent implements Serializable {   <br>       int version <span style="color: #006080">= 66;</span>   <br>       contain con = new contain();   <br>       public int getVersion() <span style="color: #006080">{  <br>              return version;</span>   <br>       }  <br>       public static void main(String args[]) throws IOException {  <br>              FileOutputStream fos = new FileOutputStream(“temp<span style="color: #cc6633">.out</span>“);  <br>              ObjectOutputStream oos = new ObjectOutputStream(fos);  <br>              SerialTest st = new SerialTest();  <br>              oos<span style="color: #cc6633">.writeObject</span>(st);  <br>              oos<span style="color: #cc6633">.flush</span>();  <br>              oos<span style="color: #cc6633">.close</span>();  <br>       }  <br>}  </pre><br><li>&nbsp; <ol><br><li><br><div><span>AC ED: STREAM_MAGIC.<span>&nbsp;</span></span><span>声明使用了序列化协议</span><span>.</span></div><br></li><li><br><div><span>00 05: STREAM_VERSION.<span>&nbsp;</span></span><span>序列化协议版本</span><span>.</span></div><br></li><li><br><div><span><span>0x73: TC_OBJECT.</span></span><span><span>&nbsp;</span></span><span>声明这是一个新的对象</span><span>.</span>&nbsp;<span>&nbsp;</span></div></li></ol><br><ol><br><li><br><div><span><span>0x72: TC_CLASSDESC.</span><span>&nbsp;</span></span><span>声明这里开始一个新</span><span>Class</span><span>。</span></div><br></li><li><br><div><span>00 0A: Class</span><span>名字的长度</span><span>.</span></div><br></li><li><br><div><span>53 65 72 69 61 6c 54 65 73 74:<span>&nbsp;</span><span>SerialTest,Class</span></span><span>类名</span><span>.</span></div><br></li><li><br><div><span>05 52 81 5A AC 66 02 F6:<span>&nbsp;</span><span>SerialVersionUID</span>,<span>&nbsp;</span></span><span>序列化</span><span>ID</span><span>，如果没有指定， <br>则会由算法随机生成一个</span><span>8byte</span><span>的</span><span>ID.</span></div><br></li><li><br><div><span>0x02:<span>&nbsp;</span></span><span>标记号</span><span>.<span>&nbsp;</span></span><span>该值声明该对象支持序列化。</span></div><br></li><li><br><div><span>00 02:<span>&nbsp;</span></span><span>该类所包含的域个数。</span></div></li></ol><br><ol><br><li><br><div><span>0x49:<span>&nbsp;</span></span><span>域类型</span><span>. 49<span>&nbsp;</span></span><span>代表</span><span>“I”,<span>&nbsp;</span></span><span>也就是</span><span>Int.</span></div><br></li><li><br><div><span>00 07:<span>&nbsp;</span></span><span>域名字的长度</span><span>.</span></div><br></li><li><br><div><span>76 65 72 73 69 6F 6E: version,</span><span>域名字描述</span><span>.</span></div></li></ol><br><ol><br><li><br><div><span>0x4C:<span>&nbsp;</span></span><span>域的类型</span><span>.</span></div><br></li><li><br><div><span>00 03:<span>&nbsp;</span></span><span>域名字长度</span><span>.</span></div><br></li><li><br><div><span>63 6F 6E:<span>&nbsp;</span></span><span>域名字描述，</span><span>con</span></div><br></li><li><br><div><span><span>0x74: TC_STRING.</span><span>&nbsp;</span></span><span>代表一个</span><span>new String.</span><span>用</span><span>String</span><span>来引用对象。</span></div><br></li><li><br><div><span>00 09:<span>&nbsp;</span></span><span>该</span><span>String</span><span>长度</span><span>.</span></div><br></li><li><br><div><span>4C 63 6F 6E 74 61 69 6E 3B:<span>&nbsp;</span><span>Lcontain</span>;, JVM</span><span>的标准对象签名表示法</span><span>.</span></div><br></li><li><br><div><span>0x78: TC_ENDBLOCKDATA,</span><span>对象数据块结束的标志</span></div></li></ol><br><ol><br><li><br><div><span><span>0x72: TC_CLASSDESC.</span><span>&nbsp;</span></span><span>声明这个是个新类</span><span>.</span></div><br></li><li><br><div><span>00 06:<span>&nbsp;</span></span><span>类名长度</span><span>.</span></div><br></li><li><br><div><span>70 61 72 65 6E 74: parent,</span><span>类名描述。</span></div><br></li><li><br><div><span>0E DB D2 BD 85 EE 63 7A:<span>&nbsp;</span><span>SerialVersionUID</span>,<span>&nbsp;</span></span><span>序列化</span><span>ID.</span></div><br></li><li><br><div><span>0x02:<span>&nbsp;</span></span><span>标记号</span><span>.<span>&nbsp;</span></span><span>该值声明该对象支持序列化</span><span>.</span></div><br></li><li><br><div><span>00 01:<span>&nbsp;</span></span><span>类中域的个数</span><span>.</span></div></li></ol><br><ol><br><li><br><div><span>0x49:<span>&nbsp;</span></span><span>域类型</span><span>. 49<span>&nbsp;</span></span><span>代表</span><span>“I”,<span>&nbsp;</span></span><span>也就是</span><span>Int.</span></div><br></li><li><br><div><span>00 0D:<span>&nbsp;</span></span><span>域名字长度</span><span>.</span></div><br></li><li><br><div><span>70 61 72 65 6E 74 56 65 72 73 69 6F 6E:<span>&nbsp;</span><span>parentVersion</span></span><span>，域名字描述。</span></div><br></li><li><br><div><span>0x78: TC_ENDBLOCKDATA,</span><span>对象块结束的标志。</span></div><br></li><li><br><div><span>0x70: TC_NULL,<span>&nbsp;</span></span><span>说明没有其他超类的标志。</span><span>.</span></div></li></ol><br><ol><br><li><br><div><span><span>00<span>&nbsp;</span><span>00</span><span>&nbsp;</span></span></span><span><span>00</span></span><span><span>&nbsp;</span>0A: 10,<span>&nbsp;</span><span>parentVersion</span></span><span>域的值</span><span>.</span></div></li></ol><br><ol><br><li><br><div><span><span>00<span>&nbsp;</span><span>00</span><span>&nbsp;</span></span></span><span><span>00</span></span><span><span>&nbsp;</span>42: 66, version</span><span>域的值</span><span>.</span></div></li></ol><br><ol><br><li><br><div><span>0x73: TC_OBJECT,<span>&nbsp;</span></span><span>声明这是一个新的对象</span><span>.</span></div><br></li><li><br><div><span>0x72: TC_CLASSDESC</span><span>声明这里开始一个新</span><span>Class.</span></div><br></li><li><br><div><span>00 07:<span>&nbsp;</span></span><span>类名的长度</span><span>.</span></div><br></li><li><br><div><span>63 6F 6E 74 61 69 6E: contain,</span><span>类名描述</span><span>.</span></div><br></li><li><br><div><span>FC BB E6 0E FB CB 60 C7:<span>&nbsp;</span><span>SerialVersionUID</span>,<span>&nbsp;</span></span><span>序列化</span><span>ID.</span></div><br></li><li><br><div><span><span>0x02: Various flags.</span><span>&nbsp;</span></span><span>标记号</span><span>.<span>&nbsp;</span></span><span>该值声明该对象支持序列化</span></div><br></li><li><br><div><span>00 01:<span>&nbsp;</span></span><span>类内的域个数。</span></div></li></ol><br><ol><br><li><br><div><span>0x49:<span>&nbsp;</span></span><span>域类型</span><span>. 49<span>&nbsp;</span></span><span>代表</span><span>“I”,<span>&nbsp;</span></span><span>也就是</span><span>Int..</span></div><br></li><li><br><div><span>00 0E:<span>&nbsp;</span></span><span>域名字长度</span><span>.</span></div><br></li><li><br><div><span>63 6F 6E 74 61 69 6E 56 65 72 73 69 6F 6E:<span>&nbsp;</span><span>containVersion</span>,<span>&nbsp;</span></span><span>域名字描述</span><span>.</span></div><br></li><li><br><div><span>0x78: TC_ENDBLOCKDATA</span><span>对象块结束的标志</span><span>.</span></div></li></ol><br><ol><br><li><br><div><span>0x70:TC_NULL</span><span>，没有超类了。</span></div></li></ol><br><ol><br><li><br><div><span><span>00<span>&nbsp;</span><span>00</span><span>&nbsp;</span></span></span><span><span>00</span></span><span><span>&nbsp;</span>0B: 11,<span>&nbsp;</span><span>containVersion</span></span><span>的值</span><span>.</span></div></li></ol><br><p><span>这个例子是相当的直白啦。</span><span><span>SerialTest</span></span><span><span>类实现</span></span><span>了</span><span>Parent</span><span>超类，内部还持有一个</span><span>Container</span><span>对象。</span></p><br><p><span>序列化后的格式如下：</span></p><br><p><span style="background-color: yellow; background-origin: initial; background-clip: initial">AC ED 00 05 73</span><span><span>&nbsp;</span><span style="background-color: lime; background-origin: initial; background-clip: initial">72 00 0A 53 65 72 69 61 6C 54 65</span></span></p><br><p><span style="background-color: lime; background-origin: initial; background-clip: initial">73 74 05 52 81 5A AC 66 02 F6 02 00 02</span><span><span>&nbsp;</span><span style="background-color: aqua; background-origin: initial; background-clip: initial">49 00 07</span></span></p><br><p><span style="background-color: aqua; background-origin: initial; background-clip: initial">76 65 72 73 69 6F 6E</span><span><span>&nbsp;</span><span style="background-color: silver; background-origin: initial; background-clip: initial">4C</span><span style="background-color: silver; background-origin: initial; background-clip: initial"><span>&nbsp;</span>00 03 63 6F 6E</span><span>&nbsp;</span><span style="background-color: silver; background-origin: initial; background-clip: initial">74 00 09</span></span></p><br><p><span style="background-color: silver; background-origin: initial; background-clip: initial">4C</span><span style="background-color: silver; background-origin: initial; background-clip: initial"><span>&nbsp;</span>63 6F 6E 74 61 69 6E 3B 78</span><span><span>&nbsp;</span><span style="background-color: red; background-origin: initial; background-clip: initial">72 00 06 70 61 72</span></span></p><br><p><span style="background-color: red; background-origin: initial; background-clip: initial">65 6E 74 0E DB D2 BD 85 EE 63 7A 02 00 01</span><span><span>&nbsp;</span><span style="background-color: red; background-origin: initial; background-clip: initial">49 00</span></span></p><br><p><span style="background-color: red; background-origin: initial; background-clip: initial">0D 70 61 72 65 6E 74 56 65 72 73 69 6F 6E 78 70</span></p><br><p><span style="background-color: teal; background-origin: initial; background-clip: initial">00<span>&nbsp;</span><span>00</span><span>&nbsp;</span><span>00</span><span>&nbsp;</span>0A 00<span>&nbsp;</span><span>00</span><span>&nbsp;</span><span>00</span><span>&nbsp;</span>42</span><span><span>&nbsp;</span><span style="background-color: green; background-origin: initial; background-clip: initial">73 72 00 07 63 6F 6E 74</span></span></p><br><p><span style="background-color: green; background-origin: initial; background-clip: initial">61 69 6E FC BB E6 0E FB CB 60 C7 02 00 01</span><span><span>&nbsp;</span><span style="background-color: green; background-origin: initial; background-clip: initial">49 00</span></span></p><br><p><span style="background-color: green; background-origin: initial; background-clip: initial">0E 63 6F 6E 74 61 69 6E 56 65 72 73 69 6F 6E 78</span></p><br><p><span style="background-color: green; background-origin: initial; background-clip: initial">70</span><span><span>&nbsp;</span><span style="background-color: green; background-origin: initial; background-clip: initial">00<span>&nbsp;</span><span>00</span><span>&nbsp;</span><span>00</span><span>&nbsp;</span>0B</span></span></p><br><p><span>我们来仔细看看这些字节都代表了啥。开头部分，见<span style="background-color: yellow; background-origin: initial; background-clip: initial">颜色</span>：</span></p><br><p><span>序列化算法的第一步就是输出对象相关类的描述。例子所示对象为</span><span><span>SerialTest</span></span><span>类实例， <br>因此接下来输出</span><span><span>SerialTest</span></span><span>类的描述。见<span style="background-color: lime; background-origin: initial; background-clip: initial">颜色</span>：</span></p><br><p><span>接下来，算法输出其中的一个域，</span><span><span>int</span></span><span><span>&nbsp;</span>version=66</span><span>；见<span style="background-color: aqua; background-origin: initial; background-clip: initial">颜色</span>：</span></p><br><p><span>然后，算法输出下一个域，</span><span>contain con = new contain();</span><span>这个有点特殊，是个对象。 <br>描述对象类型引用时需要使用</span><span>JVM</span><span>的标准对象签名表示法，见<span style="background-color: silver; background-origin: initial; background-clip: initial">颜色</span>：</span></p><br><p><span>.</span><span>接下来算法就会输出超类也就是</span><span>Parent</span><span>类描述了，见<span style="background-color: red; background-origin: initial; background-clip: initial">颜色</span>：</span></p><br><p><span>下一步，输出</span><span>parent</span><span>类的域描述，</span><span><span>int</span></span><span><span>&nbsp;</span><span>parentVersion</span>=100;</span><span>同见<span style="background-color: red; background-origin: initial; background-clip: initial">颜色</span>：</span></p><br><p><span>到此为止，算法已经对所有的类的描述都做了输出。下一步就是把实例对象的实际值输出了。这时候是从</span><span>parent Class</span><span>的域开始的，见<span style="background-color: teal; background-origin: initial; background-clip: initial">颜色</span>：</span></p><br><p><span>还有</span><span><span>SerialTest</span></span><span>类的域：</span></p><br><p><span>再往后的</span><span>bytes</span><span>比较有意思，算法需要描述</span><span>contain</span><span>类的信息，要记住， <br>现在还没有对</span><span>contain</span><span>类进行过描述，见<span style="background-color: green; background-origin: initial; background-clip: initial">颜色</span>：</span></p><br><p><span>.</span><span>输出</span><span>contain</span><span>的唯一的域描述，</span><span><span>int</span></span><span><span>&nbsp;</span><span>containVersion</span>=11</span><span>；</span></p><br><p><span>这时，序列化算法会检查</span><span>contain</span><span>是否有超类，如果有的话会接着输出。</span></p><br><p><span>最后，将</span><span>contain</span><span>类实际域值输出。</span></p><br><p><span>OK,</span><span>我们讨论了</span><span>java</span><span>序列化的机制和原理，希望能对同学们有所帮助。</span></p></li></ul><br><div><span style="white-space: pre"></span>&nbsp; 转自 <a href="http://www.java3z.com/cwbwebhome/article/article8/862.html" target="_blank" rel="external">http://www.java3z.com/cwbwebhome/article/article8/862.html</a></div><br><div><strong>serialVersionUID值的重要作用</strong></div><br><div><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </strong>根据上面的分析,可以发现如果一个类可序列化,serialVersionUID建议给一个确定的值,不要由系统自动生成,否则在增减字段(不能修改字段类型及长度)时,如果两边的类的版本不同会导致反序列化失败.</div><br><div></div><br><div><strong>注意问题</strong></div><br><div>如果序列化时代码这样写:</div><br><div style="border-bottom: silver 1px solid; text-align: left; border-left: silver 1px solid; padding-bottom: 4px; line-height: 12pt; background-color: #f4f4f4; margin: 20px 0px 10px; padding-left: 4px; width: 97.5%; padding-right: 4px; font-family: 'Courier New', courier, monospace; direction: ltr; max-height: 200px; font-size: 8pt; overflow: auto; border-top: silver 1px solid; cursor: text; border-right: silver 1px solid; padding-top: 4px" id="codeSnippetWrapper"><pre style="border-bottom-style: none; text-align: left; padding-bottom: 0px; line-height: 12pt; border-right-style: none; background-color: #f4f4f4; margin: 0em; padding-left: 0px; width: 100%; padding-right: 0px; font-family: 'Courier New', courier, monospace; direction: ltr; border-top-style: none; color: black; font-size: 8pt; border-left-style: none; overflow: visible; padding-top: 0px" id="codeSnippet">SerialTest st = new SerialTest(); <br>oos<span style="color: #cc6633">.writeObject</span>((parent)st);</pre><br></div><br><div>会发现序列化的对象依然是SerialTest,如果在分布式环境中用Parent反序列化(调用段不存在SerialTest),会造成ClassNotFoundException.</div><div id="MySignature"></div><br><div class="clear"></div><br><div id="blog_post_info_block"><br><div id="BlogPostCategory"></div><br><div id="EntryTag"></div><br><div id="blog_post_info"><br></div><br><div class="clear"></div><br><div id="post_next_prev"></div><br></div>
-
-
           
         
       
@@ -1083,8 +1106,8 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">62</span>
-                <span class="site-state-item-name">Artikel</span>
+                <span class="site-state-item-count">63</span>
+                <span class="site-state-item-name">posts</span>
               </a>
             </div>
           
@@ -1138,7 +1161,7 @@
 
 
 <div class="powered-by">
-  Erstellt mit  <a class="theme-link" href="https://hexo.io">Hexo</a>
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
 </div>
 
 <div class="theme-info">
