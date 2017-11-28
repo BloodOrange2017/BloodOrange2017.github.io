@@ -1,0 +1,735 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="本文整理了常见的安全算法，包括MD5、SHA、DES、AES、RSA等，并写了完整的工具类（Java 版），工具类包含测试。一、数字摘要算法  数字摘要也称为消息摘要，它是一个唯一对应一个消息或文本的固定长度的值，它由一个单向Hash函数对消息进行计算而产生。如果消息在传递的途中改变了，接收者通过对收到消息采用相同的Hash重新计算，新产生的摘要与原摘要进行比较，就可知道消息是否被">
+<meta property="og:type" content="article">
+<meta property="og:title" content="常见加密算法">
+<meta property="og:url" content="https://bloodorange2017.github.io/archives/2017/11/28/encryptionAlgorithm-01/index.html">
+<meta property="og:site_name" content="XueCheng Notes">
+<meta property="og:description" content="本文整理了常见的安全算法，包括MD5、SHA、DES、AES、RSA等，并写了完整的工具类（Java 版），工具类包含测试。一、数字摘要算法  数字摘要也称为消息摘要，它是一个唯一对应一个消息或文本的固定长度的值，它由一个单向Hash函数对消息进行计算而产生。如果消息在传递的途中改变了，接收者通过对收到消息采用相同的Hash重新计算，新产生的摘要与原摘要进行比较，就可知道消息是否被">
+<meta property="og:updated_time" content="2017-11-28T06:16:52.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="常见加密算法">
+<meta name="twitter:description" content="本文整理了常见的安全算法，包括MD5、SHA、DES、AES、RSA等，并写了完整的工具类（Java 版），工具类包含测试。一、数字摘要算法  数字摘要也称为消息摘要，它是一个唯一对应一个消息或文本的固定长度的值，它由一个单向Hash函数对消息进行计算而产生。如果消息在传递的途中改变了，接收者通过对收到消息采用相同的Hash重新计算，新产生的摘要与原摘要进行比较，就可知道消息是否被">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://bloodorange2017.github.io/archives/2017/11/28/encryptionAlgorithm-01/"/>
+
+
+
+
+
+  <title>常见加密算法 | XueCheng Notes</title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">XueCheng Notes</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Where there is a will, there is a way.</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/11/28/encryptionAlgorithm-01/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="XueCheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XueCheng Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">常见加密算法</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-11-28T14:15:07+08:00">
+                2017-11-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <div id="article_content" class="article_content tracking-ad" data-mod="popu_307" data-dsm="post"><br>        <div class="markdown_views"><p>本文整理了常见的安全算法，包括MD5、SHA、DES、AES、RSA等，并写了完整的工具类（Java 版），工具类包含测试。</p><br><br><br><br><h2 id="一数字摘要算法">一、数字摘要算法</h2><br><br><blockquote><br>  <p>数字摘要也称为消息摘要，它是一个唯一对应一个消息或文本的固定长度的值，它由一个单向Hash函数对消息进行计算而产生。如果消息在传递的途中改变了，接收者通过对收到消息采用相同的Hash重新计算，新产生的摘要与原摘要进行比较，就可知道消息是否被篡改了，因此消息摘要能够验证消息的完整性。消息摘要采用单向Hash函数将需要计算的内容”摘要”成固定长度的串，这个串亦称为数字指纹。这个串有固定的长度，且不同的明文摘要成密文，其结果总是不同的(相对的)，而同样的明文其摘要必定一致。这样这串摘要便可成为验证明文是否是”真身”的”指纹”了。</p><br></blockquote><br><br><br><br><h3 id="1-md5">1. Md5</h3><br><br><p>MD5即Message Digest Algorithm 5(信息摘要算法5)，是数字摘要算法一种实现，用于确保信息传输完整性和一致性，摘要长度为128位。 MD5由MD4、 MD3、 MD2改进而来，主要增强算法复杂度和不可逆性，该算法因其普遍、稳定、快速的特点，在产业界得到了极为广泛的使用，目前主流的编程语言普遍都已有MD5算法实现。</p><br><br><br><br><pre class="prettyprint"><code class=" hljs java"><span class="hljs-keyword">import</span> java.security.MessageDigest;<br><span class="hljs-keyword">import</span> java.security.NoSuchAlgorithmException;<br><br><span class="hljs-javadoc">/<strong><br> <em> Message Digest Algorithm 5(信息摘要算法5)
+ </em>/</strong></span><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MD5Util</span> {</span><br>    <span class="hljs-javadoc">/<br>     <em> Constructs the MD5Util object and sets the string whose MD5Util is to be
+     </em> computed.<br>     <em> 
+     </em><span class="hljs-javadoctag"> @param</span> inStr<br>     <em>    the &lt;code&gt;String&lt;/code&gt; whose MD5Util is to be computed
+     </em>/</span><br><br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">static</span> String COMMON_KEY=<span class="hljs-string">“zhongzhuoxin#@!321”</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-title">MD5Util</span>() {<br><br>    }<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">static</span> String <span class="hljs-title">str2MD5</span>(String inStr) {<br>        <span class="hljs-keyword">char</span> hexDigits[] = { <span class="hljs-string">‘0’</span>, <span class="hljs-string">‘1’</span>, <span class="hljs-string">‘2’</span>, <span class="hljs-string">‘3’</span>, <span class="hljs-string">‘4’</span>, <span class="hljs-string">‘5’</span>, <span class="hljs-string">‘6’</span>, <span class="hljs-string">‘7’</span>, <span class="hljs-string">‘8’</span>, <span class="hljs-string">‘9’</span>,<br>                <span class="hljs-string">‘a’</span>, <span class="hljs-string">‘b’</span>, <span class="hljs-string">‘c’</span>, <span class="hljs-string">‘d’</span>, <span class="hljs-string">‘e’</span>, <span class="hljs-string">‘f’</span> };<br>        <span class="hljs-keyword">try</span> {<br>            <span class="hljs-keyword">byte</span>[] strTemp = inStr.getBytes(<span class="hljs-string">“UTF-8”</span>);<br>            MessageDigest mdTemp = MessageDigest.getInstance(<span class="hljs-string">“MD5”</span>);<br>            mdTemp.update(strTemp);<br>            <span class="hljs-keyword">byte</span>[] md = mdTemp.digest();<br>            <span class="hljs-keyword">int</span> j = md.length;<br>            <span class="hljs-keyword">char</span> str[] = <span class="hljs-keyword">new</span> <span class="hljs-keyword">char</span>[j <em> <span class="hljs-number">2</span>];<br>            <span class="hljs-keyword">int</span> k = <span class="hljs-number">0</span>;<br>            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; j; i++) {<br>                <span class="hljs-keyword">byte</span> byte0 = md[i];<br>                str[k++] = hexDigits[byte0 &gt;&gt;&gt; <span class="hljs-number">4</span> &amp; <span class="hljs-number">0xf</span>];<br>                str[k++] = hexDigits[byte0 &amp; <span class="hljs-number">0xf</span>];<br>            }<br>            <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> String(str);<br>        } <span class="hljs-keyword">catch</span> (Exception e) {<br>            <span class="hljs-keyword">return</span> <span class="hljs-keyword">null</span>;<br>        }<br>    }<br><br><br><br><br>    <span class="hljs-comment">//–MD5Util</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">char</span> HEX_DIGITS[] = { <span class="hljs-string">‘0’</span>, <span class="hljs-string">‘1’</span>, <span class="hljs-string">‘2’</span>, <span class="hljs-string">‘3’</span>, <span class="hljs-string">‘4’</span>, <span class="hljs-string">‘5’</span>,<br>            <span class="hljs-string">‘6’</span>, <span class="hljs-string">‘7’</span>, <span class="hljs-string">‘8’</span>, <span class="hljs-string">‘9’</span>, <span class="hljs-string">‘A’</span>, <span class="hljs-string">‘B’</span>, <span class="hljs-string">‘C’</span>, <span class="hljs-string">‘D’</span>, <span class="hljs-string">‘E’</span>, <span class="hljs-string">‘F’</span> };<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> String <span class="hljs-title">toHexString</span>(<span class="hljs-keyword">byte</span>[] b) { <span class="hljs-comment">// String to byte</span><br>        StringBuilder sb = <span class="hljs-keyword">new</span> StringBuilder(b.length </em> <span class="hljs-number">2</span>);<br>        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; b.length; i++) {<br>            sb.append(HEX_DIGITS[(b[i] &amp; <span class="hljs-number">0xf0</span>) &gt;&gt;&gt; <span class="hljs-number">4</span>]);<br>            sb.append(HEX_DIGITS[b[i] &amp; <span class="hljs-number">0x0f</span>]);<br>        }<br>        <span class="hljs-keyword">return</span> sb.toString();<br>    }<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> String <span class="hljs-title">AndroidMd5</span>(String s) {<br>        <span class="hljs-keyword">try</span> {<br>            <span class="hljs-comment">// Create MD5Util Hash</span><br>            MessageDigest digest = MessageDigest<br>                    .getInstance(<span class="hljs-string">“MD5”</span>);<br>            digest.update(s.getBytes());<br>            <span class="hljs-keyword">byte</span> messageDigest[] = digest.digest();<br><br>            <span class="hljs-keyword">return</span> toHexString(messageDigest);<br>        } <span class="hljs-keyword">catch</span> (NoSuchAlgorithmException e) {<br>            e.printStackTrace();<br>        }<br><br>        <span class="hljs-keyword">return</span> <span class="hljs-string">“”</span>;<br>    }<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span>(String[] args) {<br><br>        String m = MD5Util.str2MD5(<span class="hljs-string">“swwwwwwwwwwdkinner”</span>);<br><br>        System.out.print(m.length() + <span class="hljs-string">“    “</span>);<br>        System.out.println(m);<br><br>    }<br>}<br></code></pre><br><br><br><br><h3 id="2sha">2.SHA</h3><br><br><p>SHA的全称是Secure Hash Algorithm，即安全散列算法。 1993年，安全散列算法(SHA)由美国国家标准和技术协会（NIST)提出，并作为联邦信息处理标准(FIPS PUB 180)公布， 1995年又发布了一个修订版FIPS PUB 180-1，通常称之为SHA-1。 SHA-1是基于MD4算法的，现在已成为公认的最安全的散列算法之一，并被广泛使用。SHA-1算法生成的摘要信息的长度为160位，由于生成的摘要信息更长，运算的过程更加复杂，在相同的硬件上， SHA-1的运行速度比MD5更慢，但是也更为安全。</p><br><br><br><br><pre class="prettyprint"><code class=" hljs http"><br><br><span class="java"><span class="hljs-keyword">import</span> com.google.common.base.Strings;<br><br><span class="hljs-keyword">import</span> java.security.MessageDigest;<br><br><span class="hljs-javadoc">/<strong><br> <em> SHA的全称是Secure Hash Algorithm，即安全散列算法
+ </em> Created by fangzhipeng on 2017/3/21.<br> */</strong></span><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">SHAUtil</span> {</span><br><br>    <span class="hljs-javadoc">/<br>     <em> 定义加密方式
+     </em>/</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">static</span> String KEY_SHA = <span class="hljs-string">“SHA”</span>;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">static</span> String KEY_SHA1 = <span class="hljs-string">“SHA-1”</span>;<br>    <span class="hljs-javadoc">/<strong><br>     <em> 全局数组
+     </em>/</strong></span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">static</span> String[] hexDigits = { <span class="hljs-string">“0”</span>, <span class="hljs-string">“1”</span>, <span class="hljs-string">“2”</span>, <span class="hljs-string">“3”</span>, <span class="hljs-string">“4”</span>, <span class="hljs-string">“5”</span>,<br>            <span class="hljs-string">“6”</span>, <span class="hljs-string">“7”</span>, <span class="hljs-string">“8”</span>, <span class="hljs-string">“9”</span>, <span class="hljs-string">“a”</span>, <span class="hljs-string">“b”</span>, <span class="hljs-string">“c”</span>, <span class="hljs-string">“d”</span>, <span class="hljs-string">“e”</span>, <span class="hljs-string">“f”</span> };<br><br>    <span class="hljs-javadoc">/<br>     <em> 构造函数
+     </em>/</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-title">SHAUtil</span>() {<br><br>    }<br><br>    <span class="hljs-javadoc">/<strong><br>     <em> SHA 加密
+     </em><span class="hljs-javadoctag"> @param</span> data 需要加密的字节数组<br>     <em><span class="hljs-javadoctag"> @return</span> 加密之后的字节数组
+     </em><span class="hljs-javadoctag"> @throws</span> Exception<br>     */</strong></span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">byte</span>[] <span class="hljs-title">encryptSHA</span>(<span class="hljs-keyword">byte</span>[] data) <span class="hljs-keyword">throws</span> Exception {<br>        <span class="hljs-comment">// 创建具有指定算法名称的信息摘要</span><br><span class="hljs-comment">//        MessageDigest sha = MessageDigest.getInstance(KEY_SHA);</span><br>        MessageDigest sha = MessageDigest.getInstance(KEY_SHA1);<br>        <span class="hljs-comment">// 使用指定的字节数组对摘要进行最后更新</span><br>        sha.update(data);<br>        <span class="hljs-comment">// 完成摘要计算并返回</span><br>        <span class="hljs-keyword">return</span> sha.digest();<br>    }<br><br>    <span class="hljs-javadoc">/<br>     <em> SHA 加密
+     </em><span class="hljs-javadoctag"> @param</span> data 需要加密的字符串<br>     <em><span class="hljs-javadoctag"> @return</span> 加密之后的字符串
+     </em><span class="hljs-javadoctag"> @throws</span> Exception<br>     <em>/</em></span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> String <span class="hljs-title">encryptSHA</span>(String data) <span class="hljs-keyword">throws</span> Exception {<br>        <span class="hljs-comment">// 验证传入的字符串</span><br>        <span class="hljs-keyword">if</span> (Strings.isNullOrEmpty(data)) {<br>            <span class="hljs-keyword">return</span> <span class="hljs-string">“”</span>;<br>        }<br>        <span class="hljs-comment">// 创建具有指定算法名称的信息摘要</span><br>        MessageDigest sha = MessageDigest.getInstance(KEY_SHA);<br>        <span class="hljs-comment">// 使用指定的字节数组对摘要进行最后更新</span><br>        sha.update(data.getBytes());<br>        <span class="hljs-comment">// 完成摘要计算</span><br>        <span class="hljs-keyword">byte</span>[] bytes = sha.digest();<br>        <span class="hljs-comment">// 将得到的字节数组变成字符串返回</span><br>        <span class="hljs-keyword">return</span> byteArrayToHexString(bytes);<br>    }<br><br>    <span class="hljs-javadoc">/**
+      将一个字节转化成十六进制形式的字符串<br>     <em><span class="hljs-javadoctag"> @param</span> b 字节数组
+     </em><span class="hljs-javadoctag"> @return</span> 字符串<br>     <em>/</em></span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> String <span class="hljs-title">byteToHexString</span>(<span class="hljs-keyword">byte</span> b) {<br>        <span class="hljs-keyword">int</span> ret = b;<br>        <span class="hljs-comment">//System.out.println(“ret = “ + ret);</span><br>        <span class="hljs-keyword">if</span> (ret &lt; <span class="hljs-number">0</span>) {<br>            ret += <span class="hljs-number">256</span>;<br>        }<br>        <span class="hljs-keyword">int</span> m = ret / <span class="hljs-number">16</span>;<br>        <span class="hljs-keyword">int</span> n = ret % <span class="hljs-number">16</span>;<br>        <span class="hljs-keyword">return</span> hexDigits[m] + hexDigits[n];<br>    }<br><br>    <span class="hljs-javadoc">/**
+      转换字节数组为十六进制字符串<br>     <em><span class="hljs-javadoctag"> @param</span> bytes 字节数组
+     </em><span class="hljs-javadoctag"> @return</span> 十六进制字符串<br>     <em>/</em></span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> String <span class="hljs-title">byteArrayToHexString</span>(<span class="hljs-keyword">byte</span>[] bytes) {<br>        StringBuffer sb = <span class="hljs-keyword">new</span> StringBuffer();<br>        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; bytes.length; i++) {<br>            sb.append(byteToHexString(bytes[i]));<br>        }<br>        <span class="hljs-keyword">return</span> sb.toString();<br>    }<br><br>    <span class="hljs-javadoc">/**
+      测试方法<br>     <em><span class="hljs-javadoctag"> @param</span> args
+     </em>/</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span>(String[] args) <span class="hljs-keyword">throws</span> Exception {<br>        String key = <span class="hljs-string">“123”</span>;<br>        System.out.println(encryptSHA(key));<br>    }<br>}<br></span></code></pre><br><br><br><br><h2 id="二对称加密">二、对称加密</h2><br><br><blockquote><br>  <p>对称加密算法是应用较早的加密算法，技术成熟。在对称加密算法中，数据发送方将明文(原始数据)和加密密钥一起经过特殊加密算法处理后，生成复杂的加密密文进行发送，数据接收方收到密文后，若想读取原文，则需要使用加密使用的密钥及相同算法的逆算法对加密的密文进行解密，才能使其恢复成可读明文。在对称加密算法中，使用的密钥只有一个，发送和接收双方都使用这个密钥对数据进行加密和解密，这就要求加密和解密方事先都必须知道加密的密钥。</p><br></blockquote><br><br><br><br><h3 id="1-des算法">1. DES算法</h3><br><br><p>1973 年，美国国家标准局(NBS)在认识到建立数据保护标准既明显又急迫的情况下，开始征集联邦数据加密标准的方案。 1975 年3月17日， NBS公布了IBM公司提供的密码算法，以标准建议的形式在全国范围内征求意见。经过两年多的公开讨论之后， 1977 年7月15日， NBS宣布接受这建议，作为联邦信息处理标准46 号数据加密标准(Data Encryptin Standard)，即DES正式颁布，供商业界和非国防性政府部门使用。DES算法属于对称加密算法，明文按64位进行分组，密钥长64位，但事实上只有56位参与DES <br><br>运算(第8、 16、 24、 32、 40、 48、 56、 64位是校验位，使得每个密钥都有奇数个1),分组后的明文和56位的密钥按位替代或交换的方法形成密文。由于计算机运算能力的增强，原版DES密码的密钥长度变得容易被暴力破解，因此演变出了3DES算法。 3DES是DES向AES过渡的加密算法，它使用3条56位的密钥对数据进行三次加密，是DES的一个更安全的变形</p><br><br><br><br><pre class="prettyprint"><code class=" hljs http"><br><br><span class="java"><span class="hljs-keyword">import</span> java.io.IOException;<br><span class="hljs-keyword">import</span> java.security.SecureRandom;<br><br><span class="hljs-keyword">import</span> javax.crypto.Cipher;<br><span class="hljs-keyword">import</span> javax.crypto.SecretKey;<br><span class="hljs-keyword">import</span> javax.crypto.SecretKeyFactory;<br><span class="hljs-keyword">import</span> javax.crypto.spec.DESKeySpec;<br><br><br><span class="hljs-keyword">import</span> sun.misc.BASE64Decoder;<br><span class="hljs-keyword">import</span> sun.misc.BASE64Encoder;<br><br><span class="hljs-javadoc">/<strong><br> <em> Data Encryptin Standard
+ </em> 数据加密标准<br> */</strong></span><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">DESUtil</span> {</span><br><br><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">static</span> String DES = <span class="hljs-string">“DES”</span>;<br><br>    <span class="hljs-javadoc">/<br>     <em> Description 根据键值进行加密
+     </em><br>     <em><span class="hljs-javadoctag"> @param</span> data
+     </em><span class="hljs-javadoctag"> @param</span> key  加密键byte数组<br>     <em><span class="hljs-javadoctag"> @return</span>
+     </em><span class="hljs-javadoctag"> @throws</span> Exception<br>     <em>/</em></span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> String <span class="hljs-title">encrypt</span>(String data, String key) <span class="hljs-keyword">throws</span> Exception {<br>        <span class="hljs-keyword">byte</span>[] bt = encrypt(data.getBytes(), key.getBytes());<br>        String strs = <span class="hljs-keyword">new</span> BASE64Encoder().encode(bt);<br>        <span class="hljs-keyword">return</span> strs;<br>    }<br><br>    <span class="hljs-javadoc">/**
+      Description 根据键值进行解密<br>     <em>
+     </em><span class="hljs-javadoctag"> @param</span> data<br>     <em><span class="hljs-javadoctag"> @param</span> key  加密键byte数组
+     </em><span class="hljs-javadoctag"> @return</span><br>     <em><span class="hljs-javadoctag"> @throws</span> IOException
+     </em><span class="hljs-javadoctag"> @throws</span> Exception<br>     <em>/</em></span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> String <span class="hljs-title">decrypt</span>(String data, String key) <span class="hljs-keyword">throws</span> Exception,<br>            Exception {<br>        <span class="hljs-keyword">if</span> (data == <span class="hljs-keyword">null</span>)<br>            <span class="hljs-keyword">return</span> <span class="hljs-keyword">null</span>;<br>        BASE64Decoder decoder = <span class="hljs-keyword">new</span> BASE64Decoder();<br>        <span class="hljs-keyword">byte</span>[] buf = decoder.decodeBuffer(data);<br>        <span class="hljs-keyword">byte</span>[] bt = decrypt(buf, key.getBytes());<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> String(bt);<br>    }<br><br>    <span class="hljs-javadoc">/**
+      Description 根据键值进行加密<br>     <em>
+     </em><span class="hljs-javadoctag"> @param</span> data<br>     <em><span class="hljs-javadoctag"> @param</span> key  加密键byte数组
+     </em><span class="hljs-javadoctag"> @return</span><br>     <em><span class="hljs-javadoctag"> @throws</span> Exception
+     </em>/</span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">byte</span>[] <span class="hljs-title">encrypt</span>(<span class="hljs-keyword">byte</span>[] data, <span class="hljs-keyword">byte</span>[] key) <span class="hljs-keyword">throws</span> Exception {<br>        <span class="hljs-comment">// 生成一个可信任的随机数源</span><br>        SecureRandom sr = <span class="hljs-keyword">new</span> SecureRandom();<br><br>        <span class="hljs-comment">// 从原始密钥数据创建DESKeySpec对象</span><br>        DESKeySpec dks = <span class="hljs-keyword">new</span> DESKeySpec(key);<br><br>        <span class="hljs-comment">// 创建一个密钥工厂，然后用它把DESKeySpec转换成SecretKey对象</span><br>        SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(DES);<br>        SecretKey securekey = keyFactory.generateSecret(dks);<br><br>        <span class="hljs-comment">// Cipher对象实际完成加密操作</span><br>        Cipher cipher = Cipher.getInstance(DES);<br><br>        <span class="hljs-comment">// 用密钥初始化Cipher对象</span><br>        cipher.init(Cipher.ENCRYPT_MODE, securekey, sr);<br><br>        <span class="hljs-keyword">return</span> cipher.doFinal(data);<br>    }<br><br><br>    <span class="hljs-javadoc">/<strong><br>     <em> Description 根据键值进行解密
+     </em><br>     <em><span class="hljs-javadoctag"> @param</span> data
+     </em><span class="hljs-javadoctag"> @param</span> key  加密键byte数组<br>     <em><span class="hljs-javadoctag"> @return</span>
+     </em><span class="hljs-javadoctag"> @throws</span> Exception<br>     */</strong></span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">byte</span>[] <span class="hljs-title">decrypt</span>(<span class="hljs-keyword">byte</span>[] data, <span class="hljs-keyword">byte</span>[] key) <span class="hljs-keyword">throws</span> Exception {<br>        <span class="hljs-comment">// 生成一个可信任的随机数源</span><br>        SecureRandom sr = <span class="hljs-keyword">new</span> SecureRandom();<br><br>        <span class="hljs-comment">// 从原始密钥数据创建DESKeySpec对象</span><br>        DESKeySpec dks = <span class="hljs-keyword">new</span> DESKeySpec(key);<br><br>        <span class="hljs-comment">// 创建一个密钥工厂，然后用它把DESKeySpec转换成SecretKey对象</span><br>        SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(DES);<br>        SecretKey securekey = keyFactory.generateSecret(dks);<br><br>        <span class="hljs-comment">// Cipher对象实际完成解密操作</span><br>        Cipher cipher = Cipher.getInstance(DES);<br><br>        <span class="hljs-comment">// 用密钥初始化Cipher对象</span><br>        cipher.init(Cipher.DECRYPT_MODE, securekey, sr);<br><br>        <span class="hljs-keyword">return</span> cipher.doFinal(data);<br>    }<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span>(String[]args)<span class="hljs-keyword">throws</span> Exception{<br>       String  sStr=encrypt(<span class="hljs-string">“122222112222:12343232323:jajwwwwslwskwkkwksk”</span>,<span class="hljs-string">“wew2323w233321ws233w”</span>);<br>       System.out.println(sStr);<br>       String mStr=decrypt(sStr,<span class="hljs-string">“wew2323w233321ws233w”</span>);<br>       System.out.println(mStr);<br>    }<br>}<br></span></code></pre><br><br><br><br><h3 id="2-aes">2. AES</h3><br><br><p>AES的全称是Advanced Encryption Standard，即高级加密标准，该算法由比利时密码学家Joan Daemen和Vincent Rijmen所设计，结合两位作者的名字，又称Rijndael加密算法，是美国联邦政府采用的一种对称加密标准，这个标准用来替代原先的DES算法，已经广为全世界所使用，已然成为对称加密算法中最流行的算法之一。AES算法作为新一代的数据加密标准汇聚了强安全性、高性能、高效率、易用和灵活等优 <br><br>点，设计有三个密钥长度:128,192,256位，比DES算法的加密强度更高，更为安全。</p><br><br><br><br><pre class="prettyprint"><code class=" hljs java"><br><span class="hljs-keyword">import</span> java.io.IOException;<br><span class="hljs-keyword">import</span> java.io.UnsupportedEncodingException;<br><span class="hljs-keyword">import</span> java.security.InvalidKeyException;<br><span class="hljs-keyword">import</span> java.security.NoSuchAlgorithmException;<br><span class="hljs-keyword">import</span> java.security.SecureRandom;<br><span class="hljs-keyword">import</span> java.util.Base64;<br><span class="hljs-keyword">import</span> java.util.Scanner;<br><br><span class="hljs-keyword">import</span> javax.crypto.BadPaddingException;<br><span class="hljs-keyword">import</span> javax.crypto.Cipher;<br><span class="hljs-keyword">import</span> javax.crypto.IllegalBlockSizeException;<br><span class="hljs-keyword">import</span> javax.crypto.KeyGenerator;<br><span class="hljs-keyword">import</span> javax.crypto.NoSuchPaddingException;<br><span class="hljs-keyword">import</span> javax.crypto.SecretKey;<br><span class="hljs-keyword">import</span> javax.crypto.spec.SecretKeySpec;<br><br><span class="hljs-keyword">import</span> sun.misc.BASE64Decoder;<br><span class="hljs-keyword">import</span> sun.misc.BASE64Encoder;<br><br><span class="hljs-javadoc">/<br> <em> Created by fangzhipeng on 2017/3/21.
+ </em>/</span><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AESUtil</span> {</span><br><br>    <span class="hljs-keyword">static</span>  <span class="hljs-keyword">byte</span>[]  key = <span class="hljs-string">“w@#$4@#$s^&amp;3<em>&amp;^4”</em></span>.getBytes();<br>    <span class="hljs-keyword">final</span> <span class="hljs-keyword">static</span> String algorithm=<span class="hljs-string">“AES”</span>;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> String <span class="hljs-title">encrypt</span>(String data){<br><br>        <span class="hljs-keyword">byte</span>[] dataToSend = data.getBytes();<br>        Cipher c = <span class="hljs-keyword">null</span>;<br>        <span class="hljs-keyword">try</span> {<br>            c = Cipher.getInstance(algorithm);<br>        } <span class="hljs-keyword">catch</span> (NoSuchAlgorithmException e) {<br>            <span class="hljs-comment">// TODO Auto-generated catch block</span><br>            e.printStackTrace();<br>        } <span class="hljs-keyword">catch</span> (NoSuchPaddingException e) {<br>            <span class="hljs-comment">// TODO Auto-generated catch block</span><br>            e.printStackTrace();<br>        }<br>        SecretKeySpec k =  <span class="hljs-keyword">new</span> SecretKeySpec(key, algorithm);<br>        <span class="hljs-keyword">try</span> {<br>            c.init(Cipher.ENCRYPT_MODE, k);<br>        } <span class="hljs-keyword">catch</span> (InvalidKeyException e) {<br>            <span class="hljs-comment">// TODO Auto-generated catch block</span><br>            e.printStackTrace();<br>        }<br>        <span class="hljs-keyword">byte</span>[] encryptedData = <span class="hljs-string">“”</span>.getBytes();<br>        <span class="hljs-keyword">try</span> {<br>            encryptedData = c.doFinal(dataToSend);<br>        } <span class="hljs-keyword">catch</span> (IllegalBlockSizeException e) {<br>            <span class="hljs-comment">// TODO Auto-generated catch block</span><br>            e.printStackTrace();<br>        } <span class="hljs-keyword">catch</span> (BadPaddingException e) {<br>            <span class="hljs-comment">// TODO Auto-generated catch block</span><br>            e.printStackTrace();<br>        }<br>        <span class="hljs-keyword">byte</span>[] encryptedByteValue =     Base64.getEncoder().encode(encryptedData);<br>        <span class="hljs-keyword">return</span>  <span class="hljs-keyword">new</span> String(encryptedByteValue);<span class="hljs-comment">//.toString();</span><br>    }<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> String <span class="hljs-title">decrypt</span>(String data){<br><br>        <span class="hljs-keyword">byte</span>[] encryptedData  =  Base64.getDecoder().decode(data);<br>        Cipher c = <span class="hljs-keyword">null</span>;<br>        <span class="hljs-keyword">try</span> {<br>            c = Cipher.getInstance(algorithm);<br>        } <span class="hljs-keyword">catch</span> (NoSuchAlgorithmException e) {<br>            <span class="hljs-comment">// TODO Auto-generated catch block</span><br>            e.printStackTrace();<br>        } <span class="hljs-keyword">catch</span> (NoSuchPaddingException e) {<br>            <span class="hljs-comment">// TODO Auto-generated catch block</span><br>            e.printStackTrace();<br>        }<br>        SecretKeySpec k =<br>                <span class="hljs-keyword">new</span> SecretKeySpec(key, algorithm);<br>        <span class="hljs-keyword">try</span> {<br>            c.init(Cipher.DECRYPT_MODE, k);<br>        } <span class="hljs-keyword">catch</span> (InvalidKeyException e1) {<br>            <span class="hljs-comment">// TODO Auto-generated catch block</span><br>            e1.printStackTrace();<br>        }<br>        <span class="hljs-keyword">byte</span>[] decrypted = <span class="hljs-keyword">null</span>;<br>        <span class="hljs-keyword">try</span> {<br>            decrypted = c.doFinal(encryptedData);<br>        } <span class="hljs-keyword">catch</span> (IllegalBlockSizeException e) {<br>            <span class="hljs-comment">// TODO Auto-generated catch block</span><br>            e.printStackTrace();<br>        } <span class="hljs-keyword">catch</span> (BadPaddingException e) {<br>            <span class="hljs-comment">// TODO Auto-generated catch block</span><br>            e.printStackTrace();<br>        }<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> String(decrypted);<br>    }<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span>(String[] args){<br>        String password=encrypt(<span class="hljs-string">“12233440988:1239874389888:dd333”</span>);<br>        System.out.println(password);<br>        System.out.println(decrypt(password));<br>    }<br>}<br><br></code></pre><br><br><br><br><h2 id="三非对称加密">三、非对称加密</h2><br><br><blockquote><br>  <p>非对称加密算法又称为公开密钥加密算法，它需要两个密钥，一个称为公开密钥(public key)，即公钥，另一个称为私有密钥(private key)，即私钥。公钥与私钥需要配对使用，如果用公钥对数据进行加密，只有用对应的私钥才能进行解密，而如果使用私钥对数据进行加密，那么只有用对应的公钥才能进行解密。因为加密和解密使用的是两个不同的密钥，所以这种算法称为非对称加密算法。非对称加密算法实现机密信息交换的基本过程是：甲方生成一对密钥并将其中的一把作为公钥向其它人公开，得到该公钥的乙方使用该密钥对机密信息进行加密后再发送给甲方，甲方再使用自己保存的另一把专用密钥，即私钥，对加密后的信息进行解密。</p><br></blockquote><br><br><br><br><h3 id="rsa">RSA</h3><br><br><p>RSA非对称加密算法是1977年由Ron Rivest、 Adi Shamirh和LenAdleman开发的， RSA取名来自开发他们三者的名字。 RSA是目前最有影响力的非对称加密算法，它能够抵抗到目前为止已知的所有密码攻击，已被ISO推荐为公钥数据加密标准。 RSA算法基于一个十分简单的数论事实：将两个大素数相乘十分容易，但反过来想要对其乘积进行因式分解却极其困难，因此可以将乘积公开作为加密密钥。</p><br><br><br><br><pre class="prettyprint"><code class=" hljs java"><br><span class="hljs-javadoc">/**
+  Created by fangzhipeng on 2017/3/21.<br> <em> RSA ：RSA非对称加密算法是1977年由Ron Rivest、 Adi Shamirh和LenAdleman开发   </em>  的， RSA取名来<br> <em>  自开发他们三者的名字。
+ </em> 参考：<a href="http://blog.csdn.net/wangqiuyun/article/details/42143957" target="_blank" rel="external">http://blog.csdn.net/wangqiuyun/article/details/42143957</a><br> <em>/</em></span><br><br><span class="hljs-keyword">import</span> java.io.;<br><span class="hljs-keyword">import</span> java.security.InvalidKeyException;<br><span class="hljs-keyword">import</span> java.security.KeyFactory;<br><span class="hljs-keyword">import</span> java.security.KeyPair;<br><span class="hljs-keyword">import</span> java.security.KeyPairGenerator;<br><span class="hljs-keyword">import</span> java.security.NoSuchAlgorithmException;<br><span class="hljs-keyword">import</span> java.security.SecureRandom;<br><br><span class="hljs-keyword">import</span> java.security.interfaces.RSAPrivateKey;<br><span class="hljs-keyword">import</span> java.security.interfaces.RSAPublicKey;<br><span class="hljs-keyword">import</span> java.security.spec.InvalidKeySpecException;<br><span class="hljs-keyword">import</span> java.security.spec.PKCS8EncodedKeySpec;<br><span class="hljs-keyword">import</span> java.security.spec.X509EncodedKeySpec;<br><span class="hljs-keyword">import</span> java.util.Base64;<br><br><span class="hljs-keyword">import</span> javax.crypto.BadPaddingException;<br><span class="hljs-keyword">import</span> javax.crypto.Cipher;<br><span class="hljs-keyword">import</span> javax.crypto.IllegalBlockSizeException;<br><span class="hljs-keyword">import</span> javax.crypto.NoSuchPaddingException;<br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">RSAUtil</span> {</span><br><br><br>    <span class="hljs-javadoc">/<strong><br>     <em> 字节数据转字符串专用集合
+     </em>/</strong></span><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">char</span>[] HEX_CHAR = { <span class="hljs-string">‘0’</span>, <span class="hljs-string">‘1’</span>, <span class="hljs-string">‘2’</span>, <span class="hljs-string">‘3’</span>, <span class="hljs-string">‘4’</span>, <span class="hljs-string">‘5’</span>, <span class="hljs-string">‘6’</span>,<br>            <span class="hljs-string">‘7’</span>, <span class="hljs-string">‘8’</span>, <span class="hljs-string">‘9’</span>, <span class="hljs-string">‘a’</span>, <span class="hljs-string">‘b’</span>, <span class="hljs-string">‘c’</span>, <span class="hljs-string">‘d’</span>, <span class="hljs-string">‘e’</span>, <span class="hljs-string">‘f’</span> };<br><br>    <span class="hljs-javadoc">/<br>     <em> 随机生成密钥对
+     </em>/</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">genKeyPair</span>(String filePath) {<br>        <span class="hljs-comment">// KeyPairGenerator类用于生成公钥和私钥对，基于RSA算法生成对象</span><br>        KeyPairGenerator keyPairGen = <span class="hljs-keyword">null</span>;<br>        <span class="hljs-keyword">try</span> {<br>            keyPairGen = KeyPairGenerator.getInstance(<span class="hljs-string">“RSA”</span>);<br>        } <span class="hljs-keyword">catch</span> (NoSuchAlgorithmException e) {<br>            <span class="hljs-comment">// TODO Auto-generated catch block</span><br>            e.printStackTrace();<br>        }<br>        <span class="hljs-comment">// 初始化密钥对生成器，密钥大小为96-1024位</span><br>        keyPairGen.initialize(<span class="hljs-number">1024</span>,<span class="hljs-keyword">new</span> SecureRandom());<br>        <span class="hljs-comment">// 生成一个密钥对，保存在keyPair中</span><br>        KeyPair keyPair = keyPairGen.generateKeyPair();<br>        <span class="hljs-comment">// 得到私钥</span><br>        RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();<br>        <span class="hljs-comment">// 得到公钥</span><br>        RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();<br>        <span class="hljs-keyword">try</span> {<br>            <span class="hljs-comment">// 得到公钥字符串</span><br>            <span class="hljs-comment">// 得到私钥字符串</span><br>            String privateKeyString =<span class="hljs-keyword">new</span> String( Base64.getEncoder().encode(privateKey.getEncoded()));<br>            String publicKeyString =<span class="hljs-keyword">new</span> String( Base64.getEncoder().encode(publicKey.getEncoded()));<br>            <span class="hljs-comment">// 将密钥对写入到文件</span><br><br>            File file1=<span class="hljs-keyword">new</span> File(filePath + <span class="hljs-string">“publicKey.keystore”</span>);<br>            File file2=<span class="hljs-keyword">new</span> File(filePath + <span class="hljs-string">“privateKey.keystore”</span>);<br>            <span class="hljs-keyword">if</span>(!file1.exists()) {<br>                file1.createNewFile();<br>            }<br>            <span class="hljs-keyword">if</span>(!file2.exists()) {<br>                file2.createNewFile();<br>            }<br>            FileWriter pubfw = <span class="hljs-keyword">new</span> FileWriter(filePath + <span class="hljs-string">“/publicKey.keystore”</span>);<br>            FileWriter prifw = <span class="hljs-keyword">new</span> FileWriter(filePath + <span class="hljs-string">“/privateKey.keystore”</span>);<br>            BufferedWriter pubbw = <span class="hljs-keyword">new</span> BufferedWriter(pubfw);<br>            BufferedWriter pribw = <span class="hljs-keyword">new</span> BufferedWriter(prifw);<br>            pubbw.write(publicKeyString);<br>            pribw.write(privateKeyString);<br>            pubbw.flush();<br>            pubbw.close();<br>            pubfw.close();<br>            pribw.flush();<br>            pribw.close();<br>            prifw.close();<br>        } <span class="hljs-keyword">catch</span> (Exception e) {<br>            e.printStackTrace();<br>        }<br>    }<br><br>    <span class="hljs-javadoc">/<strong><br>     <em> 从文件中输入流中加载公钥
+     </em><br>     <em><span class="hljs-javadoctag"> @param</span>
+     </em><br>     <em><span class="hljs-javadoctag"> @throws</span> Exception
+     </em>             加载公钥时产生的异常<br>     */</strong></span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> String <span class="hljs-title">loadPublicKeyByFile</span>(String path) <span class="hljs-keyword">throws</span> Exception {<br>        <span class="hljs-keyword">try</span> {<br>            BufferedReader br = <span class="hljs-keyword">new</span> BufferedReader(<span class="hljs-keyword">new</span> FileReader(path<br>                    + <span class="hljs-string">“/publicKey.keystore”</span>));<br>            String readLine = <span class="hljs-keyword">null</span>;<br>            StringBuilder sb = <span class="hljs-keyword">new</span> StringBuilder();<br>            <span class="hljs-keyword">while</span> ((readLine = br.readLine()) != <span class="hljs-keyword">null</span>) {<br>                sb.append(readLine);<br>            }<br>            br.close();<br>            <span class="hljs-keyword">return</span> sb.toString();<br>        } <span class="hljs-keyword">catch</span> (IOException e) {<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">“公钥数据流读取错误”</span>);<br>        } <span class="hljs-keyword">catch</span> (NullPointerException e) {<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">“公钥输入流为空”</span>);<br>        }<br>    }<br><br>    <span class="hljs-javadoc">/<br>     <em> 从字符串中加载公钥
+     </em><br>     <em><span class="hljs-javadoctag"> @param</span> publicKeyStr
+     </em>            公钥数据字符串<br>     <em><span class="hljs-javadoctag"> @throws</span> Exception
+     </em>             加载公钥时产生的异常<br>     <em>/</em></span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> RSAPublicKey <span class="hljs-title">loadPublicKeyByStr</span>(String publicKeyStr)<br>            <span class="hljs-keyword">throws</span> Exception {<br>        <span class="hljs-keyword">try</span> {<br>            <span class="hljs-keyword">byte</span>[] buffer = Base64.getDecoder().decode(publicKeyStr);<br>            KeyFactory keyFactory = KeyFactory.getInstance(<span class="hljs-string">“RSA”</span>);<br>            X509EncodedKeySpec keySpec = <span class="hljs-keyword">new</span> X509EncodedKeySpec(buffer);<br>            <span class="hljs-keyword">return</span> (RSAPublicKey) keyFactory.generatePublic(keySpec);<br>        } <span class="hljs-keyword">catch</span> (NoSuchAlgorithmException e) {<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">“无此算法”</span>);<br>        } <span class="hljs-keyword">catch</span> (InvalidKeySpecException e) {<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">“公钥非法”</span>);<br>        } <span class="hljs-keyword">catch</span> (NullPointerException e) {<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">“公钥数据为空”</span>);<br>        }<br>    }<br><br>    <span class="hljs-javadoc">/**
+      从文件中加载私钥<br>     <em>
+     </em><span class="hljs-javadoctag"> @param</span><br>     <em>
+     </em><span class="hljs-javadoctag"> @return</span> 是否成功<br>     <em><span class="hljs-javadoctag"> @throws</span> Exception
+     </em>/</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> String <span class="hljs-title">loadPrivateKeyByFile</span>(String path) <span class="hljs-keyword">throws</span> Exception {<br>        <span class="hljs-keyword">try</span> {<br>            BufferedReader br = <span class="hljs-keyword">new</span> BufferedReader(<span class="hljs-keyword">new</span> FileReader(path<br>                    + <span class="hljs-string">“/privateKey.keystore”</span>));<br>            String readLine = <span class="hljs-keyword">null</span>;<br>            StringBuilder sb = <span class="hljs-keyword">new</span> StringBuilder();<br>            <span class="hljs-keyword">while</span> ((readLine = br.readLine()) != <span class="hljs-keyword">null</span>) {<br>                sb.append(readLine);<br>            }<br>            br.close();<br>            <span class="hljs-keyword">return</span> sb.toString();<br>        } <span class="hljs-keyword">catch</span> (IOException e) {<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">“私钥数据读取错误”</span>);<br>        } <span class="hljs-keyword">catch</span> (NullPointerException e) {<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">“私钥输入流为空”</span>);<br>        }<br>    }<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> RSAPrivateKey <span class="hljs-title">loadPrivateKeyByStr</span>(String privateKeyStr)<br>            <span class="hljs-keyword">throws</span> Exception {<br>        <span class="hljs-keyword">try</span> {<br>            <span class="hljs-keyword">byte</span>[] buffer = Base64.getDecoder().decode(privateKeyStr);<br>            PKCS8EncodedKeySpec keySpec = <span class="hljs-keyword">new</span> PKCS8EncodedKeySpec(buffer);<br>            KeyFactory keyFactory = KeyFactory.getInstance(<span class="hljs-string">“RSA”</span>);<br>            <span class="hljs-keyword">return</span> (RSAPrivateKey) keyFactory.generatePrivate(keySpec);<br>        } <span class="hljs-keyword">catch</span> (NoSuchAlgorithmException e) {<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">“无此算法”</span>);<br>        } <span class="hljs-keyword">catch</span> (InvalidKeySpecException e) {<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">“私钥非法”</span>);<br>        } <span class="hljs-keyword">catch</span> (NullPointerException e) {<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">“私钥数据为空”</span>);<br>        }<br>    }<br><br>    <span class="hljs-javadoc">/<strong><br>     <em> 公钥加密过程
+     </em><br>     <em><span class="hljs-javadoctag"> @param</span> publicKey
+     </em>            公钥<br>     <em><span class="hljs-javadoctag"> @param</span> plainTextData
+     </em>            明文数据<br>     <em><span class="hljs-javadoctag"> @return</span>
+     </em><span class="hljs-javadoctag"> @throws</span> Exception<br>     <em>             加密过程中的异常信息
+     </em>/</strong></span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">byte</span>[] <span class="hljs-title">encrypt</span>(RSAPublicKey publicKey, <span class="hljs-keyword">byte</span>[] plainTextData)<br>            <span class="hljs-keyword">throws</span> Exception {<br>        <span class="hljs-keyword">if</span> (publicKey == <span class="hljs-keyword">null</span>) {<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">“加密公钥为空, 请设置”</span>);<br>        }<br>        Cipher cipher = <span class="hljs-keyword">null</span>;<br>        <span class="hljs-keyword">try</span> {<br>            <span class="hljs-comment">// 使用默认RSA</span><br>            cipher = Cipher.getInstance(<span class="hljs-string">“RSA”</span>);<br>            <span class="hljs-comment">// cipher= Cipher.getInstance(“RSA”, new BouncyCastleProvider());</span><br>            cipher.init(Cipher.ENCRYPT_MODE, publicKey);<br>            <span class="hljs-keyword">byte</span>[] output = cipher.doFinal(plainTextData);<br>            <span class="hljs-keyword">return</span> output;<br>        } <span class="hljs-keyword">catch</span> (NoSuchAlgorithmException e) {<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">“无此加密算法”</span>);<br>        } <span class="hljs-keyword">catch</span> (NoSuchPaddingException e) {<br>            e.printStackTrace();<br>            <span class="hljs-keyword">return</span> <span class="hljs-keyword">null</span>;<br>        } <span class="hljs-keyword">catch</span> (InvalidKeyException e) {<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">“加密公钥非法,请检查”</span>);<br>        } <span class="hljs-keyword">catch</span> (IllegalBlockSizeException e) {<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">“明文长度非法”</span>);<br>        } <span class="hljs-keyword">catch</span> (BadPaddingException e) {<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">“明文数据已损坏”</span>);<br>        }<br>    }<br><br>    <span class="hljs-javadoc">/<br>     <em> 私钥加密过程
+     </em><br>     <em><span class="hljs-javadoctag"> @param</span> privateKey
+     </em>            私钥<br>     <em><span class="hljs-javadoctag"> @param</span> plainTextData
+     </em>            明文数据<br>     <em><span class="hljs-javadoctag"> @return</span>
+     </em><span class="hljs-javadoctag"> @throws</span> Exception<br>     <em>             加密过程中的异常信息
+     </em>/</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">byte</span>[] <span class="hljs-title">encrypt</span>(RSAPrivateKey privateKey, <span class="hljs-keyword">byte</span>[] plainTextData)<br>            <span class="hljs-keyword">throws</span> Exception {<br>        <span class="hljs-keyword">if</span> (privateKey == <span class="hljs-keyword">null</span>) {<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">“加密私钥为空, 请设置”</span>);<br>        }<br>        Cipher cipher = <span class="hljs-keyword">null</span>;<br>        <span class="hljs-keyword">try</span> {<br>            <span class="hljs-comment">// 使用默认RSA</span><br>            cipher = Cipher.getInstance(<span class="hljs-string">“RSA”</span>);<br>            cipher.init(Cipher.ENCRYPT_MODE, privateKey);<br>            <span class="hljs-keyword">byte</span>[] output = cipher.doFinal(plainTextData);<br>            <span class="hljs-keyword">return</span> output;<br>        } <span class="hljs-keyword">catch</span> (NoSuchAlgorithmException e) {<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">“无此加密算法”</span>);<br>        } <span class="hljs-keyword">catch</span> (NoSuchPaddingException e) {<br>            e.printStackTrace();<br>            <span class="hljs-keyword">return</span> <span class="hljs-keyword">null</span>;<br>        } <span class="hljs-keyword">catch</span> (InvalidKeyException e) {<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">“加密私钥非法,请检查”</span>);<br>        } <span class="hljs-keyword">catch</span> (IllegalBlockSizeException e) {<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">“明文长度非法”</span>);<br>        } <span class="hljs-keyword">catch</span> (BadPaddingException e) {<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">“明文数据已损坏”</span>);<br>        }<br>    }<br><br>    <span class="hljs-javadoc">/<strong><br>     <em> 私钥解密过程
+     </em><br>     <em><span class="hljs-javadoctag"> @param</span> privateKey
+     </em>            私钥<br>     <em><span class="hljs-javadoctag"> @param</span> cipherData
+     </em>            密文数据<br>     <em><span class="hljs-javadoctag"> @return</span> 明文
+     </em><span class="hljs-javadoctag"> @throws</span> Exception<br>     <em>             解密过程中的异常信息
+     </em>/</strong></span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">byte</span>[] <span class="hljs-title">decrypt</span>(RSAPrivateKey privateKey, <span class="hljs-keyword">byte</span>[] cipherData)<br>            <span class="hljs-keyword">throws</span> Exception {<br>        <span class="hljs-keyword">if</span> (privateKey == <span class="hljs-keyword">null</span>) {<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">“解密私钥为空, 请设置”</span>);<br>        }<br>        Cipher cipher = <span class="hljs-keyword">null</span>;<br>        <span class="hljs-keyword">try</span> {<br>            <span class="hljs-comment">// 使用默认RSA</span><br>            cipher = Cipher.getInstance(<span class="hljs-string">“RSA”</span>);<br>            <span class="hljs-comment">// cipher= Cipher.getInstance(“RSA”, new BouncyCastleProvider());</span><br>            cipher.init(Cipher.DECRYPT_MODE, privateKey);<br>            <span class="hljs-keyword">byte</span>[] output = cipher.doFinal(cipherData);<br>            <span class="hljs-keyword">return</span> output;<br>        } <span class="hljs-keyword">catch</span> (NoSuchAlgorithmException e) {<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">“无此解密算法”</span>);<br>        } <span class="hljs-keyword">catch</span> (NoSuchPaddingException e) {<br>            e.printStackTrace();<br>            <span class="hljs-keyword">return</span> <span class="hljs-keyword">null</span>;<br>        } <span class="hljs-keyword">catch</span> (InvalidKeyException e) {<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">“解密私钥非法,请检查”</span>);<br>        } <span class="hljs-keyword">catch</span> (IllegalBlockSizeException e) {<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">“密文长度非法”</span>);<br>        } <span class="hljs-keyword">catch</span> (BadPaddingException e) {<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">“密文数据已损坏”</span>);<br>        }<br>    }<br><br>    <span class="hljs-javadoc">/<br>     <em> 公钥解密过程
+     </em><br>     <em><span class="hljs-javadoctag"> @param</span> publicKey
+     </em>            公钥<br>     <em><span class="hljs-javadoctag"> @param</span> cipherData
+     </em>            密文数据<br>     <em><span class="hljs-javadoctag"> @return</span> 明文
+     </em><span class="hljs-javadoctag"> @throws</span> Exception<br>     <em>             解密过程中的异常信息
+     </em>/</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">byte</span>[] <span class="hljs-title">decrypt</span>(RSAPublicKey publicKey, <span class="hljs-keyword">byte</span>[] cipherData)<br>            <span class="hljs-keyword">throws</span> Exception {<br>        <span class="hljs-keyword">if</span> (publicKey == <span class="hljs-keyword">null</span>) {<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">“解密公钥为空, 请设置”</span>);<br>        }<br>        Cipher cipher = <span class="hljs-keyword">null</span>;<br>        <span class="hljs-keyword">try</span> {<br>            <span class="hljs-comment">// 使用默认RSA</span><br>            cipher = Cipher.getInstance(<span class="hljs-string">“RSA”</span>);<br>            <span class="hljs-comment">// cipher= Cipher.getInstance(“RSA”, new BouncyCastleProvider());</span><br>            cipher.init(Cipher.DECRYPT_MODE, publicKey);<br>            <span class="hljs-keyword">byte</span>[] output = cipher.doFinal(cipherData);<br>            <span class="hljs-keyword">return</span> output;<br>        } <span class="hljs-keyword">catch</span> (NoSuchAlgorithmException e) {<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">“无此解密算法”</span>);<br>        } <span class="hljs-keyword">catch</span> (NoSuchPaddingException e) {<br>            e.printStackTrace();<br>            <span class="hljs-keyword">return</span> <span class="hljs-keyword">null</span>;<br>        } <span class="hljs-keyword">catch</span> (InvalidKeyException e) {<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">“解密公钥非法,请检查”</span>);<br>        } <span class="hljs-keyword">catch</span> (IllegalBlockSizeException e) {<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">“密文长度非法”</span>);<br>        } <span class="hljs-keyword">catch</span> (BadPaddingException e) {<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">“密文数据已损坏”</span>);<br>        }<br>    }<br><br>    <span class="hljs-javadoc">/<em>*
+     </em> 字节数据转十六进制字符串<br>     <em>
+     </em><span class="hljs-javadoctag"> @param</span> data<br>     <em>            输入数据
+     </em><span class="hljs-javadoctag"> @return</span> 十六进制内容<br>     */</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> String <span class="hljs-title">byteArrayToString</span>(<span class="hljs-keyword">byte</span>[] data) {<br>        StringBuilder stringBuilder = <span class="hljs-keyword">new</span> StringBuilder();<br>        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; data.length; i++) {<br>            <span class="hljs-comment">// 取出字节的高四位 作为索引得到相应的十六进制标识符 注意无符号右移</span><br>            stringBuilder.append(HEX_CHAR[(data[i] &amp; <span class="hljs-number">0xf0</span>) &gt;&gt;&gt; <span class="hljs-number">4</span>]);<br>            <span class="hljs-comment">// 取出字节的低四位 作为索引得到相应的十六进制标识符</span><br>            stringBuilder.append(HEX_CHAR[(data[i] &amp; <span class="hljs-number">0x0f</span>)]);<br>            <span class="hljs-keyword">if</span> (i &lt; data.length - <span class="hljs-number">1</span>) {<br>                stringBuilder.append(<span class="hljs-string">‘ ‘</span>);<br>            }<br>        }<br>        <span class="hljs-keyword">return</span> stringBuilder.toString();<br>    }<br><br><br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span>(String[] args) <span class="hljs-keyword">throws</span> Exception {<br>        String filepath=<span class="hljs-string">“F:/temp/“</span>;<br>        File file=<span class="hljs-keyword">new</span> File(filepath);<br>        <span class="hljs-keyword">if</span>(!file.exists()){<br>            file.mkdir();<br>        }<br>        genKeyPair(filepath);<br>        System.out.println(<span class="hljs-string">“————–公钥加密私钥解密过程——————-“</span>);<br>        String plainText=<span class="hljs-string">“1223333323:8783737321232:dewejj28i33e92hhsxxxx”</span>;<br>        <span class="hljs-comment">//公钥加密过程</span><br>        <span class="hljs-keyword">byte</span>[] cipherData=encrypt(loadPublicKeyByStr(loadPublicKeyByFile(filepath)),plainText.getBytes());<br>        String cipher=<span class="hljs-keyword">new</span> String(Base64.getEncoder().encode(cipherData));<br>        <span class="hljs-comment">//私钥解密过程</span><br>        <span class="hljs-keyword">byte</span>[] res=decrypt(loadPrivateKeyByStr(loadPrivateKeyByFile(filepath)), Base64.getDecoder().decode(cipher));<br>        String restr=<span class="hljs-keyword">new</span> String(res);<br>        System.out.println(<span class="hljs-string">“原文：”</span>+plainText);<br>        System.out.println(<span class="hljs-string">“加密密文：”</span>+cipher);<br>        System.out.println(<span class="hljs-string">“解密：”</span>+restr);<br>        System.out.println();<br>    }<br>}<br></code></pre><br><br><p>注： 文字部分复制了《大型电商分布式系统实践 第一版 讲师 陈康贤》的第三课。代码来源于自己的整理，全部测试通过，应该没有坑。</p></div><br>        <script type="text/javascript"><br>            $(function () {<br>                $(‘pre.prettyprint code’).each(function () {<br>                    var lines = $(this).text().split(‘\n’).length;<br>                    var $numbering = $(‘<ul/>‘).addClass(‘pre-numbering’).hide();<br>                    $(this).addClass(‘has-numbering’).parent().append($numbering);<br>                    for (i = 1; i &lt;= lines; i++) {<br>                        $numbering.append($(‘<li/>‘).text(i));<br>                    };<br>                    $numbering.fadeIn(1700);<br>                });<br>            });<br>        </script><br><br></div>
+
+
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/11/08/hdAlgorithm/" rel="next" title="转载:[JAVA加解密]DH算法">
+                <i class="fa fa-chevron-left"></i> 转载:[JAVA加解密]DH算法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2099/09/07/myProject-01/" rel="prev" title="案例项目-下载页">
+                案例项目-下载页 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://bloodorange2017.github.io/images/img_head_001.jpg"
+               alt="XueCheng" />
+          <p class="site-author-name" itemprop="name">XueCheng</p>
+           
+              <p class="site-description motion-element" itemprop="description">Do one thing at a time, and do well.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">63</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一数字摘要算法"><span class="nav-number">1.</span> <span class="nav-text">一、数字摘要算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-md5"><span class="nav-number">1.1.</span> <span class="nav-text">1. Md5</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2sha"><span class="nav-number">1.2.</span> <span class="nav-text">2.SHA</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二对称加密"><span class="nav-number">2.</span> <span class="nav-text">二、对称加密</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-des算法"><span class="nav-number">2.1.</span> <span class="nav-text">1. DES算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-aes"><span class="nav-number">2.2.</span> <span class="nav-text">2. AES</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三非对称加密"><span class="nav-number">3.</span> <span class="nav-text">三、非对称加密</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#rsa"><span class="nav-number">3.1.</span> <span class="nav-text">RSA</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">XueCheng</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Muse
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+<script type="text/javascript"
+color="160,160,233" opacity='0.4' zIndex="-2" count="16" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+</body>
+</html>
