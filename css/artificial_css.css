@@ -157,7 +157,7 @@ html, body { height: 100%; background-color: white; font-size: 24px; overflow: h
 
 .chat-l-fluid { float: left; margin-left: -100%; }
 
-.chat-icons { background: url(http://localhost:8099/point02/images/chat-icons.png) no-repeat; }
+.chat-icons { background: url(https://bloodorange2017.github.io/images/chat-icons.png) no-repeat; }
 
 .chat-container { position: relative; width: 100%; height: 100%; overflow: hidden; font-family: "Microsoft Yahei, PingFang SC"; background-color: #4982d1; }
 
