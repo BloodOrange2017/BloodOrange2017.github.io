@@ -253,118 +253,6 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/07/26/truncation-02/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="XueCheng">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="XueCheng Notes">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/07/26/truncation-02/" itemprop="url">分布式事务？No, 最终一致性</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Veröffentlicht am</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-07-26T17:54:01+08:00">
-                2017-07-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p></p><h1>分布式一致性</h1><h1>一、写在前面</h1><p>现今互联网界，分布式系统和微服务架构盛行。</p><p>一个简单操作，在服务端非常可能是由多个服务和数据库实例协同完成的。</p><p>在互联网金融等一致性要求较高的场景下，多个独立操作之间的一致性问题显得格外棘手。</p><p>基于水平扩容能力和成本考虑，传统的强一致的解决方案（e.g.单机事务）纷纷被抛弃。其理论依据就是响当当的<a href="\"http://link.zhihu.com/?target=https%3A//en.wikipedia.org/wiki/CAP_theorem\"" class="\"" wrap="" external\"="" target="\"_blank\"" rel="\"nofollow" noreferrer\"="">CAP原理<i class="\"icon-external\""></i></a>。</p><p>我们往往为了可用性和分区容错性，忍痛放弃强一致支持，转而追求最终一致性。大部分业务场景下，我们是可以接受短暂的不一致的。</p><p>本文主要讨论一些最终一致性相关的实现思路。</p><noscript><img src="\"https://pic3.zhimg.com/v2-135c492dbc2225ca86af34b837e446fa_b.png\"" data-rawwidth="\"760\"" data-rawheight="\"713\"" class="\"origin_image" zh-lightbox-thumb\"="" width="\"760\"" data-original="\"https://pic3.zhimg.com/v2-135c492dbc2225ca86af34b837e446fa_r.png\""></noscript><img src="\"//zhstatic.zhihu.com/assets/zhihu/ztext/whitedot.jpg\"" data-rawwidth="\"760\"" data-rawheight="\"713\"" class="\"origin_image" zh-lightbox-thumb="" lazy\"="" width="\"760\"" data-original="\"https://pic3.zhimg.com/v2-135c492dbc2225ca86af34b837e446fa_r.png\"" data-actualsrc="\"https://pic3.zhimg.com/v2-135c492dbc2225ca86af34b837e446fa_b.png\""><br><br><h1>二、最终一致性解决方案</h1><p>这个时候一般都会去举一个例子：A给B转100元。</p><p>当然，A跟B很不幸的被分在了不同的数据库实例上。甚者这两个人可能是在不同机构开的户。</p><p>下面讨论基本都是围绕这个场景的。更复杂的场景需要各位客官发挥下超人的想象力和扩展能力了。</p><p>谈到最终一致性，人们首先想到的应该是2PC解决方案。</p><h2>1. 两阶段提交</h2><p>两阶段提交需要有一个协调者，来协调两个操作之间的操作流程。当参与方为更多时，其逻辑其实就比较复杂了。</p><p>而参与者需要实现两阶段提交协议。Pre commit阶段需要锁住相关资源，commit或rollback时分别进行实际提交或释放资源。</p><p>看似还不错。但是考虑到各种异常情况那就比较痛苦了。</p><p>举个例子：如下图，执行到提交阶段，调用A的commit接口超时了，协调者该如何做？</p><p>我们一般会假设预提交成功后，提交或回滚肯定是成功的（由参与者保障）。</p><p>上述情况协调者只能选择继续重试。这也就要求下游接口必须实现幂等（关于幂等的实现下面我们单独再讨论下）。</p><p>一般，下游出现故障，不是短时重试能解决的。所以，我们一般也需要有定时去处理中间状态的逻辑。</p><p>这个地方，其实如果有个支持重试的MQ，可以扔到MQ。在实践中，我们曾经也尝试自己实现了一个基于MySQL的重试队列。下面还会聊到这一点。</p><p>另外，我们也利用了一些外部重试机制。比如支付场景，微信和支付宝都有非常可靠的通知机制。</p><p>我们在通知处理接口中做一些重试策略。如果重试失败，就返回微信或支付宝失败。</p><p>这样第三方还会接着回调我们(怀疑他们可能发现了我厂回调成功率比其他商户要低^_^)，不过作为小厂，利用一些大厂成熟的机制还是可取的。</p><noscript><img src="\"https://pic3.zhimg.com/v2-adeed5162805d0de2b9c08dc5f1f943e_b.png\"" data-rawwidth="\"1107\"" data-rawheight="\"636\"" class="\"origin_image" zh-lightbox-thumb\"="" width="\"1107\"" data-original="\"https://pic3.zhimg.com/v2-adeed5162805d0de2b9c08dc5f1f943e_r.png\""></noscript><img src="\"//zhstatic.zhihu.com/assets/zhihu/ztext/whitedot.jpg\"" data-rawwidth="\"1107\"" data-rawheight="\"636\"" class="\"origin_image" zh-lightbox-thumb="" lazy\"="" width="\"1107\"" data-original="\"https://pic3.zhimg.com/v2-adeed5162805d0de2b9c08dc5f1f943e_r.png\"" data-actualsrc="\"https://pic3.zhimg.com/v2-adeed5162805d0de2b9c08dc5f1f943e_b.png\""><br><h2>2.\n异步确保（没有事务消息）</h2><p>“异步确保”这个词不一定是准确的，还没找到更合适的词，抱歉。</p><p>异步化不只是为了一致性，有时候更多的考虑响应时间，下游稳定性等因素。本节只讨论通过异步方案，如何实现最终一致性。</p><p>该方案关键是要有个消息表。另外，一般会有个队列，而且我们一般都会假设这个MQ不丢消息。不过很不幸此MQ还不支持事务消息。</p><p>基本思路就是：</p><ol><li>消息生产方，需要额外建一个消息表，并记录消息发送状态。消息表和业务数据要在一个事务里提交。实现时为了简单，可以只是增加一个字段。新增字段会跟业务强耦合，新增表处理起来不同交易数据可以通用处理。不过因为消息表跟业务需要在一个事务里，所以存储耦合在所难免。</li><li>消息消费方，需要处理这个消息，并完成自己的业务逻辑。此时如果本地事务处理成功，那发送给生产方一个confirm消息，表明已经处理成功了。如果处理失败，该消息还是需要放回MQ的。如果MQ支持重试，那就省事儿了。如果不支持，可以考虑把该消息放回队尾或另建一个队列特殊处理。当然非要处理成功才能继续，那只能block在这条消息了（估计一般人不会这么做）。Kafka lowlevel接口是支持自己设置offset的，所以可以实现block。</li><li>生产方定时扫描本地消息表，把还没处理完成的消息由发送一遍。如果有靠谱的自动对账补账逻辑，其实这一步也可以省略。在实践中，丢消息或者下游处理失败这种场景还是非常少的。这里要看业务上能不能容忍不一致到一个对账补账周期。</li></ol><p>当然如果进一步简化，那么MQ也可以不要的。直接用一个脚本处理，一些低频场景，也没啥大问题。当然离线扫表这个事情，总让人不爽。业务量不大且也出初期相信很多人干活儿这事儿。</p><p>另外，对一致性要求不高的或者有其他兜底方案的场景（比如较为频繁的对账补账机制），我们就不需要关心消息的confirm等情况，只要扔给消息，就认为万事大吉，一般也是可取的。</p><noscript><img src="\"https://pic1.zhimg.com/v2-38771836390d7db544d0780c96d8d56c_b.png\"" data-rawwidth="\"1140\"" data-rawheight="\"527\"" class="\"origin_image" zh-lightbox-thumb\"="" width="\"1140\"" data-original="\"https://pic1.zhimg.com/v2-38771836390d7db544d0780c96d8d56c_r.png\""></noscript><img src="\"//zhstatic.zhihu.com/assets/zhihu/ztext/whitedot.jpg\"" data-rawwidth="\"1140\"" data-rawheight="\"527\"" class="\"origin_image" zh-lightbox-thumb="" lazy\"="" width="\"1140\"" data-original="\"https://pic1.zhimg.com/v2-38771836390d7db544d0780c96d8d56c_r.png\"" data-actualsrc="\"https://pic1.zhimg.com/v2-38771836390d7db544d0780c96d8d56c_b.png\""><p>上面我们除了处理业务逻辑，还做了很多繁琐的事情。把这些杂活儿都扔给一个中间件多好！这就是阿里等大厂做的事务消息中间件了（比如Notify，RockitMQ的事务消息，请看下节）。</p><h2>3.\n异步确保（事务消息）</h2><p>事务消息实际上是一个很理想的想法。</p><p>理想是：我们只要把消息扔到MQ，那么这个消息肯定会被消费成功。生产方不用担心消息发送失败，也不用担心消息会丢失。</p><p>回到现实，消费方，如果消息处理失败了，还有机会继续消费，直到成功为止（消费方逻辑bug导致消费失败情况不在本文讨论范围内）。</p><p>但遗憾的是市面上大部分MQ都不支持事务消息，其中包括看起来可以一统江湖的kafka。</p><p>RocketMQ号称支持，但是还没开源。阿里云据说免费提供，没玩过（羡慕下阿里等大厂内部猿类们）。不过从网上公开的资料看，用起来还是有些不爽的地方。这是后话了，毕竟解决了很多问题。</p><p>事务消息，关键一点是把上小节中繁琐的消息状态和重发等用中间件形式封装了。</p><p>我厂目前还没提供成熟的支持事务消息的MQ。下面以网传RMQ为例，说明事务消息大概是怎么玩的：</p><p>RMQ的事务消息相对于普通MQ，相当于提供了2PC的提交接口。</p><p>生产方需要先发送一个prepared消息给RMQ。如果操作1失败，返回失败。</p><p>然后执行本地事务，如果成功了需要发送Confirm消息给RMQ。2失败，则调用RMQ cancel接口。 </p><p>那问题是3失败了（或者超时）该如何处理呢？</p><p>别急，RMQ考虑到这个问题了。 RMQ会要求你实现一个check的接口。生产方需要实现该接口，并告知RMQ自己本地事务是否执行成功（第4步）。RMQ会定时轮训所有处于pre状态的消息，并调用对应的check接口，以决定此消息是否可以提交。</p><p>当然第5步也可能会失败。这时候需要RMQ支持消息重试。处理失败的消息果断时间再进行重试，直到成功为止（超过重试次数后会进死信队列，可能得人肉处理了，因为没用过所以细节不是很了解）。</p><p>支持消息重试，这一点也很重要。消息重试机制也不仅仅在这里能用到，还有其他一些特殊的场景，我们会依赖他。下一小节，我们简单探讨一下这个问题。</p><p>RMQ还是很强大的。我们认为这个程度的一致性已经能够满足绝大部分互联网应用场景。代价是生产方做了不少额外的事情，但相比没有事务消息情况，确实解放了不少劳动力。 </p><noscript><img src="\"https://pic2.zhimg.com/v2-cffaa4dd5e45a4d1fa5a528cfaf20991_b.png\"" data-rawwidth="\"556\"" data-rawheight="\"325\"" class="\"origin_image" zh-lightbox-thumb\"="" width="\"556\"" data-original="\"https://pic2.zhimg.com/v2-cffaa4dd5e45a4d1fa5a528cfaf20991_r.png\""></noscript><img src="\"//zhstatic.zhihu.com/assets/zhihu/ztext/whitedot.jpg\"" data-rawwidth="\"556\"" data-rawheight="\"325\"" class="\"origin_image" zh-lightbox-thumb="" lazy\"="" width="\"556\"" data-original="\"https://pic2.zhimg.com/v2-cffaa4dd5e45a4d1fa5a528cfaf20991_r.png\"" data-actualsrc="\"https://pic2.zhimg.com/v2-cffaa4dd5e45a4d1fa5a528cfaf20991_b.png\""><p>P.S. 据说阿里内部因为历史原因，用notify比RMQ要多，他们俩基本原理类似。</p><h2>4. 补偿交易（Compensating\nTransaction）</h2><p>补偿交易，其核心思想是:针对每个操作，都要注册一个与其对应的补偿操作。一般来说操作本身和其补偿（撤销）操作会在一个事务里完成。</p><p>当其后续操作失败后，需要按相反顺序完成前面注册的所有撤销操作。</p><p>跟2PC比，他的核心价值应该是少了锁资源的代价。流程也相对简单一点。但实际操作中，补偿操作不太好定义，其中间状态处理也会比较棘手。</p><p>比如A:-100(补偿为A:+100),\nB:+100。那么如果B:+100失败后就需要执行A:+100。</p><p>曾经有位大牛同事(也是我灰常崇拜的一位技术控)一直热衷于这个思路，相信有些场景用补偿交易模式也是个不错的选择。</p><p>他更多是不断思考如何让补偿看起来跟注册个单库事务一样简单。做到业务无感知。</p><p>因为本人没有相关实战经验，所以留个<a href="\"http://link.zhihu.com/?target=https%3A//docs.microsoft.com/en-us/azure/architecture/patterns/compensating-transaction\"" class="\"" wrap="" external\"="" target="\"_blank\"" rel="\"nofollow" noreferrer\"="">链接在这里<i class="\"icon-external\""></i></a>，供大家扩展阅读。偷懒了，截个此文中的一张图。</p><noscript><img src="\"https://pic3.zhimg.com/v2-706ab3a10327ce6707b316fcb0e6df96_b.png\"" data-rawwidth="\"647\"" data-rawheight="\"380\"" class="\"origin_image" zh-lightbox-thumb\"="" width="\"647\"" data-original="\"https://pic3.zhimg.com/v2-706ab3a10327ce6707b316fcb0e6df96_r.png\""></noscript><img src="\"//zhstatic.zhihu.com/assets/zhihu/ztext/whitedot.jpg\"" data-rawwidth="\"647\"" data-rawheight="\"380\"" class="\"origin_image" zh-lightbox-thumb="" lazy\"="" width="\"647\"" data-original="\"https://pic3.zhimg.com/v2-706ab3a10327ce6707b316fcb0e6df96_r.png\"" data-actualsrc="\"https://pic3.zhimg.com/v2-706ab3a10327ce6707b316fcb0e6df96_b.png\""><br><h2>5.\n消息重试</h2><p>上面多次提到消息重试。如果说事务消息重点解决了生产者和MQ之间的一致性问题，那么重试机制对于确保消费者和MQ之间的一致性是至关重要的。</p><p>重试可以是pull模式，也可以是push模式。我厂目前已经提供push模式的消息重试，这个还是要赞一下的！</p><p>消息重试，重试顾名思义是要解决消息一次性传递过程中的失败场景。举个例子，支付宝回调商户，然后商户系统挂了，怎么办？答案是重试！</p><p>一般来说，消息如果消费失败，就会被放到重试队列。如果是延迟时间固定（比如每次延迟2s），那么只需要按失败的顺序进队列就好了，然后对队首的消息，只有当延迟时间到达才能被消费。</p><p>这里会有个水位的概念。如果按时间作为水位，那么期望执行时间大于当前时间的消息才是高于水位以上的。其他消息对consumer不可见。</p><p>如果要实现每个消息延迟时间不一样，之前想过一种基于队列的方案是，按秒的维度建多个队列。按执行时间入到不同的队列，一天86400个队列（一般丑陋）。然后cosumer按时间消费不同队列。</p><p>当然如果不依赖队列可以有更灵活的方案。</p><p>之前做支付时候，做了个基于DB的延时队列。每次消息进去时候，都会把下次执行时间设置一下。再对这个时间做个索引….</p><p>略土，but it works。毕竟失败的消息不该很多，所以DB容量也不用太在意。很多时候，能跑起来的，简单的架构会得到更多人喜爱。</p><p>我厂提供了一种基于redis的延时队列，可以支持消息重试。用到的主要数据结构是redis的zset，按消息处理时间排序。</p><p>当然实现起来也没说的那么简单。MQ遇到的持久化问题，内存数据丢失问题，重试次数控制，消息追溯等等都需要有一些额外的开发量。</p><p>综上，如果MQ能够提供消息重试特性，那就不要自己折腾了。这里还是有不少坑的。</p><h2>6.\n幂等（接口支持重入）</h2><p>即使没有MQ，重试也是无处不在的。所以幂等问题不是因为用到MQ后引入的，而是老问题。</p><p>幂等怎么做？</p><p>如果是单条insert操作，我们一般会依赖唯一键。如果一个事务里包含一个单条insert，那也可以依赖这条insert做幂等，当insert抛异常就回滚事务。</p><p>如果是update操作，那么状态机控制和版本控制异常重要。这里要多加小心。</p><p>再复杂点的，可以考虑引入一个log表。该log对操作id（消息id？）进行唯一键控制。然后整个操作用事务控制。当插入log失败时整个事务回滚就好了。</p><p>有人会说先查log表或者利用redis等缓存，加锁。我想说的是这个基本上都不work。除非在事务里进行查寻。所以建议，所幸让代码简单点，直接插入，依赖数据库唯一键冲突回滚掉就好了。</p><p>用唯一键挡重入是目前为止个人觉得最有安全感的方式。当然对数据库会有一些额外性能损耗。问题就变成了有多大的并发，其中又有多大是需要重试的？</p><p>我相信Fasion IO卡+分库分表之后，想达到数据库性能瓶颈还是有点难度的（主要是针对金融类场景）。</p><h1>三、后记</h1><p>本文略虚，当然目前最终一致性没有一个放之四海而皆准的成功实践。需要大家根据不同的业务特性和发展阶段，选则适当的方式来实现。</p><p>纠结最终一致性问题，其实万恶之源是因为RPC本身会失败，会有结果不确定的情况。</p><p>隐约感觉本人职业生涯大部分时间都会跟各种失败和timeout搏斗了。</p><p>本文重点讨论利用MQ实现最终一致性。主要原因有：</p><p>1. 目前市面上的MQ都相对非常强大，几乎都号称可以做到不丢数据。相信未来对事务消息应该也会更加普及。</p><p>2. 异步化几乎是不同处理能力（响应时间、吞吐量）和稳定性（99.99%的服务依赖99.9%的服务）的服务之间解耦的毕竟之路。</p><p>当然前面的讨论还很浅显。能力有限，希望能够不断完善此文，请各位看到的客观不吝赐教。</p><p>下一篇，希望能够跟大家share一下，最近在做的一个项目。其主要目的利用现有还未支持事务消息的MQ，在业务层实现类事务消息逻辑，并且尽量不让代码变成一坨。</p><br><p>本人在知乎处女文，会有人看到吗？</p><p></p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/07/20/dubbox-01/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1944,11 +1832,130 @@
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://bloodorange2017.github.io/archives/2017/06/16/activeMq-03/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="XueCheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://bloodorange2017.github.io/images/img_head_001.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="XueCheng Notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/06/16/activeMq-03/" itemprop="url">Sping+ActiveMQ整合</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Veröffentlicht am</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-06-16T17:13:23+08:00">
+                2017-06-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <pre><code>&lt;div class=&quot;entry&quot;&gt;
+</code></pre><p>通过前一篇《<a href="http://blog.csdn.net/u013256816/article/details/51161548" class="external" rel="nofollow" target="_blank">ActiveMQ简述</a>》大概对ActiveMQ有了一个大概的认识，本篇所阐述的是如何通过Spring继承ActiveMQ进而更有效、更灵活的运用ActiveMQ.</p><br><p>Spring和ActiveMQ整合需要在项目中包含以下这几个jar包（缺一不可）：activeio-core-3.1.4.jar，activemq-all-5.13.2.jar，activemq-pool-5.13.2.jar，commons-pool2-2.4.2.jar，这些jar可以在ActiveMQ的安装包中的/lib/optional/下找到，或者从<a href="http://download.csdn.net/detail/u013256816/9492418" class="external" rel="nofollow" target="_blank">这里</a>下载。</p><br><h2 id="配置connectionfactory"><a name="t0"></a>配置ConnectionFactory</h2><br><p>ConnectionFactory是用于产生到JMS服务器的链接的，Spring为我们提供了多个ConnectionFactory，有SingleConnectionFactory和CachingConnectionFactory。SingleConnectionFactory对于建立JMS服务器链接的请求会一直返回同一个链接，并且会忽略Connection的close方法调用。CachingConnectionFactory继承了SingleConnectionFactory，所以它拥有SingleConnectionFactory的所有功能，同时它还新增了缓存功能，可以缓存Session, MessageProducer和MessageConsumer。</p><br><p>Spring提供的ConnectionFactory只是Spring用于管理ConnectionFactory的，真正产生到JMS服务器链接的ConnectionFactory还得是JMS服务厂商提供的，并且需要把它注入到Spring提供的ConnectionFactory中，这里使用ActiveMQ提供的ConnectionFactory，所以定义如下（10.10.195.187是博主的测试ip地址）：</p><br><pre class="brush: java; gutter: true">&lt;bean id=&quot;targetConnectionFactory&quot; class=&quot;org.apache.activemq.ActiveMQConnectionFactory&quot;&gt;<br>        &lt;property name=&quot;brokerURL&quot; value=&quot;tcp://10.10.195.187:61616&quot; /&gt;<br>    &lt;/bean&gt;<br>    &lt;bean id=&quot;connectionFactory&quot; class=&quot;org.springframework.jms.connection.SingleConnectionFactory&quot;&gt;<br>        &lt;property name=&quot;targetConnectionFactory&quot; ref=&quot;targetConnectionFactory&quot;/&gt;<br>    &lt;/bean&gt;</pre><br><p>ActiveMQ为我们提供了一个PooledConnectionFactory，通过往里面注入一个ActiveMQConnectionFactory可以用来将Connection, Session和MessageProducer池化，这样可以大大的减少我们的资源消耗。当使用PooledConnectionFactory时，我们在定义一个ConnectionFactory时这样定义：</p><br><pre class="brush: java; gutter: true"> &lt;bean id=&quot;targetConnectionFactory&quot; class=&quot;org.apache.activemq.ActiveMQConnectionFactory&quot;&gt;<br>        &lt;property name=&quot;brokerURL&quot; value=&quot;tcp://10.10.195.187:61616&quot; /&gt;<br>    &lt;/bean&gt;<br>    &lt;bean id=&quot;poolConnectionFactory&quot; class=&quot;org.apache.activemq.pool.PooledConnectionFactory&quot;  &gt;<br>        &lt;property name=&quot;connectionFactory&quot; ref=&quot;targetConnectionFactory&quot; /&gt;<br>        &lt;property name=&quot;maxConnections&quot; value=&quot;10&quot;/&gt;<br>    &lt;/bean&gt;<br>    &lt;bean id=&quot;connectionFactory&quot; class=&quot;org.springframework.jms.connection.SingleConnectionFactory&quot;&gt;<br>        &lt;property name=&quot;targetConnectionFactory&quot; ref=&quot;poolConnectionFactory&quot;/&gt;<br>    &lt;/bean&gt;</pre><br><p>这里也可以去掉spring提供的SingleConnectionFactory,类似这样：</p><br><pre class="brush: java; gutter: true">&lt;bean id=&quot;targetConnectionFactory&quot; class=&quot;org.apache.activemq.ActiveMQConnectionFactory&quot;&gt;<br>        &lt;property name=&quot;brokerURL&quot; value=&quot;tcp://10.10.195.187:61616&quot; /&gt;<br>    &lt;/bean&gt;<br>    &lt;bean id=&quot;connectionFactory&quot; class=&quot;org.apache.activemq.pool.PooledConnectionFactory&quot;  &gt;<br>        &lt;property name=&quot;connectionFactory&quot; ref=&quot;targetConnectionFactory&quot; /&gt;<br>        &lt;property name=&quot;maxConnections&quot; value=&quot;10&quot;/&gt;<br>    &lt;/bean&gt;</pre><br><hr><br><h2 id="配置消息发送生产者"><a name="t1"></a>配置消息发送（生产）者</h2><br><p>配置好ConnectionFactory之后我们就需要配置生产者。生产者负责生产消息并发送到JMS服务器，这通常对应的是我们的一个业务逻辑服务实现类。但是我们的服务实现类是怎么进行消息的发送的呢？这通常是利用Spring为我们提供的JmsTemplate类来实现，所以配置生产者其实最核心的就是配置进行消息发送的JmsTemplate。对于消息发送者而言，它在发送消息的时候要知道自己该往哪里发，为此，我们在定义JmsTemplate的时候需要往里面注入一个Spring提供的ConnectionFactory对象。</p><br><p>spring配置文件中添加:</p><br><pre class="brush: java; gutter: true"> &lt;bean id=&quot;jmsTemplate&quot; class=&quot;org.springframework.jms.core.JmsTemplate&quot;&gt;<br>        &lt;property name=&quot;connectionFactory&quot; ref=&quot;poolConnectionFactory&quot;/&gt;<br>    &lt;/bean&gt;</pre><br><p>在<a title="Java EE知识库" href="http://lib.csdn.net/base/17" target="_blank" class="external" rel="nofollow">Java</a>相关处理文件中添加(这里用的是@Inject注解，当然也可以用@Autowired)：</p><br><pre class="brush: java; gutter: true"> @Inject<br>    @Named(&quot;jmsTemplate&quot;)<br>    private JmsTemplate jmsTemplate;</pre><br><p>这样就可以通过jmsTemplate对象来处理相关信息，譬如：</p><br><pre class="brush: java; gutter: true">  jmsTemplate.convertAndSend(&quot;sqlQueue&quot;,sql);</pre><br><p>真正利用JmsTemplate进行消息发送的时候，我们需要知道消息发送的目的地，即Destination。在Jms中有一个用来表示目的地的Destination接口，它里面没有任何方法定义，只是用来做一个标志而已。当我们在使用JmsTemplate进行消息发送时没有指定destination的时候将使用默认的Destination。默认Destination可以通过在定义jmsTemplate bean对象时通过属性defaultDestination或defaultDestinationName来进行诸如，defaultDestinationName对于的就是一个普通字符串。在ActiveMQ中实现了两种类型的Destination，一个是点对点的ActiveMQQueue,另一个就是支持订阅-发布模式的ActiveMQTopic。</p><br><pre class="brush: java; gutter: true">&lt;bean id=&quot;queueDestination&quot; class=&quot;org.apache.activemq.command.ActiveMQQueue&quot;&gt;<br>        &lt;constructor-arg&gt;<br>            &lt;value&gt;sqlQueue&lt;/value&gt;<br>        &lt;/constructor-arg&gt;<br>    &lt;/bean&gt;<br>    &lt;bean id=&quot;topicDestination&quot; class=&quot;org.apache.activemq.command.ActiveMQTopic&quot;&gt;<br>        &lt;constructor-arg&gt;<br>            &lt;value&gt;topic&lt;/value&gt;<br>        &lt;/constructor-arg&gt;<br>    &lt;/bean&gt;</pre><br><p>对面上面的那个例子可以在Java程序中添加：</p><br><pre class="brush: java; gutter: true"> @Inject<br>    @Named(&quot;queueDestination&quot;)<br>    private Destination queueDestination;</pre><br><p>进而【jmsTemplate.convertAndSend(“sqlQueue”,sql);】可以改为【jmsTemplate.convertAndSend(queueDestination,sql);】<br><br>也可以这样修改jmsTemplate：</p><br><pre class="brush: java; gutter: true">&lt;bean id=&quot;jmsTemplate&quot; class=&quot;org.springframework.jms.core.JmsTemplate&quot;&gt;<br>        &lt;property name=&quot;connectionFactory&quot; ref=&quot;connectionFactory&quot;/&gt;<br>        &lt;property name=&quot;defaultDestination&quot; ref=&quot;queueDestination&quot;/&gt;<br>    &lt;/bean&gt;</pre><br><p>或者：</p><br><pre class="brush: java; gutter: true">&lt;bean id=&quot;jmsTemplate&quot; class=&quot;org.springframework.jms.core.JmsTemplate&quot;&gt;<br>        &lt;property name=&quot;connectionFactory&quot; ref=&quot;connectionFactory&quot;/&gt;<br>        &lt;property name=&quot;defaultDestinationName&quot; value=&quot;sqlQueue&quot;/&gt;<br>    &lt;/bean&gt;</pre><br><p>进而在java程序中这样调用：jmsTemplate.convertAndSend(sql);</p><br><hr><br><h2 id="配置消息接收消费者"><a name="t2"></a>配置消息接收（消费）者</h2><br><p>生产者往指定目的地Destination发送消息后，接下来就是消费者对指定目的地的消息进行消费了。那么消费者是如何知道有生产者发送消息到指定目的地Destination了呢？这是通过Spring为我们封装的消息监听容器MessageListenerContainer实现的，它负责接收信息，并把接收到的信息分发给真正的MessageListener进行处理。每个消费者对应每个目的地都需要有对应的MessageListenerContainer。对于消息监听容器而言，除了要知道监听哪个目的地之外，还需要知道到哪里去监听，也就是说它还需要知道去监听那个JMS服务器，这是通过在配置MessageConnectionFactory的时候往里面注入一个ConnectionFactory来实现的。所以我们在配置一个MessageListenerContainer的时候有三个属性必须指定，一个是表示从哪里监听的ConnectionFactory，一个是表示监听什么的Destination，一个是接收到消息以后进行消息处理的MessageListener.</p><br><p>Spring为我们听过了两种类型的MessageListenerContainer：SimpleMessageListenerContainer和DefaultMessageListenerContainer。MessageListenerContainer：SimpleMessageListenerContainer会在一开始的时候就创建一个会话Session和消费者Consumer，并且会适用标准的JMS的MessageConsumer.setMessageListener()方法注册监听器让JMS提供调用监听器的回调函数。它不会动态的适应运行时需要和参与外部的事务管理。兼容性方面，它非常接近于独立的JMS规范，但一般不兼容J2EE的JMS限制。大多数情况下，我们还是使用DefaultMessageListenerContainer，跟MessageListenerContainer：SimpleMessageListenerContainer想比，它会动态的适应运行时的需求，并且能够参与外部的事务管理。它很好的平衡了JMS提供者要求低，先进功能如事务参与和兼容J2EE环境。</p><br><p>spring配置文件中添加:</p><br><pre class="brush: java; gutter: true"> &lt;bean id=&quot;queueDestination&quot; class=&quot;org.apache.activemq.command.ActiveMQQueue&quot;&gt;<br>        &lt;constructor-arg&gt;<br>            &lt;value&gt;sqlQueue&lt;/value&gt;<br>        &lt;/constructor-arg&gt;<br>    &lt;/bean&gt;<br>    &lt;bean id=&quot;listenerContainer&quot; class=&quot;org.springframework.jms.listener.DefaultMessageListenerContainer&quot;&gt;<br>        &lt;property name=&quot;connectionFactory&quot; ref=&quot;poolConnectionFactory&quot; /&gt;<br>        &lt;property name=&quot;messageListener&quot; ref=&quot;jmsQueueReceiver&quot; /&gt;<br>        &lt;property name=&quot;destination&quot; ref=&quot;queueDestination&quot; /&gt;<br>    &lt;/bean&gt;</pre><br><p>其中的jmsQueueReceiver代码如下：</p><br><pre class="brush: java; gutter: true">import javax.jms.JMSException;<br>import javax.jms.Message;<br>import javax.jms.MessageListener;<br>import javax.jms.TextMessage;<br><br>import org.springframework.stereotype.Component;<br><br>@Component(&quot;jmsQueueReceiver&quot;)<br>public class JmsQueueReceiver implements MessageListener<br>{<br>    @Override<br>    public void onMessage(Message messgae)<br>    {<br>        if(messgae instanceof TextMessage)<br>        {<br>            TextMessage textMessage = (TextMessage) messgae;<br>            try<br>            {<br>                String text = textMessage.getText();<br>                System.out.println(&quot;######################[&quot;+text+&quot;]######################&quot;);<br>            }<br>            catch (JMSException e)<br>            {<br>                e.printStackTrace();<br>            }<br>        }<br>    }<br>}</pre><br><hr><br><h2 id="事务管理"><a name="t3"></a>事务管理</h2><br><p>Spring提供了一个JmsTransactionManager用于对JMS ConnectionFactory做事务管理。这将允许JMS应用利用Spring的事务管理特性。JmsTransactionManager在执行本地资源事务管理时将从指定的ConnectionFactory绑定一个ConnectionFactory/Session这样的配对到线程中。JmsTemplate会自动检测这样的事务资源，并对他们进行相应的操作。</p><br><p>在J2EE环境中，ConnectionFactory会池化Connection和Session，这样这些资源将会在整个事务中被有效地重复利用。在一个独立的环境中，使用Spring的SingleConnectionFactory时所有的事务将公用一个Connection，但是每个事务将保留自己独立的Session.</p><br><p>JmsTemplate可以利用JtaTransactionManager和能够进行分布式的JMS ConnectionFactory处理分布式事务。</p><br><p>在Spring整合JMS的应用中，如果我们要进行本地的事务管理的话非常简单，只需要在定义对于的消息监听容器时指定其sessionTransacted属性为true(默认为false)：</p><br><pre class="brush: java; gutter: true">&lt;bean id=&quot;listenerContainer&quot; class=&quot;org.springframework.jms.listener.DefaultMessageListenerContainer&quot;&gt;<br>        &lt;property name=&quot;connectionFactory&quot; ref=&quot;connectionFactory&quot; /&gt;<br>        &lt;property name=&quot;messageListener&quot; ref=&quot;jmsQueueReceiver&quot; /&gt;<br>        &lt;property name=&quot;destination&quot; ref=&quot;queueDestination&quot; /&gt;<br>        &lt;property name=&quot;sessionTransacted&quot; value=&quot;true&quot;/&gt;<br>    &lt;/bean&gt;</pre><br><p>这样JMS在进行消息监听的时候就会进行事务控制，当在接收消息时监听器执行失败时JMS就会对接收到的消息进行回滚。这里需要注意的是对于其他操作如<a title="MySQL知识库" href="http://lib.csdn.net/base/14" target="_blank" class="external" rel="nofollow">数据库</a>等访问不属于该事务控制。</p><br><p>可以在JmsQueueReceiver中修改一下代码从而检测到发送异常时是否会进行事务回滚：</p><br><pre class="brush: java; gutter: true">@Component(&quot;jmsQueueReceiver&quot;)<br>public class JmsQueueReceiver implements MessageListener<br>{<br>    @Override<br>    public void onMessage(Message messgae)<br>    {<br>        if(messgae instanceof TextMessage)<br>        {<br>            TextMessage textMessage = (TextMessage) messgae;<br>            try<br>            {<br>                String text = textMessage.getText();<br>                System.out.println(&quot;######################[&quot;+text+&quot;]######################&quot;);<br>                if(true)<br>                {<br>                    throw new RuntimeException(&quot;Error&quot;);<br>                }<br>            }<br>            catch (JMSException e)<br>            {<br>                e.printStackTrace();<br>            }<br>        }<br>    }<br>}</pre><br><p>你可以通过向Destination发送一条信息，通过JmsQueueReceiver处理后，发送异常进而事务混滚。可以通过<a href="http://10.10.195.187:8161/admin/queues.jsp" class="external" rel="nofollow" target="_blank">http://10.10.195.187:8161/admin/queues.jsp</a>查看相关信息（ip地址是博主的ActiveMQ服务器所在id，根据实际情况修改）。</p><br><p>如果想要接收消息和数据库访问处于同一事务中，那么我们就可以配置一个外部的事务管理同时配置一个支持外部事务管理的消息监听容器（如DefaultMessageListenerContainer)。要配置这样一个参与分布式事务管理的消息监听容器，我们可以配置一个JtaTransactionManager，当然底层的JMS ConnectionFactory需要能够支持分布式事务管理，并正确地注册我们的JtaTransactionManager。这样消息监听器进行消息接收和对应的数据库访问就会处于同一数据库控制下，当消息接收失败或数据库访问失败都会进行事务回滚操作。</p><br><pre class="brush: java; gutter: true"> &lt;bean id=&quot;listenerContainer&quot; class=&quot;org.springframework.jms.listener.DefaultMessageListenerContainer&quot;&gt;<br>        &lt;property name=&quot;connectionFactory&quot; ref=&quot;connectionFactory&quot; /&gt;<br>        &lt;property name=&quot;messageListener&quot; ref=&quot;jmsQueueReceiver&quot; /&gt;<br>        &lt;property name=&quot;destination&quot; ref=&quot;queueDestination&quot; /&gt;<br>        &lt;property name=&quot;sessionTransacted&quot; value=&quot;true&quot;/&gt;<br>        &lt;property name=&quot;transactionManager&quot; ref=&quot;jtaTransactionManager&quot;/&gt;<br>    &lt;/bean&gt;<br>    &lt;bean id=&quot;jtaTransactionManager&quot; class=&quot;org.springframework.transaction.jta.JtaTransactionManager&quot;/&gt;</pre><br><p>当给小时监听容器指定了transactionManager时，消息监听容器将忽略sessionTransacted的值。</p><br><p>到这里大概的Spring+ActiveMQ整合告一段落，所有代码经博主亲测，确保有效性及正确性。如有疑问，可在下方留言。</p><br><hr><br><p>参考资料：<br><br>1. <a href="http://haohaoxuexi.iteye.com/blog/1893038" class="external" rel="nofollow" target="_blank">Spring整合JMS(一)——基于ActiveMQ实现</a><br><br>2. <a href="http://blog.csdn.net/wilsonke/article/details/42191015" class="external" rel="nofollow" target="_blank">Spring+ActiveMQ+Mysql 配置JMS</a><br><br>3. <a href="http://blog.csdn.net/u013256816/article/details/51161548" class="external" rel="nofollow" target="_blank">ActiveMQ简述</a></p>
+
+
+
+<pre><code>&lt;!-- BEGIN #author-bio --&gt;
+</code></pre><!-- END #author-bio -->
+<pre><code>&lt;/div&gt;
+</code></pre>
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -1993,7 +2000,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">64</span>
+                <span class="site-state-item-count">63</span>
                 <span class="site-state-item-name">Artikel</span>
               </a>
             </div>
